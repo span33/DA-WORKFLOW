@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- origin at X=0.0 Y=0.0 -->
+<definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/DI http://www.omg.org/spec/BPMN/20100524/MODEL http://www.omg.org/spec/BPMN/20100524/MODEL http://www.omg.org/spec/BPMN/20100524/MODEL-XMI http://www.omg.org/spec/DD/20100524/DC http://www.omg.org/spec/DD/20100524/DC-XMI http://www.omg.org/spec/DD/20100524/DI http://www.omg.org/spec/DD/20100524/DI-XMI" id="Definitions_1" exporter="org.eclipse.bpmn2.modeler.core" exporterVersion="1.2.4.Final-v20160330-1625-B110" targetNamespace="studerw.com">
+  <process id="NEW_USER" name="Approve New User" isExecutable="true">
+    <documentation id="Documentation_1">This process is initiated when a user enters the system but is not found yet in the User
+            repository. Upon submitting the standard registration information,
+            an administrator will be taked with adding or denying the user.
+        </documentation>
+    <startEvent id="startUser" activiti:initiator="initiator" name="Start">
+      <outgoing>flow1</outgoing>
+    </startEvent>
+    <userTask id="approveUserTask" name="Approve New User Account">
+      <incoming>flow1</incoming>
+      <outgoing>flow2</outgoing>
+    </userTask>
+    <sequenceFlow id="flow1" sourceRef="startUser" targetRef="approveUserTask"/>
+    <exclusiveGateway id="approvalExclusiveGateway" name="Exclusive Gateway">
+      <incoming>flow2</incoming>
+      <outgoing>flow3</outgoing>
+      <outgoing>flow4</outgoing>
+    </exclusiveGateway>
+    <sequenceFlow id="flow2" sourceRef="approveUserTask" targetRef="approvalExclusiveGateway"/>
+    <serviceTask id="newUserApproved" activiti:expression="${userAccountWorkflow.approved(execution)}" name="Create User Account, send Alerts">
+      <incoming>flow3</incoming>
+      <outgoing>flow6</outgoing>
+    </serviceTask>
+    <serviceTask id="newUserDenied" activiti:expression="${userAccountWorkflow.denied(execution)}" name="send alert">
+      <incoming>flow4</incoming>
+      <outgoing>flow5</outgoing>
+    </serviceTask>
+    <endEvent id="endevent1" name="End">
+      <incoming>flow5</incoming>
+      <incoming>flow6</incoming>
+    </endEvent>
+    <sequenceFlow id="flow3" sourceRef="approvalExclusiveGateway" targetRef="newUserApproved">
+      <conditionExpression xsi:type="tFormalExpression" id="FormalExpression_1">
+                <![CDATA[
+                ${approved == true}
+            ]]>
+            </conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow4" sourceRef="approvalExclusiveGateway" targetRef="newUserDenied">
+      <conditionExpression xsi:type="tFormalExpression" id="FormalExpression_2">
+                <![CDATA[
+                ${approved == false}
+            ]]>
+            </conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow5" sourceRef="newUserDenied" targetRef="endevent1"/>
+    <sequenceFlow id="flow6" sourceRef="newUserApproved" targetRef="endevent1"/>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_Process_1" bpmnElement="newUser">
+      <bpmndi:BPMNShape id="BPMNShape_StartEvent_1" bpmnElement="startUser">
+        <omgdc:Bounds height="36.0" width="36.0" x="50.0" y="132.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_1" labelStyle="BPMNLabelStyle_1">
+          <omgdc:Bounds height="15.0" width="25.0" x="55.0" y="168.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_UserTask_1" bpmnElement="approveUserTask">
+        <omgdc:Bounds height="50.0" width="110.0" x="136.0" y="125.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_2" labelStyle="BPMNLabelStyle_1">
+          <omgdc:Bounds height="30.0" width="81.0" x="150.0" y="135.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_ExclusiveGateway_1" bpmnElement="approvalExclusiveGateway" isMarkerVisible="true">
+        <omgdc:Bounds height="50.0" width="50.0" x="296.0" y="125.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_3" labelStyle="BPMNLabelStyle_1">
+          <omgdc:Bounds height="30.0" width="57.0" x="293.0" y="175.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_ServiceTask_1" bpmnElement="newUserApproved">
+        <omgdc:Bounds height="50.0" width="110.0" x="396.0" y="75.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_4" labelStyle="BPMNLabelStyle_1">
+          <omgdc:Bounds height="45.0" width="84.0" x="409.0" y="77.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_ServiceTask_2" bpmnElement="newUserDenied">
+        <omgdc:Bounds height="50.0" width="110.0" x="396.0" y="175.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_5" labelStyle="BPMNLabelStyle_1">
+          <omgdc:Bounds height="15.0" width="55.0" x="423.0" y="192.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_EndEvent_1" bpmnElement="endevent1">
+        <omgdc:Bounds height="36.0" width="36.0" x="556.0" y="132.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_6" labelStyle="BPMNLabelStyle_1">
+          <omgdc:Bounds height="15.0" width="22.0" x="563.0" y="168.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_1" bpmnElement="flow1" sourceElement="BPMNShape_StartEvent_1" targetElement="BPMNShape_UserTask_1">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="86.0" y="150.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="111.0" y="150.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="136.0" y="150.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_7"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_2" bpmnElement="flow2" sourceElement="BPMNShape_UserTask_1" targetElement="BPMNShape_ExclusiveGateway_1">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="246.0" y="150.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="271.0" y="150.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="296.0" y="150.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_8"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_3" bpmnElement="flow3" sourceElement="BPMNShape_ExclusiveGateway_1" targetElement="BPMNShape_ServiceTask_1">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="321.0" y="125.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="321.0" y="100.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="396.0" y="100.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_9"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_4" bpmnElement="flow4" sourceElement="BPMNShape_ExclusiveGateway_1" targetElement="BPMNShape_ServiceTask_2">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="321.0" y="175.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="321.0" y="200.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="396.0" y="200.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_10"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_5" bpmnElement="flow6" sourceElement="BPMNShape_ServiceTask_1" targetElement="BPMNShape_EndEvent_1">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="506.0" y="100.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="574.0" y="100.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="574.0" y="132.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_11"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_6" bpmnElement="flow5" sourceElement="BPMNShape_ServiceTask_2" targetElement="BPMNShape_EndEvent_1">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="506.0" y="200.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="574.0" y="200.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="574.0" y="168.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_12"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+    <bpmndi:BPMNLabelStyle id="BPMNLabelStyle_1">
+      <omgdc:Font name="arial" size="9.0"/>
+    </bpmndi:BPMNLabelStyle>
+  </bpmndi:BPMNDiagram>
+</definitions>

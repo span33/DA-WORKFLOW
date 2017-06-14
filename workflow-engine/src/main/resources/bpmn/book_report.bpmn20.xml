@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- origin at X=0.0 Y=0.0 -->
+<definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsd="http://www.w3.org/2001/XMLSchema" id="Definitions_1" exporter="org.eclipse.bpmn2.modeler.core" exporterVersion="1.2.4.Final-v20160330-1625-B110" targetNamespace="studerw.com">
+  <process id="BOOK_REPORT___NONE" name="Book Report Workflow" isExecutable="true">
+    <documentation id="Documentation_1">This process is initiated when a book report is created.</documentation>
+    <startEvent id="startevent" activiti:initiator="initiator" name="Start">
+      <outgoing>flow1</outgoing>
+    </startEvent>
+    <serviceTask id="publishBookReport" activiti:expression="${documentService.publish(execution)}" name="Publish Book Report">
+      <incoming>flow3</incoming>
+      <outgoing>flow4</outgoing>
+    </serviceTask>
+    <userTask id="submitToWorkflow" name="Submit Book Report to Workflow">
+      <incoming>flow1</incoming>
+      <incoming>flow5</incoming>
+      <outgoing>flow2</outgoing>
+    </userTask>
+    <endEvent id="endevent" name="End">
+      <incoming>flow4</incoming>
+    </endEvent>
+    <subProcess id="DYNAMIC_SUB_PROCESS" name="Dynamic Document Subprocess">
+      <incoming>flow2</incoming>
+      <outgoing>flow3</outgoing>
+      <startEvent id="dynamic_sub_process_start_event" name="Start Dynamic SubProcess">
+        <outgoing>SequenceFlow_1</outgoing>
+      </startEvent>
+      <endEvent id="dynamic_sub_process_end_event" name="End Dynamic SubProcess">
+        <incoming>SequenceFlow_1</incoming>
+      </endEvent>
+      <endEvent id="rejectedErrorEndEvent" name="ErrorEnd">
+        <errorEventDefinition id="ErrorEventDefinition_1"/>
+      </endEvent>
+      <sequenceFlow id="SequenceFlow_1" sourceRef="dynamic_sub_process_start_event" targetRef="dynamic_sub_process_end_event"/>
+    </subProcess>
+    <boundaryEvent id="REJECTED_ERROR_BOUNDARY_EVENT" name="Rejected Error Event" attachedToRef="DYNAMIC_SUB_PROCESS">
+      <outgoing>flow5</outgoing>
+      <errorEventDefinition id="ErrorEventDefinition_2"/>
+    </boundaryEvent>
+    <sequenceFlow id="flow1" sourceRef="startevent" targetRef="submitToWorkflow"/>
+    <sequenceFlow id="flow2" sourceRef="submitToWorkflow" targetRef="DYNAMIC_SUB_PROCESS"/>
+    <sequenceFlow id="flow3" sourceRef="DYNAMIC_SUB_PROCESS" targetRef="publishBookReport"/>
+    <sequenceFlow id="flow4" sourceRef="publishBookReport" targetRef="endevent"/>
+    <sequenceFlow id="flow5" name="Doc Rejected" sourceRef="REJECTED_ERROR_BOUNDARY_EVENT" targetRef="submitToWorkflow"/>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_Process_1" bpmnElement="BOOK_REPORT___NONE">
+      <bpmndi:BPMNShape id="BPMNShape_SubProcess_1" bpmnElement="DYNAMIC_SUB_PROCESS" isExpanded="true">
+        <omgdc:Bounds height="186.0" width="222.0" x="296.0" y="50.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_5" labelStyle="BPMNLabelStyle_1">
+          <omgdc:Bounds height="15.0" width="178.0" x="302.0" y="53.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_StartEvent_1" bpmnElement="startevent">
+        <omgdc:Bounds height="36.0" width="36.0" x="50.0" y="125.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_1" labelStyle="BPMNLabelStyle_1">
+          <omgdc:Bounds height="15.0" width="25.0" x="55.0" y="161.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_ServiceTask_1" bpmnElement="publishBookReport">
+        <omgdc:Bounds height="50.0" width="110.0" x="568.0" y="118.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_2" labelStyle="BPMNLabelStyle_1">
+          <omgdc:Bounds height="30.0" width="82.0" x="582.0" y="128.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_UserTask_1" bpmnElement="submitToWorkflow">
+        <omgdc:Bounds height="50.0" width="110.0" x="136.0" y="118.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_3" labelStyle="BPMNLabelStyle_1">
+          <omgdc:Bounds height="30.0" width="110.0" x="136.0" y="128.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_EndEvent_1" bpmnElement="endevent">
+        <omgdc:Bounds height="36.0" width="36.0" x="728.0" y="125.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_4" labelStyle="BPMNLabelStyle_1">
+          <omgdc:Bounds height="15.0" width="22.0" x="735.0" y="161.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_StartEvent_2" bpmnElement="dynamic_sub_process_start_event">
+        <omgdc:Bounds height="36.0" width="36.0" x="346.0" y="100.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_6" labelStyle="BPMNLabelStyle_1">
+          <omgdc:Bounds height="45.0" width="79.0" x="325.0" y="136.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_EndEvent_2" bpmnElement="dynamic_sub_process_end_event">
+        <omgdc:Bounds height="36.0" width="36.0" x="432.0" y="100.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_7" labelStyle="BPMNLabelStyle_1">
+          <omgdc:Bounds height="30.0" width="79.0" x="411.0" y="136.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_EndEvent_3" bpmnElement="rejectedErrorEndEvent">
+        <omgdc:Bounds height="36.0" width="36.0" x="346.0" y="150.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_8" labelStyle="BPMNLabelStyle_1">
+          <omgdc:Bounds height="15.0" width="49.0" x="340.0" y="186.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_BoundaryEvent_1" bpmnElement="REJECTED_ERROR_BOUNDARY_EVENT">
+        <omgdc:Bounds height="36.0" width="36.0" x="332.0" y="218.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_15" labelStyle="BPMNLabelStyle_1">
+          <omgdc:Bounds height="30.0" width="63.0" x="319.0" y="254.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_1" bpmnElement="flow1" sourceElement="BPMNShape_StartEvent_1" targetElement="BPMNShape_UserTask_1">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="86.0" y="143.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="126.0" y="143.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="126.0" y="143.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="136.0" y="143.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_9"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_2" bpmnElement="flow3" sourceElement="BPMNShape_SubProcess_1" targetElement="BPMNShape_ServiceTask_1">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="518.0" y="143.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="543.0" y="143.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="568.0" y="143.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_10"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_3" bpmnElement="flow4" sourceElement="BPMNShape_ServiceTask_1" targetElement="BPMNShape_EndEvent_1">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="678.0" y="143.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="688.0" y="143.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="728.0" y="143.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_11"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_4" bpmnElement="flow5" sourceElement="BPMNShape_BoundaryEvent_1" targetElement="BPMNShape_UserTask_1">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="332.0" y="236.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="191.0" y="236.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="191.0" y="168.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_12">
+          <omgdc:Bounds height="15.0" width="74.0" x="192.0" y="237.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_5" bpmnElement="flow2" sourceElement="BPMNShape_UserTask_1" targetElement="BPMNShape_SubProcess_1">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="246.0" y="143.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="271.0" y="143.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="296.0" y="143.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_13"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_6" bpmnElement="SequenceFlow_1" sourceElement="BPMNShape_StartEvent_2" targetElement="BPMNShape_EndEvent_2">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="382.0" y="118.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="407.0" y="118.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="432.0" y="118.0"/>
+        <bpmndi:BPMNLabel id="BPMNLabel_14"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+    <bpmndi:BPMNLabelStyle id="BPMNLabelStyle_1">
+      <omgdc:Font name="arial" size="9.0"/>
+    </bpmndi:BPMNLabelStyle>
+  </bpmndi:BPMNDiagram>
+</definitions>
