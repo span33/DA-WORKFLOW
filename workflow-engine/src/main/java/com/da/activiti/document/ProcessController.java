@@ -17,6 +17,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,7 +26,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.da.activiti.model.Response;
 import com.da.activiti.model.document.ProcessInfo;
+import com.da.activiti.model.document.TaskInfo;
 import com.da.activiti.web.BaseController;
+import com.da.activiti.workflow.WorkflowBuilder;
+import com.da.activiti.workflow.WorkflowService;
 
 @Controller
 @RequestMapping("/process")
@@ -35,14 +39,56 @@ public class ProcessController extends BaseController {
 	@Autowired
 	ProcessService processService;
 
+	@Autowired
+	WorkflowService workflowService;
+	
+	@Autowired
+	WorkflowBuilder workflowBuilder ;
+
+	@RequestMapping(value = "/saveGridData", method = RequestMethod.POST)
+	public String postGridData(@RequestBody List<ProcessInfo> processInfos, BindingResult result,
+			final RedirectAttributes redirectAttributes, HttpServletRequest request, ModelMap model) {
+			processTaskMapping(processInfos);
+			
+			processInfos.forEach(processinfo -> {
+				try {
+					workflowBuilder.createProcess(processinfo.getProcessName(), processinfo.getSubProcessList());
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			});
+
+		/*
+		 * 
+		 * org.activiti.bpmn.model.Process process =
+		 * workflowService.createProcess(processInfo.getProcessName()); String
+		 * deploymentId =
+		 * workflowService.getProcesDefinationByProcessName(process.getId());
+		 * processInfo.setProcessName(deploymentId);
+		 */
+		return null;
+
+	}
+
 	@RequestMapping(value = "/saveProcess", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<Response> post(@ModelAttribute ProcessInfo processInfo, BindingResult result,
 			final RedirectAttributes redirectAttributes, HttpServletRequest request, ModelMap model) {
-		
 		String processId = processService.createProcess(processInfo);
-		String msg = "Process id : "+ processId +" -- Process Created Successfully ";
+		String msg = "Process id : " + processId + " -- Process Created Successfully ";
 		Response<String> res = new Response<String>(true, msg);
 		res.setData(processId);
+		return new ResponseEntity<Response>(res, HttpStatus.OK);
+
+	}
+
+	@RequestMapping(value = "/createTask", method = RequestMethod.POST)
+	public @ResponseBody ResponseEntity<Response> createTask(@ModelAttribute TaskInfo taskInfo, BindingResult result,
+			final RedirectAttributes redirectAttributes, HttpServletRequest request, ModelMap model) {
+		String taskId = processService.createTask(taskInfo);
+		String msg = "Task id : " + taskId + " -- Process Created Successfully ";
+		Response<String> res = new Response<String>(true, msg);
+		res.setData(taskId);
 		return new ResponseEntity<Response>(res, HttpStatus.OK);
 
 	}
@@ -51,12 +97,14 @@ public class ProcessController extends BaseController {
 	@ModelAttribute
 	public void addModelInfo(ModelMap model, HttpServletRequest request) {
 		super.addModelInfo(model, request);
-		List<ProcessInfo> processList = processService.listAllProcesses();
 		/*
+		 * List<ProcessInfo> processList = processService.listAllProcesses();
+		 * 
 		 * ObjectMapper mapper = new ObjectMapper(); model.addAttribute("json",
 		 * mapper.writeValueAsString(files));
+		 * 
+		 * model.addAttribute("processList", processList);
 		 */
-		model.addAttribute("processList", processList);
 	}
 
 	@InitBinder
@@ -106,9 +154,18 @@ public class ProcessController extends BaseController {
 
 	}
 
-	@RequestMapping(value = "/TaskMappingListByTaskId.htm", method = RequestMethod.GET)
-	public @ResponseBody ResponseEntity<Response> getTaskMapingList(@RequestParam int mappingId) {
-		List<Map<String, Object>> processList = processService.processesTraskMappingListByTaskId(mappingId);
+	@RequestMapping(value = "/SubprocessByProcessId.htm", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Response> getSubProcessByProcessId(@RequestParam int processId) {
+		List<Map<String, Object>> processList = processService.allSubProcessesByProcessId(processId);
+		Response<List<Map<String, Object>>> res = new Response<List<Map<String, Object>>>(true, "Alert acknowledged");
+		res.setData(processList);
+		return new ResponseEntity<Response>(res, HttpStatus.OK);
+
+	}
+
+	@RequestMapping(value = "/TaskListByProcessId.htm", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Response> getTaskByProcessId(@RequestParam int processId) {
+		List<Map<String, Object>> processList = processService.taskListByProcessId(processId);
 		Response<List<Map<String, Object>>> res = new Response<List<Map<String, Object>>>(true, "Alert acknowledged");
 		res.setData(processList);
 		return new ResponseEntity<Response>(res, HttpStatus.OK);
@@ -131,5 +188,16 @@ public class ProcessController extends BaseController {
 		res.setData(processList);
 		return new ResponseEntity<Response>(res, HttpStatus.OK);
 
+	}
+	
+	private void processTaskMapping(List <ProcessInfo> processInfos) {
+		processInfos.forEach(processInfo -> {
+			List<ProcessInfo> subprocesslist = processService.listAllSubProcesses(processInfo.getProcessId());
+			processInfo.setSubProcessList(subprocesslist);
+			subprocesslist.forEach(process -> {
+				List<TaskInfo> tasklist = processService.listTaskByProcessId(process.getProcessId());
+				process.setTaskList(tasklist);
+			});
+		});
 	}
 }

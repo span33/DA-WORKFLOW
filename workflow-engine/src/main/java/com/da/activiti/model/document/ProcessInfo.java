@@ -1,41 +1,59 @@
 package com.da.activiti.model.document;
 
+import java.util.List;
+
 public class ProcessInfo extends Document {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -6202402876080084935L;
+
+	private int processId;
+
+	private String processName;
+
+	private String processDescription;
+
+	private String processOwner;
+
+	private String processType;
+
+	private String processTemplateId;
+
+	private List<ProcessInfo> subProcessList;
+
+	private String processLevel;
+
+	private String parent;
+
+	private String processHasSibling;
+
+	private String createdBy;
+
+	private List<TaskInfo> taskList;
 	
-	private int processId ;
-	
-	private String processName ;
-	
-	private String processDescription ;
-	
-	private String processOwner ;
-	
-	private String processType ;
-	
-	private String processTemplateId ;
-	
-	@Override
-	public String toString() {
-		return "ProcessInfo [processName=" + processName + ", processDescription=" + processDescription
-				+ ", processOwner=" + processOwner + ", processType=" + processType + ", processTemplateId="
-				+ processTemplateId + ", processLevel=" + processLevel + ", processParentId=" + processParentId
-				+ ", processHasSibling=" + processHasSibling + ", createdBy=" + createdBy + ", processTaskMappingId="
-				+ processTaskMappingId + "]";
+	private int processTaskMappingId;
+
+	public List<TaskInfo> getTaskList() {
+		return taskList;
 	}
 
-	private String processLevel ;
+	public void setTaskList(List<TaskInfo> taskList) {
+		this.taskList = taskList;
+	}
+
 	
-	private String processParentId ;
-	
-	private String processHasSibling ;
-	
-	private String createdBy ;
-	
+
+	@Override
+	public String toString() {
+		return "ProcessInfo [processId=" + processId + ", processName=" + processName + ", processDescription="
+				+ processDescription + ", processOwner=" + processOwner + ", processType=" + processType
+				+ ", processTemplateId=" + processTemplateId + ", subProcessList=" + subProcessList + ", processLevel="
+				+ processLevel + ", parent=" + parent + ", processHasSibling=" + processHasSibling + ", createdBy="
+				+ createdBy + ", taskList=" + taskList + ", processTaskMappingId=" + processTaskMappingId + "]";
+	}
+
 	public String getCreatedBy() {
 		return createdBy;
 	}
@@ -44,8 +62,7 @@ public class ProcessInfo extends Document {
 		this.createdBy = createdBy;
 	}
 
-	private int processTaskMappingId ;
-	
+
 
 	public int getProcessId() {
 		return processId;
@@ -103,14 +120,6 @@ public class ProcessInfo extends Document {
 		this.processLevel = processLevel;
 	}
 
-	public String getProcessParentId() {
-		return processParentId;
-	}
-
-	public void setProcessParentId(String processParentId) {
-		this.processParentId = processParentId;
-	}
-
 	public String getProcessHasSibling() {
 		return processHasSibling;
 	}
@@ -125,6 +134,22 @@ public class ProcessInfo extends Document {
 
 	public void setProcessTaskMappingId(int processTaskMappingId) {
 		this.processTaskMappingId = processTaskMappingId;
+	}
+	
+	public String getParent() {
+		return parent;
+	}
+
+	public void setParent(String parent) {
+		this.parent = parent;
+	}
+	
+	public List<ProcessInfo> getSubProcessList() {
+		return subProcessList;
+	}
+
+	public void setSubProcessList(List<ProcessInfo> subProcessList) {
+		this.subProcessList = subProcessList;
 	}
 
 }

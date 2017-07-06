@@ -97,6 +97,54 @@ public class DocWorkflowListener {
         doc.setDocState(DocState.WAITING_FOR_COLLABORATION);
         this.docSrvc.updateDocument(doc);
     }
+    /**
+     * Called when a collaboration task is created
+     *
+     * @param execution
+     * @param task
+     */
+    public void onCreateGenricTask(Execution execution, DelegateTask task) {
+        ProcessInstance pi = runtimeService.createProcessInstanceQuery().
+                processInstanceId(execution.getProcessInstanceId()).singleResult();
+
+        String docId = pi.getBusinessKey();
+        if (StringUtils.isBlank(docId)) {
+            return;
+        }
+        Document doc = this.docSrvc.getDocument(DocType.JOURNAL,docId);
+        if (doc == null) {
+            return;
+        }
+        LOG.debug("Setting doc: {} to state = {}", doc.getTitle(), DocState.WAITING_FOR_DOCUMENT_TO_SUBMIT.name());
+        doc.setDocState(DocState.WAITING_FOR_DOCUMENT_TO_SUBMIT);
+        this.docSrvc.updateDocument(doc);
+    }
+    /**
+     * Called when a collaboration task is completed
+     *
+     * @param execution
+     * @param task
+     */
+    public void onCompleteGenricTask(Execution execution, DelegateTask task) {
+        ProcessInstance pi = runtimeService.createProcessInstanceQuery().
+                processInstanceId(execution.getProcessInstanceId()).singleResult();
+
+        String docId = pi.getBusinessKey();
+        if (StringUtils.isBlank(docId)) {
+            return;
+        }
+        Document doc = this.docSrvc.getDocument(DocType.JOURNAL,docId);
+        if (doc == null) {
+            return;
+        }
+        LOG.debug("Setting doc: {} to state = {}", doc.getTitle(), DocState.COLLABORATED.name());
+        doc.setDocState(DocState.DOCUMENT_SUBMITED);
+        this.docSrvc.updateDocument(doc);
+
+        String message = String.format("%s entitled '%s' has been collaborated on. ", doc.getDocType().name(), doc.getTitle());
+        this.alertService.sendAlert(doc.getAuthor(), Alert.SUCCESS, message);
+
+    }
 
     /**
      * Called when a collaboration task is completed

@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.da.activiti.document.dao.ProcessDao;
-import com.da.activiti.model.document.Document;
 import com.da.activiti.model.document.ProcessInfo;
+import com.da.activiti.model.document.TaskInfo;
 import com.google.common.collect.Lists;
 
 /**
@@ -19,7 +19,7 @@ import com.google.common.collect.Lists;
  *         Date: 5/18/14
  */
 @Service("processService")
-public class ProcessService {
+public class ProcessService  {
     private static final Logger LOG = LoggerFactory.getLogger(ProcessService.class);
    
     @Autowired protected ProcessDao processDao;
@@ -28,22 +28,70 @@ public class ProcessService {
         return processDao.getProcessListByTaskMappingId(mappingId);
     }
     @Transactional(readOnly = true)
-    public List<Map<String, Object>> processesTraskMappingListByTaskId(int mappingId) {
-        return processDao.getProcessTaskMappingListByTaskId(mappingId);
+    public List<Map<String, Object>> taskListByProcessId(int processId) {
+        return processDao.getTaskListByProcessId(processId);
     }
     
     @Transactional(readOnly = true)
-    public List<Map<String, Object>> allProcesses() {
-        
-        return processDao.getProcesList();
+    public List<TaskInfo> listTaskByProcessId(int processId) {
+        return processDao.readTaskByProcessId(processId);
+    }
+    
+	@Transactional(readOnly = true)
+	public List<Map<String, Object>> allProcesses() {
+		List<Map<String, Object>> processRows = processDao.getProcesList();
+		processRows.forEach(index -> {
+			if ((Integer) index.get("isleaf") == 0) {
+				index.put("isleaf", false);
+			}else if((Integer) index.get("isleaf") == 1) {
+				index.put("isleaf", true);
+			}
+			if ((Integer) index.get("expanded") == 0) {
+				index.put("expanded", false);
+			}else if ((Integer) index.get("expanded") == 1) {
+				index.put("expanded", true);
+			}
+			
+		});
+
+		return processRows;
+
+	}
+	
+	@Transactional(readOnly = true)
+	public List<Map<String, Object>> allSubProcessesByProcessId(int processId) {
+		List<Map<String, Object>> processRows = processDao.getSubProcesListByProcessId(processId);
+		processRows.forEach(index -> {
+			if ((Integer) index.get("isleaf") == 0) {
+				index.put("isleaf", false);
+			}else if((Integer) index.get("isleaf") == 1) {
+				index.put("isleaf", true);
+			}
+			if ((Integer) index.get("expanded") == 0) {
+				index.put("expanded", false);
+			}else if ((Integer) index.get("expanded") == 1) {
+				index.put("expanded", true);
+			}
+			
+		});
+
+		return processRows;
+
+	}
+    
+	
+    @Transactional(readOnly = true)
+    public List<ProcessInfo>  listAllProcesses() {
+    	 List<ProcessInfo> processList = Lists.newArrayList();
+         processList = this.processDao.readAll();
+         return processList;
        
     }
     
     @Transactional(readOnly = true)
-    public List<ProcessInfo>  listAllProcesses() {
-        
+    public List<ProcessInfo>  listAllSubProcesses(int processId) {
     	 List<ProcessInfo> processList = Lists.newArrayList();
-         processList = this.processDao.readAll();
+         processList = this.processDao.readAllSubprocess(processId);
          return processList;
        
     }
@@ -67,7 +115,7 @@ public class ProcessService {
     @Transactional(readOnly = true)
     public List<Map<String, Object>> taskListById(int id) {
         
-        return processDao.getTaskListById(id);
+        return processDao.getTaskListByProcessId(id);
        
     }
     
@@ -84,6 +132,12 @@ public class ProcessService {
         return processDao.getTaskActorMappingListById(id);
        
     }
+    
+    @Transactional
+    public String createTask(TaskInfo taskInfo){
+    	return processDao.create(taskInfo);
+    }
+   
     
     @Transactional
     public String createProcess(ProcessInfo processInfo){

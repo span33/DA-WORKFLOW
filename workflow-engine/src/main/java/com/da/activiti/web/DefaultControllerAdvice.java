@@ -6,6 +6,8 @@ import com.google.common.collect.Maps;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
@@ -31,9 +33,9 @@ public class DefaultControllerAdvice {
 //    }
 
 
-    /**
+   /* *//**
      * With Ajax calls we need to send a 200 OK response with a status of success: false.
-     */
+     *//*
     @ExceptionHandler(Exception.class)
     public ModelAndView handleException(Exception ex) {
         LOG.error("Caught Exception - returning error response: {}", ex.getMessage());
@@ -44,5 +46,20 @@ public class DefaultControllerAdvice {
         model.put("response", response);
         return new ModelAndView("error", model);
         //return new ResponseEntity<Response>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    */
+    
+    /**
+     * With Ajax calls we need to send a 200 OK response with a status of success: false.
+     */
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Response> handleException(Exception ex) {
+        LOG.error("Caught Exception - returning error response: {}", ex.getMessage());
+        LOG.error("Root cause: {}", ExceptionUtils.getRootCauseMessage(ex));
+        ex.printStackTrace();
+        Map<String, Object> model = Maps.newHashMap();
+        Response response = new Response(false, ex.getMessage() + "    Root Cause: " + ExceptionUtils.getRootCauseMessage(ex));
+        model.put("response", response);
+        return new ResponseEntity<Response>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

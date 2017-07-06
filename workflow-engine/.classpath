@@ -49,7 +49,7 @@
 	<classpathentry kind="var" path="M2_REPO/xml-apis/xml-apis/1.4.01/xml-apis-1.4.01.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/activiti/activiti-engine/5.18.0/activiti-engine-5.18.0.jar" sourcepath="M2_REPO/org/activiti/activiti-engine/5.18.0/activiti-engine-5.18.0-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/activiti/activiti-bpmn-converter/5.18.0/activiti-bpmn-converter-5.18.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/activiti/activiti-bpmn-model/5.18.0/activiti-bpmn-model-5.18.0.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/activiti/activiti-bpmn-model/5.18.0/activiti-bpmn-model-5.18.0.jar" sourcepath="/ActivitiSouceCode"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/commons/commons-lang3/3.3.2/commons-lang3-3.3.2.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/fasterxml/jackson/core/jackson-core/2.4.3/jackson-core-2.4.3.jar"/>
 	<classpathentry kind="var" path="M2_REPO/com/fasterxml/jackson/core/jackson-databind/2.4.3/jackson-databind-2.4.3.jar"/>
@@ -65,7 +65,7 @@
 	<classpathentry kind="var" path="M2_REPO/org/activiti/activiti-spring/5.18.0/activiti-spring-5.18.0.jar" sourcepath="M2_REPO/org/activiti/activiti-spring/5.18.0/activiti-spring-5.18.0-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/commons-dbcp/commons-dbcp/1.4/commons-dbcp-1.4.jar"/>
 	<classpathentry kind="var" path="M2_REPO/commons-pool/commons-pool/1.5.4/commons-pool-1.5.4.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/activiti/activiti-bpmn-layout/5.18.0/activiti-bpmn-layout-5.18.0.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/activiti/activiti-bpmn-layout/5.18.0/activiti-bpmn-layout-5.18.0.jar" sourcepath="/ActivitiCode"/>
 	<classpathentry kind="var" path="M2_REPO/org/tinyjee/jgraphx/jgraphx/1.10.4.1/jgraphx-1.10.4.1.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/codehaus/groovy/groovy-all/2.0.4/groovy-all-2.0.4.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/postgresql/postgresql/9.4-1201-jdbc41/postgresql-9.4-1201-jdbc41.jar"/>

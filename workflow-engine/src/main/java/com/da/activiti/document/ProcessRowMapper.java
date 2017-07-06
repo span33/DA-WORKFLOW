@@ -32,7 +32,7 @@ public class ProcessRowMapper  implements RowMapper<ProcessInfo>{
 	        processInfo.setProcessType(processType);
 	        processInfo.setProcessTemplateId(processTemplateId);
 	        processInfo.setProcessLevel(processLevel);
-	        processInfo.setProcessParentId(processParentId);
+	        processInfo.setParent(processParentId);
 	        processInfo.setProcessHasSibling(processHasSibling);
 	        processInfo.setCreatedBy(createdBy);
 	        processInfo.setUpdatedBy(updatedBy);

@@ -13,6 +13,11 @@ public enum DocType {
     JOURNAL,
     GENERAL,
     OPENACCOUNT,
+    TESTPROCESS,
+    TEST33,
+    PAYORDER,
+    SALESORDER,
+    OCAS,
     //Just for unit tests - do not use in production
     UNIT_TEST_NO_EXIST;
 

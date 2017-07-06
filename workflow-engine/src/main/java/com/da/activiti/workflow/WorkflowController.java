@@ -104,7 +104,7 @@ public class WorkflowController extends BaseController {
         }
 
         //Try to find the specific DocType/Group workflow
-        ProcessDefinition procDef = this.workflowSrvc.findProcDefByDocTypeAndGroup(docType, group);
+        ProcessDefinition procDef = this.workflowSrvc.findBaseProcDef(docType);
         if (procDef == null) {
             //we need to build a new group workflow based on the specified docType
             procDef = this.workflowBldr.createGroupWorkflow(docType, group);

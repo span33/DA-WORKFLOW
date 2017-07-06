@@ -1,19 +1,34 @@
 package com.da.activiti.workflow;
 
-import com.da.activiti.model.document.DocType;
-import com.google.common.collect.Lists;
+import static org.junit.Assert.assertEquals;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Random;
 
 import org.activiti.bpmn.BpmnAutoLayout;
+import org.activiti.bpmn.model.BoundaryEvent;
 import org.activiti.bpmn.model.BpmnModel;
+import org.activiti.bpmn.model.EndEvent;
+import org.activiti.bpmn.model.ErrorEventDefinition;
+import org.activiti.bpmn.model.Process;
+import org.activiti.bpmn.model.StartEvent;
+import org.activiti.bpmn.model.SubProcess;
+import org.activiti.bpmn.model.UserTask;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
+import org.activiti.engine.TaskService;
 import org.activiti.engine.impl.RepositoryServiceImpl;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.repository.ProcessDefinitionQuery;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Task;
 import org.activiti.image.impl.DefaultProcessDiagramGenerator;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,10 +37,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import javax.print.Doc;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
+import com.da.activiti.model.document.DocType;
+import com.da.activiti.model.document.ProcessInfo;
+import com.da.activiti.model.workflow.DynamicUserTask;
+import com.da.activiti.model.workflow.DynamicUserTaskType;
+import com.google.common.collect.Lists;
 
 /**
  * Various methods to find process definitions by group and {@link com.da.activiti.model.document.DocType}.
@@ -41,6 +57,7 @@ public class WorkflowService {
 
     @Autowired protected RuntimeService runtimeService;
     @Autowired protected RepositoryService repoSrvc;
+    @Autowired TaskService taskService;
     @Autowired ApplicationContext appContext;
 
     /**
@@ -101,8 +118,8 @@ public class WorkflowService {
      *
      * @return the list (possibly empty) of DocTypes that have at least a base type (i.e. group = NONE) defined.
      */
-    public List<DocType> findExistingBaseDocTypes() {
-        List<DocType> docTypes = Lists.newArrayList();
+    public List<String> findExistingBaseDocTypes() {
+        List<String> docTypes = Lists.newArrayList();
         String likeQuery = String.format("%s%s%s", "%", WFConstants.PROCESS_GROUP_DIVIDER, WFConstants.WORKFLOW_GROUP_NONE);
         LOG.debug("using likeQuery for baseTypes = {}", likeQuery);
                 List < ProcessDefinition > processDefinitions = this.repoSrvc.createProcessDefinitionQuery().
@@ -112,7 +129,8 @@ public class WorkflowService {
         LOG.debug("Base type = {}", String.valueOf(docTypes));
         for (ProcessDefinition processDefinition : processDefinitions) {
             String[] parsed = this.parseProcessId(processDefinition.getKey());
-            DocType docType = null;
+            docTypes.add(parsed[0]);
+         /*   DocType docType = null;
             try {
                 docType = DocType.valueOf(parsed[0]);
 
@@ -123,7 +141,7 @@ public class WorkflowService {
             if (docType != null){
                 docTypes.add(docType);
 
-            }
+            }*/
         }
         LOG.debug("Found baseDocTypes: {}", docTypes);
         return docTypes;
@@ -279,4 +297,142 @@ public class WorkflowService {
         return approvals;
     }
 */
+    protected UserTask createUserTask(String id, String name, String assignee) { 
+        UserTask userTask = new UserTask(); 
+        userTask.setName(name); 
+        userTask.setId(id); 
+        userTask.setAssignee(assignee); 
+        return userTask; 
+       } 
+    
+    public Process createProcess(String processName,List <ProcessInfo> subprocess) throws IOException {
+    	 // 1. Build up the model from scratch
+        BpmnModel model = new BpmnModel();
+        Process process = new Process();
+        model.addProcess(process);
+        model.setTargetNamespace("da.com");
+       // String deploymentId = processName+"___NONE";
+        String deploymentId = processName+"___NONE";
+        process.setId(deploymentId);
+
+        process.addFlowElement(createStartEvent());
+        
+        process.addFlowElement(createUserTask("task1", "First task", "fred"));
+        process.addFlowElement(createUserTask("task2", "Second task", "john"));
+        process.addFlowElement(createEndEvent());
+
+        process.addFlowElement(WorkflowBuilder.createSequenceFlow("start", "task1"));
+        process.addFlowElement(WorkflowBuilder.createSequenceFlow("task1", "task2"));
+        process.addFlowElement(WorkflowBuilder.createSequenceFlow("task2", "end"));
+
+        // 2. Generate graphical information
+        new BpmnAutoLayout(model).execute();
+
+        // 3. Deploy the process to the engine
+        Deployment deployment = this.repoSrvc.createDeployment()
+                .addBpmnModel(deploymentId+"dynamic-model.bpmn", model).name("Dynamic process deployment")
+                .deploy();
+
+
+        ProcessDefinition processDefinition = this.repoSrvc.createProcessDefinitionQuery().
+                processDefinitionKey(deploymentId).latestVersion().singleResult();
+
+        ProcessInstance processInstance = runtimeService
+                .startProcessInstanceByKey(deploymentId);
+        
+       
+
+        // 5. Check if task is available
+        List<Task> tasks = taskService.createTaskQuery()
+                .processInstanceId(processInstance.getId()).list();
+
+
+        // 6. Save process diagram to a file
+        InputStream processDiagram = repoSrvc
+                .getProcessDiagram(processInstance.getProcessDefinitionId());
+        FileUtils.copyInputStreamToFile(processDiagram, new File("target/diagram.png"));
+        // 7. Save resulting BPMN xml to a file
+        InputStream processBpmn = repoSrvc
+                .getResourceAsStream(deployment.getId(), deploymentId+"dynamic-model.bpmn");
+        FileUtils.copyInputStreamToFile(processBpmn,
+                new File("target/"+deploymentId+"process.bpmn20.xml"));
+        
+        return process;
+     }
+   
+    
+    
+    /*public Process createProcess(String processName,List <ProcessInfo> subprocess) throws IOException {
+   	 // 1. Build up the model from scratch
+       BpmnModel model = new BpmnModel();
+       Process process = new Process();
+       model.addProcess(process);
+       model.setTargetNamespace("da.com");
+      // String deploymentId = processName+"___NONE";
+       String deploymentId = processName+"___NONE";
+       process.setId(deploymentId);
+
+       process.addFlowElement(createStartEvent());
+       process.addFlowElement(createUserTask("task1", "First task", "fred"));
+       process.addFlowElement(createUserTask("task2", "Second task", "john"));
+       process.addFlowElement(createEndEvent());
+
+       process.addFlowElement(WorkflowBuilder.createSequenceFlow("start", "task1"));
+       process.addFlowElement(WorkflowBuilder.createSequenceFlow("task1", "task2"));
+       process.addFlowElement(WorkflowBuilder.createSequenceFlow("task2", "end"));
+
+       // 2. Generate graphical information
+       new BpmnAutoLayout(model).execute();
+
+       // 3. Deploy the process to the engine
+       Deployment deployment = this.repoSrvc.createDeployment()
+               .addBpmnModel(deploymentId+"dynamic-model.bpmn", model).name("Dynamic process deployment")
+               .deploy();
+
+
+       ProcessDefinition processDefinition = this.repoSrvc.createProcessDefinitionQuery().
+               processDefinitionKey(deploymentId).latestVersion().singleResult();
+
+       ProcessInstance processInstance = runtimeService
+               .startProcessInstanceByKey(deploymentId);
+       
+      
+
+       // 5. Check if task is available
+       List<Task> tasks = taskService.createTaskQuery()
+               .processInstanceId(processInstance.getId()).list();
+
+
+       // 6. Save process diagram to a file
+       InputStream processDiagram = repoSrvc
+               .getProcessDiagram(processInstance.getProcessDefinitionId());
+       FileUtils.copyInputStreamToFile(processDiagram, new File("target/diagram.png"));
+       // 7. Save resulting BPMN xml to a file
+       InputStream processBpmn = repoSrvc
+               .getResourceAsStream(deployment.getId(), deploymentId+"dynamic-model.bpmn");
+       FileUtils.copyInputStreamToFile(processBpmn,
+               new File("target/"+deploymentId+"process.bpmn20.xml"));
+       
+       return process;
+    }
+    */
+    
+    
+    public String getProcesDefinationByProcessName(String processName ) {
+    	 ProcessDefinition pd =
+                 this.repoSrvc.createProcessDefinitionQuery().processDefinitionKey(processName).latestVersion().singleResult();
+   return pd.getId();
+    }
+   protected StartEvent createStartEvent() { 
+       StartEvent startEvent = new StartEvent(); 
+       startEvent.setId("start"); 
+       return startEvent; 
+      } 
+      
+      protected EndEvent createEndEvent() { 
+       EndEvent endEvent = new EndEvent(); 
+       endEvent.setId("end"); 
+       return endEvent; 
+      } 
+    
 }

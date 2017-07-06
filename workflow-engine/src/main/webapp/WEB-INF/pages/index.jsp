@@ -47,7 +47,7 @@
 
         <div class="row marketing">
             <div class="col-lg-6">
-               <%--  <h4><a href="${pageContext.request.contextPath}/process/createProcess.htm" class="">Create Process</a></h4> --%>
+                <h4><a href="${pageContext.request.contextPath}/process/createProcess.htm" class="">Create Process</a></h4> 
 				<h4><a href="${pageContext.request.contextPath}/document/jouranalRegistration.htm" class="">Create Jouranal</a></h4>
                 <p>View and edit group Journal approval workflows</p>
                 <%-- <h4><a href="${pageContext.request.contextPath}/document/list.htm" class="">View Process</a></h4> --%>
@@ -56,6 +56,8 @@
                 <%-- <h4><a href="${pageContext.request.contextPath}/tasks.htm" class="">Tasks</a></h4>
 
                 <p>View and complete group and assigned tasks</p> --%>
+                
+                
 
             </div>
 

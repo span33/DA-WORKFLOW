@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans profile="!cloud" xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:c="http://www.springframework.org/schema/c"
        xmlns:tx="http://www.springframework.org/schema/tx" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
        xsi:schemaLocation="
       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
@@ -21,9 +22,17 @@
 
     <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
 
-    <jdbc:embedded-database id="dataSource" type="H2">
+   <!--  <jdbc:embedded-database id="dataSource" type="H2">
         <jdbc:script location="${jdbc.initialize.location}"/>
-    </jdbc:embedded-database>
+    </jdbc:embedded-database> -->
+    
+     <bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig"
+          p:driverClassName="${jdbc.driver}"
+          p:jdbcUrl="${jdbc.url}"
+          p:password="${jdbc.pw}"
+          p:username="${jdbc.user}" /> 
+
+    <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" c:configuration-ref="hikariConfig"/> 
 
     <tx:annotation-driven transaction-manager="transactionManager" />
 

@@ -48,7 +48,7 @@ public abstract class BaseDao {
 			for (int index = 1; index <= colCount; index++) {
 				rowUi.put("key" + index, resultSetMetaData.getColumnLabel(index));
 			}
-			rows.add(rowUi);
+			//rows.add(rowUi);
 
 			while (rs.next()) {
 				Map<String, Object> row = new LinkedHashMap<>();
@@ -109,7 +109,7 @@ public abstract class BaseDao {
 			for (int index = 1; index <= colCount; index++) {
 				rowUi.put("key" + index, resultSetMetaData.getColumnLabel(index));
 			}
-			rows.add(rowUi);
+			//rows.add(rowUi);
 
 			while (rs.next()) {
 				Map<String, Object> row = new LinkedHashMap<>();

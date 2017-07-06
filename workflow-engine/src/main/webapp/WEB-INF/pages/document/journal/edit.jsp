@@ -6,11 +6,13 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags/tasks" %>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <jsp:include page="../../fragments/head.jsp"/>
-    <title>Invoice Edit</title>
+    <title>View Invoice</title>
+
 </head>
 
 <body>
@@ -48,14 +50,12 @@
         </c:if>
     </div>
 
-    <div id="currentDoc" class="panel panel-default">
+    <div class="panel panel-default">
         <div class="panel-heading">
             <span class="glyphicon glyphicon-file pull-right"></span>
-
-            <h3 class="panel-title"><strong>Invoice - ${document.title}</strong></h3>
+            <h3 class="panel-title"><strong>Journal ${document.id}</strong></h3>
         </div>
         <div class="panel-body">
-
             <form:form cssStyle="margin: 20px" cssClass="form-horizontal" method="POST" commandName="document">
 
                 <div class="form-group">
@@ -65,96 +65,148 @@
                         <p id="docId" class="form-control-static">${document.id}</p>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="author" class="col-sm-2 control-label">Author</label>
-
-                    <div class="col-sm-10">
-                        <form:input path="author" id="author" cssClass="form-control" readonly="true"/>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="groupId" class="col-sm-2 control-label">Group</label>
-
-                    <div class="col-sm-10">
-                        <form:input path="groupId" id="groupId" cssClass="form-control" readonly="true"/>
-                    </div>
-                </div>
-
-                <div class="form-group">
+                <%-- <div class="form-group">
                     <label for="title" class="col-sm-2 control-label">Title</label>
 
                     <div class="col-sm-10">
-                        <form:input cssClass="form-control" id="title" path="title" readonly="false" autofocus="true"/>
+                        <form:input cssClass="form-control" id="title" path="title" />
+                    </div>
+                </div> --%>
+                <div class="form-group">
+                    <label for="author" class="col-sm-2 control-label">Author</label>
+
+                    <div class="col-sm-4">
+                        <p id="author" class="form-control-static">${document.author}</p>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="payee" class="col-sm-2 control-label">Payee</label>
+                    <label for="postingDate" class="col-sm-2 control-label">Posting
+									Date</label>
 
                     <div class="col-sm-4">
-                        <form:input cssClass="form-control" id="payee" path="payee" readonly="false"/>
+                        <form:input path="postingDate" id="postingDate" cssClass="form-control" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="period" class="col-sm-2 control-label">Period</label>
+
+                    <div class="col-sm-4">
+                        <form:input cssClass="form-control" id="period" path="period"  />
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="amount" class="col-sm-2 control-label">Amount</label>
+                    <label for="referance" class="col-sm-2 control-label">References</label>
 
                     <div class="col-sm-4">
-                        <form:input cssClass="form-control" id="amount" path="amount" readonly="false"/>
+                        <form:input cssClass="form-control" id="referance" path="referance"  />
+
+                    </div>
+                </div>
+                 <div class="form-group">
+                    <label for="journalDocType" class="col-sm-2 control-label">Journal Type</label>
+
+                    <div class="col-sm-4">
+                        <form:input cssClass="form-control" id="journalDocType" path="journalDocType"  />
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="documentHeader" class="col-sm-2 control-label">Document
+									Header</label>
+
+                    <div class="col-sm-4">
+                        <form:input cssClass="form-control" id="documentHeader" path="documentHeader"  />
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="debitAmount" class="col-sm-2 control-label">Debit
+									Amount</label>
+
+                    <div class="col-sm-4">
+                        <form:input cssClass="form-control" id="debitAmount" path="debitAmount"  />
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="creditAmount" class="col-sm-2 control-label">Credit
+									Amount</label>
+
+                    <div class="col-sm-4">
+                        <form:input cssClass="form-control" id="creditAmount" path="creditAmount"  />
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="companyCode" class="col-sm-2 control-label">Author</label>
+
+                    <div class="col-sm-4">
+                        <form:input cssClass="form-control" id="author" path="author"  />
+
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="createdDate" class="col-sm-2 control-label">Created Date</label>
 
                     <div class="col-sm-4">
-                        <form:input cssClass="form-control" id="createdDate" path="createdDate" readonly="true"/>
+                        <form:input cssClass="form-control" id="createdDate" path="createdDate" />
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="docState" class="col-sm-2 control-label">State</label>
 
-                    <div class="col-sm-10">
-                        <form:input cssClass="form-control" id="docState" path="docState" readonly="true"/>
+                    <div class="col-sm-4">
+                        <form:input cssClass="form-control" id="docState" path="docState" />
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="docType" class="col-sm-2 control-label">Doc Type</label>
 
-                    <div class="col-sm-10">
-                        <form:input cssClass="form-control" id="docType" path="docType" readonly="true"/>
+                    <div class="col-sm-4">
+                        <form:input cssClass="form-control" id="docType" path="docType" />
                     </div>
                 </div>
+                
                 <div class="form-group">
-                    <div class="col-sm-offset-2 col-sm-10">
-                        <div class="checkbox">
-                            <label for="isSubmit">
-                                <input name="isSubmit" id="isSubmit" type="checkbox"> Submit to Workflow?
-                            </label>
-                        </div>
+                    <label for="evidanceFileLocation" class="col-sm-2 control-label">Uploaded
+									Evidence</label>
+
+                    <div class="col-sm-10">
+                    <table>
+                    <tr>
+                    <td>
+                        <form:input cssClass="form-control" id="evidenceLocation" name="evidenceLocation" path="evidenceLocation" readonly="true"/>
+                    </td>
+                    <td>
+                       <button type="button" id="downloadEvidence" name="downloadEvidence"   class="btn btn-success" >Download Evidence</button>
+                    </td>
+                    </tr>
+                    </table>
                     </div>
                 </div>
-                <div class="pull-right">
-                    <button type="submit" class="btn btn-primary btn-default">Update Invoice</button>
-                </div>
+
                 <%--<div class="pull-right">--%>
                 <%--<button type="submit" class="btn btn-primary btn-lg">Submit for Approval</button>--%>
                 <%--</div>--%>
             </form:form>
         </div>
     </div>
-
     <hr/>
     <t:historic tagList="${historicTasks}" document="${document}"/>
-
 </div>
-
 <jsp:include page="/WEB-INF/pages/fragments/footer.jsp"/>
 <script>
     $(document).ready(function () {
-        $("#title").attr('required', '');
-        $("#content").attr('required', '');
-        $("#group").attr('required', '');
-        $("#summary").attr('required', '');
         $('li#nav-docs').addClass('active');
     });
+    
+    $("#downloadEvidence").click(function(event) {
+    	var url = '/downloadEvidance.htm?fileName='+$("#evidenceLocation").val();
+    	
+		 window.open(SERVLET_CONTEXT +url);
+		
+	});
 
 </script>
 </body>

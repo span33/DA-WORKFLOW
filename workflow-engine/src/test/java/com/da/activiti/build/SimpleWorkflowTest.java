@@ -58,7 +58,7 @@ public class SimpleWorkflowTest {
         process.addFlowElement(createUserTask("task2", "Second task", "john"));
         process.addFlowElement(createEndEvent());
 
-        process.addFlowElement(createSequenceFlow("start", "task1"));
+        process.addFlowElement(createSequenceFlow("start", "end"));
         process.addFlowElement(createSequenceFlow("task1", "task2"));
         process.addFlowElement(createSequenceFlow("task2", "end"));
 

@@ -1,6 +1,8 @@
 package com.da.activiti.task;
 
+import com.da.activiti.document.ProcessService;
 import com.da.activiti.model.Response;
+import com.da.activiti.model.document.ProcessInfo;
 import com.da.activiti.model.task.CandidateTask;
 import com.da.activiti.model.task.TaskApprovalForm;
 import com.da.activiti.model.task.TaskCollaborationForm;
@@ -36,6 +38,8 @@ public class TaskController extends BaseController {
     private static final Logger LOG = LoggerFactory.getLogger(TaskController.class);
 
     @Autowired protected LocalTaskService taskService;
+    
+    @Autowired protected ProcessService processService;
 
     @InitBinder
     protected void initBinder(WebDataBinder binder) {
@@ -90,6 +94,16 @@ public class TaskController extends BaseController {
         return "redirect:/tasks.htm";
     }
 
-
+    @RequestMapping(value = "/taskList", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Response<List<CandidateTask>>> getTaskList(HttpServletRequest request) {
+        String userName = currentUserName();
+        LOG.debug("TaskController: tasks for user: " + userName);
+        List<CandidateTask> tasks = taskService.findCandidateTasks(userName);
+        LOG.debug("returning json response of: " + tasks.size() + " for user : " + userName);
+        Response res = new Response(true, "tasks for user: " + userName, tasks);
+        return new ResponseEntity<Response<List<CandidateTask>>>(res, HttpStatus.OK);
+    }
+    
+    
 
 }
