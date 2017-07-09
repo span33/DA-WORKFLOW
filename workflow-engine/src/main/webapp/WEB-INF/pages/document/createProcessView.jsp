@@ -182,8 +182,6 @@
             		alert("Grid is empty");
             	}
             	
-            	alert(SERVLET_CONTEXT + '/process/saveGridData');
-            	
             	$.ajax({
         	        url: SERVLET_CONTEXT + '/process/saveGridData',
         	        type: "POST",

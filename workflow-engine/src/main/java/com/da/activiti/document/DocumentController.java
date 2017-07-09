@@ -19,7 +19,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,7 +35,6 @@ public class DocumentController extends BaseController {
 	DocumentService docService;
 	@Autowired
 	LocalTaskService localTaskSrvc;
-
 	@Override
 	@ModelAttribute
 	public void addModelInfo(ModelMap model, HttpServletRequest request) {
@@ -44,12 +42,10 @@ public class DocumentController extends BaseController {
 		List<Group> groups = userService.getAssignmentGroups(request.getRemoteUser());
 		model.addAttribute("groups", groups);
 	}
-
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) {
 		binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
 	}
-
 	@RequestMapping(value = "/list.htm", method = RequestMethod.GET)
 	public String getDocuments(ModelMap model, HttpServletRequest request) {
 		model.addAttribute("documents", this.docService.getDocumentsByUser(currentUserName()));

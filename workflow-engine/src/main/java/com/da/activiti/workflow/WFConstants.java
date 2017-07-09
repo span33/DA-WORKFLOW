@@ -11,7 +11,7 @@ import com.da.activiti.model.document.DocType;
 public class WFConstants {
     public static final String NAMESPACE_CATEGORY = "da.com";
     public static final String PROCESS_GROUP_DIVIDER = "___";
-    public static final String WORKFLOW_GROUP_NONE = "NONE";
+    public static final String WORKFLOW_GROUP_NONE = "Approver";
     public static final String SUBPROCESS_ID_DYNAMIC = "DYNAMIC_SUB_PROCESS";
     public static final String SUBPROCESS_NAME_DYNAMIC = "Dynamic Document Subprocess";
     public static final String TASK_ID_DOC_APPROVAL = "APPROVE_REJECT_DOC_USER_TASK";

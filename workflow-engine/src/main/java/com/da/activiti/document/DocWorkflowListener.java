@@ -104,7 +104,7 @@ public class DocWorkflowListener {
      * @param task
      */
     public void onCreateGenricTask(Execution execution, DelegateTask task) {
-        ProcessInstance pi = runtimeService.createProcessInstanceQuery().
+     /*   ProcessInstance pi = runtimeService.createProcessInstanceQuery().
                 processInstanceId(execution.getProcessInstanceId()).singleResult();
 
         String docId = pi.getBusinessKey();
@@ -117,7 +117,7 @@ public class DocWorkflowListener {
         }
         LOG.debug("Setting doc: {} to state = {}", doc.getTitle(), DocState.WAITING_FOR_DOCUMENT_TO_SUBMIT.name());
         doc.setDocState(DocState.WAITING_FOR_DOCUMENT_TO_SUBMIT);
-        this.docSrvc.updateDocument(doc);
+        this.docSrvc.updateDocument(doc);*/
     }
     /**
      * Called when a collaboration task is completed

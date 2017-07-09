@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import com.da.activiti.model.document.DocType;
@@ -58,6 +59,7 @@ public class WorkflowBuilder {
 	@Autowired
 	WorkflowService workflowService;
 
+	@Transactional
 	public Process createProcess(String processName, List<ProcessInfo> listOFSubprocess) throws IOException {
 		// 1. Build up the model from scratch
 		BpmnModel model = new BpmnModel();
@@ -65,7 +67,8 @@ public class WorkflowBuilder {
 		model.addProcess(process);
 		model.setTargetNamespace("da.com");
 		// String deploymentId = processName+"___NONE";
-		String deploymentId = processName + "___NONE";
+		String deploymentId = WFConstants.createProcId(DocType.JOURNAL, "Approver");
+		//String deploymentId = processName + "___NONE";
 		process.setId(deploymentId);
 		
 		StartEvent startEvent = workflowService.createStartEvent();
@@ -84,7 +87,7 @@ public class WorkflowBuilder {
 			}
 
 			if (prevsub == null) {
-				prevsub = createDynamicSubProcess(dynamicUserTasks, errorDef);
+				prevsub = createDynamicSubProcess(dynamicUserTasks, errorDef,subprocess.getProcessName());
 				process.addFlowElement(prevsub);
 				process.addFlowElement(createSequenceFlow(startEvent.getId(), prevsub.getId()));
 				process.addFlowElement(WorkflowBuilder.createSequenceFlow(startEvent.getId(), prevsub.getId()));
@@ -131,8 +134,8 @@ public class WorkflowBuilder {
 	protected static SequenceFlow approvalTask(SubProcess sub, EndEvent errorEnd, DynamicUserTask from, int currentIdx,
 			int total, SequenceFlow prev) {
 		UserTask current = new UserTask();
-		current.setId(String.format("%s_%d", WFConstants.TASK_ID_DOC_APPROVAL, currentIdx));
-		current.setName(String.format("Approval (%d / %d)", currentIdx, total));
+		current.setId(String.format("%s_%d%s", WFConstants.TASK_ID_DOC_APPROVAL, currentIdx ,sub.getId()));
+		current.setName(String.format("Approval (%d / %d /%s)", currentIdx, total,sub.getId()));
 		/*
 		 * if (StringUtils.isBlank(from.getName())) {
 		 * current.setName(String.format("Approve Document (%d / %d)",
@@ -160,15 +163,15 @@ public class WorkflowBuilder {
 		current.setCandidateUsers(from.getCandidateUsers());
 
 		ExclusiveGateway gw = new ExclusiveGateway();
-		gw.setId(String.format("exclusivegateway_approval_%d_of_%d", currentIdx, total));
-		gw.setName(String.format("Exclusive Approval Gateway %d of %d", currentIdx, total));
+		gw.setId(String.format("exclusivegateway_approval_%d_of_%d_of_%s", currentIdx, total , sub.getId()));
+		gw.setName(String.format("Exclusive Approval Gateway %d of %d of %s", currentIdx, total ,sub.getId()));
 		sub.addFlowElement(gw);
 		sub.addFlowElement(createSequenceFlow(current.getId(), gw.getId()));
 
 		// -------------------------------------------------------------
 		SequenceFlow rejectedFlow = new SequenceFlow();
-		rejectedFlow.setId(String.format("docRejectedSubFlow_%d_of_%d", currentIdx, total));
-		rejectedFlow.setName(String.format("Doc Rejected %d of %d", currentIdx, total));
+		rejectedFlow.setId(String.format("docRejectedSubFlow_%d_of_%d_of_%s", currentIdx, total ,sub.getId()));
+		rejectedFlow.setName(String.format("Doc Rejected %d of %d of %s", currentIdx, total ,sub.getId()));
 		rejectedFlow.setSourceRef(gw.getId());
 		rejectedFlow.setTargetRef(errorEnd.getId());
 
@@ -182,8 +185,8 @@ public class WorkflowBuilder {
 
 		// -----------------------------------------------
 		SequenceFlow approvedFlow = new SequenceFlow();
-		approvedFlow.setId(String.format("docApprovedSubFlow_%d_of_%d", currentIdx, total));
-		approvedFlow.setName(String.format("Doc Approved %d of %d", currentIdx, total));
+		approvedFlow.setId(String.format("docApprovedSubFlow_%d_of_%d_%s", currentIdx, total,sub.getId()));
+		approvedFlow.setName(String.format("Doc Approved %d of %d of %s", currentIdx, total,sub.getId()));
 		approvedFlow.setSourceRef(gw.getId());
 
 		ActivitiListener approvedListener = new ActivitiListener();
@@ -251,8 +254,8 @@ public class WorkflowBuilder {
 	protected static SequenceFlow genricTask(SubProcess subProcess, DynamicUserTask from, int currentIdx, int total,
 			SequenceFlow prev) {
 		UserTask current = new UserTask();
-		current.setId(String.format("%s_%d", WFConstants.TASK_ID_DOC_GENRIC_TASK, currentIdx));
-		current.setName(String.format(from.getName()+"(%d / %d)", currentIdx, total));
+		current.setId(String.format("%s_%d", WFConstants.TASK_ID_DOC_GENRIC_TASK+subProcess.getId(), currentIdx));
+		current.setName(String.format(from.getName()+"(%d / %d / %s )", currentIdx, total,subProcess.getId()));
 		/*
 		 * if (StringUtils.isBlank(from.getName())) {
 		 * current.setName(String.format("Document Collaboration (%d / %d)",
@@ -288,8 +291,8 @@ public class WorkflowBuilder {
 		prev.setTargetRef(current.getId());
 
 		SequenceFlow ref = new SequenceFlow();
-		ref.setId(String.format("dynamic_collab_subflow_%d_%d", currentIdx, total));
-		ref.setName(String.format("Collaboration SubFlow %d of %d", currentIdx, total));
+		ref.setId(String.format("dynamic_collab_subflow_%d_%d_%s", currentIdx, total , subProcess.getId()));
+		ref.setName(String.format("Collaboration SubFlow %d of %d of %s", currentIdx, total ,subProcess.getId()));
 		ref.setSourceRef(current.getId());
 
 		subProcess.addFlowElement(ref);
@@ -520,13 +523,14 @@ public class WorkflowBuilder {
 		String key = WFConstants.createProcId(docType, group);
 
 		// make sure one doesn't already exist.
-		if (!workflowService.groupWorkflowExists(docType, group)) {
+		/*if (!workflowService.groupWorkflowExists(docType, group)) {
 			throw new IllegalStateException(
 					"The workflow for docType: " + docType.name() + " and group: " + group + " does not exist");
-		}
+		}*/
 
-		ProcessDefinition procDef = workflowService.findProcDefByDocTypeAndGroup(docType, group);
-
+		//ProcessDefinition procDef = workflowService.findProcDefByDocTypeAndGroup(docType, group);
+		ProcessDefinition procDef = workflowService.findBaseProcDef(docType);
+		
 		BpmnModel model = this.repoSrvc.getBpmnModel(procDef.getId());
 		Process proc = model.getMainProcess();
 		SubProcess subProcessOrig = this.getDynamicSubProcess(proc);
@@ -557,11 +561,47 @@ public class WorkflowBuilder {
 		// create the diagramming
 		String deployId = this.repoSrvc.createDeployment().addBpmnModel(key + ".bpmn", updatedModel)
 				.name("Dynamic Process Deployment - " + key).deploy().getId();
-		ProcessDefinition updatedProcDef = workflowService.findProcDefByDocTypeAndGroup(docType, group);
+		//ProcessDefinition updatedProcDef = workflowService.findProcDefByDocTypeAndGroup(docType, group);
+		ProcessDefinition updatedProcDef = workflowService.findBaseProcDef(docType);
 		Assert.notNull(updatedProcDef, "something went wrong creating the new processDefinition: " + key);
 		return updatedProcDef;
 	}
 
+	public static SubProcess createDynamicSubProcess(List<DynamicUserTask> dynamicUserTasks,
+			ErrorEventDefinition errorDef,String subprocessName) {
+		SubProcess sub = new SubProcess();
+		sub.setId(WFConstants.SUBPROCESS_ID_DYNAMIC+subprocessName);
+		sub.setName(WFConstants.SUBPROCESS_NAME_DYNAMIC+subprocessName);
+		StartEvent start = new StartEvent();
+		start.setId("dynamic_sub_process_start_event"+subprocessName);
+		start.setName("Start Dynamic SubProcess"+subprocessName);
+		sub.addFlowElement(start);
+
+		EndEvent end = new EndEvent();
+		end.setId("dynamic_sub_process_end_event" +subprocessName);
+		end.setName("End Dynamic SubProcess" +subprocessName);
+		sub.addFlowElement(end);
+
+		EndEvent errorEnd = new EndEvent();
+		errorEnd.setId("rejectedErrorEndEvent"+subprocessName);
+		errorEnd.setName("ErrorEnd"+subprocessName);
+		errorEnd.addEventDefinition(errorDef);
+		sub.addFlowElement(errorEnd);
+
+		if (dynamicUserTasks.isEmpty()) {
+			sub.addFlowElement(createSequenceFlow(start.getId(), end.getId()));
+			return sub;
+		}
+
+		SequenceFlow startFlow = new SequenceFlow(start.getId(), null);
+		sub.addFlowElement(startFlow);
+		RecursiveTaskConverter recursiveTaskConverter = new RecursiveTaskConverter(dynamicUserTasks, sub, errorEnd);
+
+		SequenceFlow lastRef = recursiveTaskConverter.recurseTasks(startFlow);
+		lastRef.setTargetRef(end.getId());
+		return sub;
+	}
+	
 	public static SubProcess createDynamicSubProcess(List<DynamicUserTask> dynamicUserTasks,
 			ErrorEventDefinition errorDef) {
 		SubProcess sub = new SubProcess();
@@ -683,9 +723,9 @@ public class WorkflowBuilder {
 					continue;
 				}
 			}
-		}
-		if (refs.size() != 2 || refs.get(0) == null || refs.get(1) == null) {
-			throw new IllegalStateException("Could not find source and ref sequenceflows");
+		} 
+		if ( refs.get(0)== null || refs.get(1) == null) {
+			throw new IllegalStateException("Could not find source and ref sequenceflows"+refs);
 		}
 		return refs;
 	}

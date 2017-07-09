@@ -30,6 +30,7 @@ import com.da.activiti.model.document.TaskInfo;
 import com.da.activiti.web.BaseController;
 import com.da.activiti.workflow.WorkflowBuilder;
 import com.da.activiti.workflow.WorkflowService;
+import org.activiti.bpmn.model.Process;
 
 @Controller
 @RequestMapping("/process")
@@ -46,28 +47,22 @@ public class ProcessController extends BaseController {
 	WorkflowBuilder workflowBuilder ;
 
 	@RequestMapping(value = "/saveGridData", method = RequestMethod.POST)
-	public String postGridData(@RequestBody List<ProcessInfo> processInfos, BindingResult result,
+	public  ResponseEntity<Response> postGridData(@RequestBody List<ProcessInfo> processInfos, BindingResult result,
 			final RedirectAttributes redirectAttributes, HttpServletRequest request, ModelMap model) {
 			processTaskMapping(processInfos);
-			
+			String msg = "Process Created Successfully " ;
 			processInfos.forEach(processinfo -> {
 				try {
-					workflowBuilder.createProcess(processinfo.getProcessName(), processinfo.getSubProcessList());
+					Process 	 process = workflowBuilder.createProcess(processinfo.getProcessName(), processinfo.getSubProcessList());
+					 String.join(msg, ",", process.getName());
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			});
-
-		/*
-		 * 
-		 * org.activiti.bpmn.model.Process process =
-		 * workflowService.createProcess(processInfo.getProcessName()); String
-		 * deploymentId =
-		 * workflowService.getProcesDefinationByProcessName(process.getId());
-		 * processInfo.setProcessName(deploymentId);
-		 */
-		return null;
+			Response<String> res = new Response<String>(true, msg);
+			res.setData(msg);
+			return new ResponseEntity<Response>(res, HttpStatus.OK);
 
 	}
 
