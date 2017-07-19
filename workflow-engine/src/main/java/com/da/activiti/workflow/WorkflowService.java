@@ -1,21 +1,15 @@
 package com.da.activiti.workflow;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Random;
 
 import org.activiti.bpmn.BpmnAutoLayout;
-import org.activiti.bpmn.model.BoundaryEvent;
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.bpmn.model.EndEvent;
-import org.activiti.bpmn.model.ErrorEventDefinition;
 import org.activiti.bpmn.model.Process;
 import org.activiti.bpmn.model.StartEvent;
-import org.activiti.bpmn.model.SubProcess;
 import org.activiti.bpmn.model.UserTask;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
@@ -39,8 +33,6 @@ import org.springframework.util.Assert;
 
 import com.da.activiti.model.document.DocType;
 import com.da.activiti.model.document.ProcessInfo;
-import com.da.activiti.model.workflow.DynamicUserTask;
-import com.da.activiti.model.workflow.DynamicUserTaskType;
 import com.google.common.collect.Lists;
 
 /**

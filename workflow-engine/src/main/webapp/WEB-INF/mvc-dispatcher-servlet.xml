@@ -32,6 +32,18 @@
         <property name="defaultViews">
             <list>
                 <bean id="jsonView" class="org.springframework.web.servlet.view.json.MappingJackson2JsonView"/>
+            	<bean id="xmlViewer" class="org.springframework.web.servlet.view.xml.MarshallingView">
+		<constructor-arg>
+		  		<bean class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+			<property name="classesToBeBound">
+				<list>
+					<value>com.da.activiti.FormBuilder.gen.models.FormTemplate</value>
+				</list>
+			</property>
+		  		</bean>
+		</constructor-arg>
+	</bean>
+            
             </list>
         </property>
     </bean>

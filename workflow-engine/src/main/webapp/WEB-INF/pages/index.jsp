@@ -53,6 +53,7 @@
                 <h4><a href="${pageContext.request.contextPath}/forms/buildForms.htm" class="">Build Forms</a></h4> 
                 <%-- <h4><a href="${pageContext.request.contextPath}/tasks.htm" class="">Tasks</a></h4>
                 <p>View and complete group and assigned tasks</p> --%>
+                <h4><a href="${pageContext.request.contextPath}/forms/dynamicFormGenrator.htm" class="">Genrate Forms</a></h4> 
             </div>
             <div class="col-lg-6">
                 <h4><a href="${pageContext.request.contextPath}/workflow/index.htm" class="">Workflows</a></h4>
