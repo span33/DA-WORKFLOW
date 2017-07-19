@@ -129,19 +129,6 @@ public class JdbcProcessDao extends BaseDao implements ProcessDao {
 
 	@Override
 	public List<Map<String, Object>> getProcesList() {
-		// TODO Auto-generated method stub
-		/*
-		 * String sql =
-		 * "SELECT process_id  as 'Process Id' ,process_name as 'Process Name' ,process_description  as Description ,"
-		 * + "process_owner as 'Owner' ," +
-		 * "process_type as 'Type' ,process_template_id as 'Template Id' ,process_level as 'Level' ,process_parent_id as Parent ,"
-		 * +
-		 * "process_hasSibling as HasSibling , process_task_mapping_process_task_mapping_id  as 'Mapping Id',created_by as 'Created By'"
-		 * +
-		 * " ,updated_by as 'Updated By' ,dt_created as 'Created Date' ,dt_updated as 'Updated Date' FROM Process ORDER BY dt_created ASC;"
-		 * ;
-		 */
-
 		String sql = "SELECT process_id  as 'processId' ,process_name as 'processName' ,process_description  as processDescription ,"
 				+ "process_owner as 'processOwner' ,"
 				+ "process_type as 'processType' ,process_template_id as 'processTemplateId' ,process_level as 'level' ,process_parent_id as parent ,"
@@ -151,19 +138,6 @@ public class JdbcProcessDao extends BaseDao implements ProcessDao {
 	}
 
 	public List<Map<String, Object>> getSubProcesListByProcessId(int processId) {
-		// TODO Auto-generated method stub
-		/*
-		 * String sql =
-		 * "SELECT process_id  as 'Process Id' ,process_name as 'Process Name' ,process_description  as Description ,"
-		 * + "process_owner as 'Owner' ," +
-		 * "process_type as 'Type' ,process_template_id as 'Template Id' ,process_level as 'Level' ,process_parent_id as Parent ,"
-		 * +
-		 * "process_hasSibling as HasSibling , process_task_mapping_process_task_mapping_id  as 'Mapping Id',created_by as 'Created By'"
-		 * +
-		 * " ,updated_by as 'Updated By' ,dt_created as 'Created Date' ,dt_updated as 'Updated Date' FROM Process ORDER BY dt_created ASC;"
-		 * ;
-		 */
-
 		String sql = "SELECT process_id  as 'processId' ,process_name as 'processName' ,process_description  as processDescription ,"
 				+ "process_owner as 'processOwner' ,"
 				+ "process_type as 'processType' ,process_template_id as 'processTemplateId' ,process_level as 'level' ,process_parent_id as parent ,"

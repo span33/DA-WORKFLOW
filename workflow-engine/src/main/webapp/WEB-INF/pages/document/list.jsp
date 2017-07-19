@@ -33,7 +33,7 @@
 
 
         <c:choose>
-            <c:when test="${empty processList}">
+            <c:when test="${empty userForms}">
                 <p>The user does not have any group documents</p>
             </c:when>
             <c:otherwise>
@@ -42,31 +42,15 @@
                         <th>Id</th>
                         <th>Process Id</th>
                         <th>Doc Type</th>
-                        <th>User Id </th>
                         <th>Form Link </th>
                     </tr>
 
-                    <c:forEach items="${processList}" var="doc">
+                    <c:forEach items="${userForms}" var="userForm">
                         <tr>
-                            <c:choose>
-                                <c:when test="${doc.docType eq 'BOOK_REPORT'}">
-                                    <td><a href="${pageContext.request.contextPath}/document/bookReport/view.htm?id=${doc.id}">${doc.title}</a></td>
-                                </c:when>
-                                <c:when test="${doc.docType eq 'INVOICE'}">
-                                    <td><a href="${pageContext.request.contextPath}/document/invoice/view.htm?id=${doc.id}">${doc.title}</a></td>
-                                </c:when>
-                                <c:when test="${doc.docType eq 'JOURNAL'}">
-                                    <td><a href="${pageContext.request.contextPath}/document/journal/view.htm?id=${doc.id}">${doc.id}</a></td>
-                                </c:when>
-                                <c:otherwise>
-                                    <td>UNKNOWN</td>
-                                </c:otherwise>
-                            </c:choose>
-                            <td>${doc.author}</td>
-                            <td>${doc.groupId}</td>
-                            <td><spring:eval expression="doc.createdDate"/></td>
-                            <td>${doc.docState}</td>
-                            <td>${doc.docType}</td>
+                            <td>${userForm.id}</td>
+                            <td>${userForm.processId}</td>
+                            <td>${userForm.docType}</td>
+                            <td><a href="${pageContext.request.contextPath}/forms/dynamicFormGenrator.htm?${userForm.formLink}">Populate ${userForm.docType} Form</a></td>
                         </tr>
                     </c:forEach>
                 </table>

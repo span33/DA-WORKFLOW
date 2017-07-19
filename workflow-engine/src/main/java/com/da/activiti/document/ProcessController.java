@@ -33,7 +33,7 @@ import com.da.activiti.workflow.WorkflowService;
 import org.activiti.bpmn.model.Process;
 
 @Controller
-@RequestMapping("/process")
+@RequestMapping("/admin/process")
 public class ProcessController extends BaseController {
 	private static final Logger LOG = LoggerFactory.getLogger(ProcessController.class);
 

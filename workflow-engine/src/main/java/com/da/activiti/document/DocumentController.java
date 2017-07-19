@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.da.activiti.FormBuilder.FormService;
 import com.da.activiti.task.LocalTaskService;
 import com.da.activiti.web.BaseController;
 
@@ -35,12 +36,16 @@ public class DocumentController extends BaseController {
 	DocumentService docService;
 	@Autowired
 	LocalTaskService localTaskSrvc;
+	
+    @Autowired FormService  formService ;
+	
 	@Override
 	@ModelAttribute
 	public void addModelInfo(ModelMap model, HttpServletRequest request) {
 		super.addModelInfo(model, request);
 		List<Group> groups = userService.getAssignmentGroups(request.getRemoteUser());
 		model.addAttribute("groups", groups);
+		model.addAttribute("userForms", formService.userFormsByUserId(currentUserName()));
 	}
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) {

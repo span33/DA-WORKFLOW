@@ -25,28 +25,11 @@
     //<![CDATA[
         $(function(){
         	
-        	 // Assign functions to pager buttons
-        	 function addProcess() { 
-        		 var url = SERVLET_CONTEXT + '/process/saveProcess'  ;
-        		 addRow(url);
-        	 }
-        	 
-        	 function addSubProcess() {
-        		 var url = SERVLET_CONTEXT + '/process/saveProcess'  ;
-        		 addRow(url);
-        	 }
-        	 
-        	 function addTask() {
-        		 var url = SERVLET_CONTEXT + '/process/createTask'  ;
-        		 alert(url)
-        		 addRow(url);
-        	 }
-        	 
         	 
                 $.ajax({
         	        type: 'GET',
         	        dataType: 'json',
-        	        url: SERVLET_CONTEXT + '/process/DynProcesslist.htm',
+        	        url: SERVLET_CONTEXT + '/admin/process/DynProcesslist.htm',
         	        headers: {
         	            Accept: "application/json"
         	        },
@@ -78,7 +61,7 @@
 
             grid.jqGrid({
                 datatype: "json",
-                url:SERVLET_CONTEXT + '/process/DynProcesslist.htm',
+                url:SERVLET_CONTEXT + '/admin/process/DynProcesslist.htm',
                 colNames:["processId","Process Name","Description","Owner","Process Type","Template","Level","Parent" ,"hasSibling" ,"" ,"",""],
                 colModel:[
                     {name:'processId', index:'processId', width:50, key:true},
@@ -183,7 +166,7 @@
             	}
             	
             	$.ajax({
-        	        url: SERVLET_CONTEXT + '/process/saveGridData',
+        	        url: SERVLET_CONTEXT + '/admin/process/saveGridData',
         	        type: "POST",
         	        dataType: 'json',
         	        data: JSON.stringify(allRowsInProcessGrid),
@@ -219,7 +202,7 @@
             }
  function addRow() {
      $(this).jqGrid('editGridRow', 'new', {
-         url: SERVLET_CONTEXT + '/process/saveProcess',
+         url: SERVLET_CONTEXT + '/admin/process/saveProcess',
          serializeEditData: function(data) {
              return $.param(data);
          },
@@ -264,7 +247,7 @@
 
  function addTask() {
      $(this).jqGrid('editGridRow', 'new', {
-         url: SERVLET_CONTEXT + '/process/createTask',
+         url: SERVLET_CONTEXT + '/admin/process/createTask',
          serializeEditData: function(data) {
              return $.param(data);
          },
@@ -417,7 +400,7 @@
 			
            
             $("#" + childGridID).jqGrid({
-            	url:SERVLET_CONTEXT + '/process/SubprocessByProcessId.htm?processId='+$(this).jqGrid("getLocalRow", parentRowKey).processId,
+            	url:SERVLET_CONTEXT + '/admin/process/SubprocessByProcessId.htm?processId='+$(this).jqGrid("getLocalRow", parentRowKey).processId,
                 mtype: "GET",
                 datatype: "json",
                 colNames:["id","Sub Process Name","Description","Owner","Process Type","Template","Level","Parent" ,"hasSibling" ,"" ],
@@ -480,7 +463,7 @@
             $('#' + parentRowID).append('<table id=' + childGridID + '></table><div id=' + childGridPagerID + ' class=scroll></div>');
             
            $ ("#" + childGridID).jqGrid({
-            	url:SERVLET_CONTEXT + '/process/TaskListByProcessId.htm?processId='+$(this).jqGrid("getLocalRow", parentRowKey).processId,
+            	url:SERVLET_CONTEXT + '/admin/process/TaskListByProcessId.htm?processId='+$(this).jqGrid("getLocalRow", parentRowKey).processId,
                 mtype: "GET",
                 datatype: "json",
                 page: 1,
