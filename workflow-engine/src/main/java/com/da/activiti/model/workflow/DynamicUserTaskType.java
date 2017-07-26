@@ -8,7 +8,11 @@ import java.util.List;
  */
 public enum DynamicUserTaskType {
     COLLABORATION,
-    APPROVE_REJECT;
+    APPROVE_REJECT,
+	DOC_SUBMIT,
+	BACKEND_TASK;
+	
+	
 	
 	public static DynamicUserTaskType findByTasktype(String tasktype){
 		
@@ -20,8 +24,10 @@ public enum DynamicUserTaskType {
 	            return v.COLLABORATION;
 	        }else if(v.APPROVE_REJECT.name().equals(tasktype)) {
 	        	return v.APPROVE_REJECT;
+	        }else if(v.DOC_SUBMIT.name().equals(tasktype)) {
+	        	return v.DOC_SUBMIT;
 	        }else {
-	        	return null;
+	        	return BACKEND_TASK;
 	        	}
 	        }
 	    return null;

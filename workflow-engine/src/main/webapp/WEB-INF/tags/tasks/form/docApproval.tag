@@ -32,6 +32,12 @@
             <hr/>
                 <div class="form-group">
                     <c:set var="docType" value="${candidateTask.processVariables['docType']}"/>
+                   <c:set var="processUserFormId"
+					value="${candidateTask.processVariables['processUserFormId']}" />
+					
+					<c:set var="workFlowId"
+					value="${candidateTask.processVariables['workFlowId']}" />
+					
                     <c:choose>
                         <c:when test="${docType == bookReportTypeStr}">
                             <c:set var="subUrl" value="bookReport" scope="page"/>
@@ -48,8 +54,8 @@
                         
                         <c:otherwise>
                             <%--TODO should probably do some alert--%>
-                            <c:set var="subUrl" value="journal" scope="page"/>
-                            <c:set var="docLabel" value="Journal" scope="page"/>
+                            <c:set var="subUrl" value="${docType}" scope="page"/>
+                            <c:set var="docLabel" value="${docType}" scope="page"/>
                         </c:otherwise>
                     </c:choose>
 
@@ -57,8 +63,10 @@
 
                     <div class="col-sm-10">
                         <p class="form-control-static"><a
-                                href="${pageContext.request.contextPath}/document/${subUrl}/view.htm?id=${candidateTask.processVariables['businessKey']}"
-                                onclick="window.open(this.href, 'View Document','left=20,top=20,width=800,height=600,scrollbars=1,toolbar=0,resizable=1'); return false;" >View ${docLabel}</a>
+							href="${pageContext.request.contextPath}/forms/document/${subUrl}/view.htm?id=${candidateTask.processVariables['businessKey']}&processUserFormId=${processUserFormId}&workFlowId=${workFlowId}"
+							onclick="window.open(this.href, 'View Document','left=20,top=20,width=800,height=600,scrollbars=1,toolbar=0,resizable=1'); return false;">View
+							${docLabel}</a>
+			
                         </p>
                     </div>
                 </div>

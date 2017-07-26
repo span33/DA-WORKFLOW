@@ -22,6 +22,10 @@
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
+            <sec:authorize access="hasRole('Admin')">
+			<li id ="nav-configure-process" ><a href="${pageContext.request.contextPath}/admin/process/createProcess.htm" class="">Configure Process</a> </li> 
+			<li id ="nav-buildForms" ><a href="${pageContext.request.contextPath}/admin/process/buildForms.htm" class="">Build Forms</a> </li> 
+			</sec:authorize>
                 <li id="nav-docs"><a href="${pageContext.request.contextPath}/document/list.htm">Process</a></li>
                 <li id="nav-tasks"><a href="${pageContext.request.contextPath}/tasks.htm">Tasks</a></li>
                 <li id="nav-workflows"><a href="${pageContext.request.contextPath}/workflow/index.htm">Workflows</a></li>

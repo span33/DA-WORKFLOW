@@ -42,7 +42,7 @@
 							<!-- Form Name -->
 							<legend>Manual Journal Form</legend>
 							
-			<div id="displaymsgTag" class="centered">
+			<div id="displaymsgTag" class="centered hide">
                 <div class="flash">
                     <p id ="dispalyMessage"><strong></strong></p>
                 </div>

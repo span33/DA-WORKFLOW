@@ -1,5 +1,6 @@
 package com.da.activiti.document.dao;
 
+import java.sql.Types;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -68,10 +69,11 @@ public class JdbcProcessDao extends BaseDao implements ProcessDao {
 	public String create(ProcessInfo obj) {
 		LOG.debug("Inserting  ProcessInfo into SQL backend: {}", obj);
 
-		String sql = "INSERT INTO PROCESS (process_name, process_description, process_type, process_template_id, process_level, process_parent_id, process_hasSibling, created_by) "
-				+ "VALUES (:processName, :processDescription, :processType, :processTemplateId, :processLevel, :parent, :processHasSibling, :createdBy)";
+		String sql = "INSERT INTO PROCESS (process_name, process_description, process_type, process_template_id, process_level, process_parent_id, process_hasSibling, created_by,doc_type,group) "
+				+ "VALUES (:processName, :processDescription, :processType, :processTemplateId, :processLevel, :parent, :processHasSibling, :createdBy,:docType,:groupId)";
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		BeanPropertySqlParameterSource source = new BeanPropertySqlParameterSource(obj);
+		source.registerSqlType("docType", Types.VARCHAR);
 		this.namedJdbcTemplate.update(sql, source, keyHolder);
 		return Long.toString(keyHolder.getKey().longValue());
 	}
@@ -129,7 +131,7 @@ public class JdbcProcessDao extends BaseDao implements ProcessDao {
 
 	@Override
 	public List<Map<String, Object>> getProcesList() {
-		String sql = "SELECT process_id  as 'processId' ,process_name as 'processName' ,process_description  as processDescription ,"
+		String sql = "SELECT process_id  as 'processId' ,process_name as 'processName', doc_type as 'docType', group_Id as 'groupId',process_description  as 'processDescription' ,"
 				+ "process_owner as 'processOwner' ,"
 				+ "process_type as 'processType' ,process_template_id as 'processTemplateId' ,process_level as 'level' ,process_parent_id as parent ,"
 				+ "process_hasSibling as processHasSibling ,'Addprocess' as 'Addprocess' ,'Actions' as 'Actions' ,  isleaf ,  expanded   FROM Process where process_parent_id is  null ORDER BY dt_created ASC;";

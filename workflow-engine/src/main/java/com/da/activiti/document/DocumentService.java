@@ -1,17 +1,8 @@
 package com.da.activiti.document;
 
-import com.da.activiti.alert.AlertService;
-import com.da.activiti.document.dao.BookReportDao;
-import com.da.activiti.document.dao.InvoiceDao;
-import com.da.activiti.document.dao.JournalDao;
-import com.da.activiti.model.Alert;
-import com.da.activiti.model.JournalDetail;
-import com.da.activiti.model.document.*;
-import com.da.activiti.user.InvalidAccessException;
-import com.da.activiti.user.UserService;
-import com.da.activiti.workflow.WorkflowService;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.RuntimeService;
@@ -30,9 +21,25 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import com.da.activiti.FormBuilder.FormService;
+import com.da.activiti.FormBuilder.WorkFlowDao;
+import com.da.activiti.alert.AlertService;
+import com.da.activiti.document.dao.BookReportDao;
+import com.da.activiti.document.dao.InvoiceDao;
+import com.da.activiti.document.dao.JournalDao;
+import com.da.activiti.model.Alert;
+import com.da.activiti.model.JournalDetail;
+import com.da.activiti.model.WorkFlowBean;
+import com.da.activiti.model.document.BookReport;
+import com.da.activiti.model.document.DocState;
+import com.da.activiti.model.document.DocType;
+import com.da.activiti.model.document.Document;
+import com.da.activiti.model.document.Invoice;
+import com.da.activiti.user.InvalidAccessException;
+import com.da.activiti.user.UserService;
+import com.da.activiti.workflow.WorkflowService;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 /**
  \* @author Santosh Pandey
@@ -50,6 +57,8 @@ public class DocumentService {
     @Autowired protected JournalDao journalDao;
     @Autowired protected WorkflowService workflowService;
     @Autowired protected AlertService alertService;
+    @Autowired protected WorkFlowDao workFlowDao ;
+    @Autowired protected FormService formService ;
 
     @Transactional(readOnly = true)
     public List<Document> getGroupDocumentsByUser(String userId) {
@@ -115,10 +124,72 @@ public class DocumentService {
     }
 
     @Transactional
-    public void submitToWorkflow(DocType DocType ,String docId) {
-        Document doc = this._getDocument(DocType,docId);
+    public void submitToWorkflow(DocType DocType ,String workFlowId,int processUserFormId) {
+        Document doc = this._getDocument(workFlowId);
         LOG.debug("beginning (or continuing) doc workflow for doc {}. ", doc.getId());
         UserDetails userDetails = this.userService.currentUser();
+        
+        
+        if (!StringUtils.equals(userDetails.getUsername(), doc.getAuthor())) {
+            throw new InvalidAccessException("Only the author of a doc can submit for approval");
+        }
+
+        try {
+            identityService.setAuthenticatedUserId(userDetails.getUsername());
+            DocType docType = doc.getDocType();
+            String group = doc.getGroupId();
+
+            ProcessDefinition procDef = this.workflowService.findProcDef(docType, group);
+            if (procDef == null) {
+                throw new IllegalArgumentException("No workflow exists for doctype=" + docType.name() + " and group=" + group);
+            }
+
+            ProcessInstance current = workflowService.findProcessInstanceByBusinessKey(workFlowId);
+            if (current == null){
+                current = runtimeService.startProcessInstanceByKey(procDef.getKey(), workFlowId);
+            }
+
+            List<Task> tasks = taskService.createTaskQuery().processInstanceId(current.getProcessInstanceId()).list(); //.singleResult();
+           
+            tasks.forEach(task -> {System.out.println(task.getAssignee());
+            taskService.setAssignee(task.getId(), userDetails.getUsername());
+
+            /*if (DocType.BOOK_REPORT.equals(doc.getDocType())) {
+                this.bookReportDao.update((BookReport) doc);
+            } else if (DocType.INVOICE.equals(doc.getDocType())) {
+                this.invoiceDao.update((Invoice) doc);
+            } else if (DocType.JOURNAL.equals(doc.getDocType())) {
+                this.journalDao.update((JournalDetail) doc);
+            }else {
+                throw new IllegalArgumentException("Unknown doc type: " + doc.getDocType());
+            }*/
+            workFlowDao.update((WorkFlowBean)doc);
+            taskService.setVariableLocal(task.getId(), "taskOutcome", task.getTaskDefinitionKey());
+            Map<String, Object> processVariables = Maps.newHashMap();
+            processVariables.put("initiator", doc.getAuthor());
+            processVariables.put("businessKey", doc.getId());
+            processVariables.put("docAuthor", doc.getAuthor());
+            processVariables.put("docType", doc.getDocType());
+            processVariables.put("processUserFormId", processUserFormId);
+            processVariables.put("workFlowId",workFlowId);
+            taskService.setVariables(task.getId(), processVariables);
+            taskService.complete(task.getId());
+            });
+        }
+        finally {
+
+        	
+        	identityService.setAuthenticatedUserId(null);
+        }
+    }
+    
+    @Transactional
+    public void submitToWorkflow(DocType DocType ,String docId) {
+        Document doc = this._getDocument(docId);
+        LOG.debug("beginning (or continuing) doc workflow for doc {}. ", doc.getId());
+        UserDetails userDetails = this.userService.currentUser();
+        
+        
         if (!StringUtils.equals(userDetails.getUsername(), doc.getAuthor())) {
             throw new InvalidAccessException("Only the author of a doc can submit for approval");
         }
@@ -138,10 +209,12 @@ public class DocumentService {
                 current = runtimeService.startProcessInstanceByKey(procDef.getKey(), docId);
             }
 
-            Task task = taskService.createTaskQuery().processInstanceId(current.getProcessInstanceId()).singleResult();
+            List<Task> tasks = taskService.createTaskQuery().processInstanceId(current.getProcessInstanceId()).list(); //.singleResult();
+           
+            tasks.forEach(task -> {System.out.println(task.getAssignee());
             taskService.setAssignee(task.getId(), userDetails.getUsername());
 
-            if (DocType.BOOK_REPORT.equals(doc.getDocType())) {
+            /*if (DocType.BOOK_REPORT.equals(doc.getDocType())) {
                 this.bookReportDao.update((BookReport) doc);
             } else if (DocType.INVOICE.equals(doc.getDocType())) {
                 this.invoiceDao.update((Invoice) doc);
@@ -149,7 +222,8 @@ public class DocumentService {
                 this.journalDao.update((JournalDetail) doc);
             }else {
                 throw new IllegalArgumentException("Unknown doc type: " + doc.getDocType());
-            }
+            }*/
+            workFlowDao.update((WorkFlowBean)doc);
             taskService.setVariableLocal(task.getId(), "taskOutcome", "Submitted");
             Map<String, Object> processVariables = Maps.newHashMap();
             processVariables.put("initiator", doc.getAuthor());
@@ -158,6 +232,7 @@ public class DocumentService {
             processVariables.put("docType", doc.getDocType());
             taskService.setVariables(task.getId(), processVariables);
             taskService.complete(task.getId());
+            });
         }
         finally {
 
@@ -198,7 +273,7 @@ public class DocumentService {
         ProcessInstance pi = runtimeService.createProcessInstanceQuery().
                 processInstanceId(execution.getProcessInstanceId()).singleResult();
         String docId = pi.getBusinessKey();
-        Document doc = this._getDocument(DocType.JOURNAL,docId);
+        Document doc = this._getDocument(docId);
         doc.setDocState(DocState.PUBLISHED);
         String message = String.format("%s entitled '%s' has been successfully published ", doc.getDocType().name(), doc.getTitle());
         this.alertService.sendAlert(doc.getAuthor(), Alert.SUCCESS, message);
@@ -217,7 +292,7 @@ public class DocumentService {
         ProcessInstance pi = runtimeService.createProcessInstanceQuery().
                 processInstanceId(execution.getProcessInstanceId()).singleResult();
         String docId = pi.getBusinessKey();
-        Document doc = this._getDocument(DocType.JOURNAL,docId);
+        Document doc = this._getDocument(docId);
         doc.setDocState(DocState.EMAILED);
         String message = String.format("%s entitled '%s' has been successfully emailed ", doc.getDocType().name(), doc.getTitle());
         this.alertService.sendAlert(doc.getAuthor(), Alert.SUCCESS, message);
@@ -226,7 +301,7 @@ public class DocumentService {
 
     @Transactional(readOnly = true)
     public Document getDocument(DocType docType,String id) {
-        return this._getDocument(docType,id);
+        return this._getDocument(id);
     }
 
     /**
@@ -235,8 +310,9 @@ public class DocumentService {
      * @param id
      * @return document with given id
      */
-    private Document _getDocument(DocType docType ,String id) {
-    	Document document = null;
+    private Document _getDocument(String id) {
+    	Document document = workFlowDao.read(id);
+    	/*Document document = null ;
     	if (DocType.BOOK_REPORT.equals(docType)) {
     		document = this.bookReportDao.read(id);
         } else if (DocType.INVOICE.equals(docType)) {
@@ -244,10 +320,9 @@ public class DocumentService {
         }else if(DocType.JOURNAL.equals(docType) ){
         	document = this.journalDao.read(id);
         }else {
-            throw new IllegalArgumentException("Unknown doc type: " + document.getDocType());
-        }
-    	
-        
+        	document = workFlowDao.read(id);
+            
+        }*/
         return document;
     }
 
@@ -258,7 +333,7 @@ public class DocumentService {
      * @param document
      */
     private void _updateDocument(Document document) {
-        if (DocType.BOOK_REPORT.equals(document.getDocType())) {
+       /* if (DocType.BOOK_REPORT.equals(document.getDocType())) {
             this.bookReportDao.update((BookReport) document);
         } else if (DocType.INVOICE.equals(document.getDocType())) {
             this.invoiceDao.update((Invoice) document);
@@ -266,7 +341,8 @@ public class DocumentService {
             this.journalDao.update((JournalDetail) document);
         }else {
             throw new IllegalArgumentException("Unknown doc type: " + document.getDocType());
-        }
+        }*/
+    	workFlowDao.update((WorkFlowBean)document);
     }
     
     

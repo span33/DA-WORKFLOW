@@ -25,8 +25,8 @@
             <concurrency-control max-sessions="2" error-if-maximum-exceeded="true" />
         </session-management>
 		
-	
-        <intercept-url pattern="/**" access="hasAnyRole('Submitter','Approver')" />
+		<intercept-url pattern="/admin/**" access="hasRole('Admin')" />
+        <intercept-url pattern="/**" access="hasAnyRole('Submitter','Approver','Admin')" />
 
         <form-login login-page="/login.htm" always-use-default-target="false" default-target-url="/"
                     authentication-failure-url="/loginfailed.htm" />

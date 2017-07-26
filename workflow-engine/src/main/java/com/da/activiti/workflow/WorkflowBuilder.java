@@ -60,14 +60,14 @@ public class WorkflowBuilder {
 	WorkflowService workflowService;
 
 	@Transactional
-	public Process createProcess(String processName, List<ProcessInfo> listOFSubprocess) throws IOException {
+	public Process createProcess(ProcessInfo processinfo, List<ProcessInfo> listOFSubprocess) throws IOException {
 		// 1. Build up the model from scratch
 		BpmnModel model = new BpmnModel();
 		Process process = new Process();
 		model.addProcess(process);
 		model.setTargetNamespace("da.com");
 		// String deploymentId = processName+"___NONE";
-		String deploymentId = WFConstants.createProcId(DocType.JOURNAL, "Approver");
+		String deploymentId = WFConstants.createProcId(processinfo.getDocType(), processinfo.getGroupId());
 		//String deploymentId = processName + "___NONE";
 		process.setId(deploymentId);
 		
@@ -75,7 +75,8 @@ public class WorkflowBuilder {
 		process.addFlowElement(startEvent);
 		SubProcess prevsub = null;
 		SubProcess nextsub = null;
-
+		
+		//ParallelGateway parallelGateway = new ParallelGateway();
 		for (ProcessInfo subprocess : listOFSubprocess) {
 
 			ErrorEventDefinition errorDef = new ErrorEventDefinition();
@@ -102,13 +103,14 @@ public class WorkflowBuilder {
 				//
 				nextsub = prevsub;
 			} else {
-				nextsub = createDynamicSubProcess(dynamicUserTasks, errorDef);
+				nextsub =createDynamicSubProcess(dynamicUserTasks, errorDef,subprocess.getProcessName());
 				process.addFlowElement(nextsub);
 				process.addFlowElement(createSequenceFlow(prevsub.getId(), nextsub.getId()));
 				process.addFlowElement(WorkflowBuilder.createSequenceFlow(prevsub.getId(), nextsub.getId()));
 			}
 
 		}
+		
 		process.addFlowElement(workflowService.createEndEvent());
 		process.addFlowElement(WorkflowBuilder.createSequenceFlow(nextsub.getId(), "end"));
 		// 2. Generate graphical information
@@ -118,7 +120,7 @@ public class WorkflowBuilder {
 				.addBpmnModel(deploymentId + "dynamic-model.bpmn", model).name("Dynamic process deployment").deploy();
 		ProcessDefinition processDefinition = this.repoSrvc.createProcessDefinitionQuery()
 				.processDefinitionKey(deploymentId).latestVersion().singleResult();
-		ProcessInstance processInstance = workflowService.runtimeService.startProcessInstanceByKey(deploymentId);
+		/*ProcessInstance processInstance = workflowService.runtimeService.startProcessInstanceByKey(deploymentId);
 		// 5. Check if task is available
 		List<Task> tasks = workflowService.taskService.createTaskQuery().processInstanceId(processInstance.getId())
 				.list();
@@ -126,7 +128,7 @@ public class WorkflowBuilder {
 		InputStream processDiagram = repoSrvc.getProcessDiagram(processInstance.getProcessDefinitionId());
 		FileUtils.copyInputStreamToFile(processDiagram, new File("target/diagram.png"));
 		// 7. Save resulting BPMN xml to a file
-		InputStream processBpmn = repoSrvc.getResourceAsStream(deployment.getId(), deploymentId + "dynamic-model.bpmn");
+*/		InputStream processBpmn = repoSrvc.getResourceAsStream(deployment.getId(), deploymentId + "dynamic-model.bpmn");
 		FileUtils.copyInputStreamToFile(processBpmn, new File("target/" + deploymentId + "process.bpmn20.xml"));
 		return process;
 	}
@@ -301,6 +303,7 @@ public class WorkflowBuilder {
 	}
 
 	protected static SequenceFlow createSequenceFlow(String from, String to) {
+		
 		SequenceFlow flow = new SequenceFlow();
 		flow.setSourceRef(from);
 		flow.setTargetRef(to);
@@ -597,6 +600,7 @@ public class WorkflowBuilder {
 		sub.addFlowElement(startFlow);
 		RecursiveTaskConverter recursiveTaskConverter = new RecursiveTaskConverter(dynamicUserTasks, sub, errorEnd);
 
+		
 		SequenceFlow lastRef = recursiveTaskConverter.recurseTasks(startFlow);
 		lastRef.setTargetRef(end.getId());
 		return sub;
@@ -664,8 +668,10 @@ public class WorkflowBuilder {
 			return DynamicUserTaskType.APPROVE_REJECT;
 		} else if (StringUtils.startsWith(id, WFConstants.TASK_ID_DOC_COLLABORATE)) {
 			return DynamicUserTaskType.COLLABORATION;
+		} else if (StringUtils.startsWith(id, WFConstants.TASK_ID_DOC_SUBMITTED)) {
+			return DynamicUserTaskType.DOC_SUBMIT;
 		} else {
-			return null;
+			return DynamicUserTaskType.BACKEND_TASK;
 		}
 	}
 
@@ -740,7 +746,7 @@ public class WorkflowBuilder {
 		private int taskTotal = 0;
 		private SubProcess subProcess;
 		private EndEvent errorEnd;
-		private boolean isCalled = false;
+		private   boolean isCalled = false;
 
 		public RecursiveTaskConverter(List<DynamicUserTask> dynamicUserTasks, SubProcess subProcess,
 				EndEvent errorEnd) {
@@ -768,7 +774,8 @@ public class WorkflowBuilder {
 				this.isCalled = true;
 				return this._recurseTasksPriv(prev);
 			} else {
-				throw new IllegalStateException("The recurseTasks method can only be called once");
+				return prev ;
+				//throw new IllegalStateException("The recurseTasks method can only be called once");
 			}
 		}
 

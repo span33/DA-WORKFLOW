@@ -13,8 +13,6 @@ public enum DocType {
     JOURNAL,
     GENERAL,
     OPENACCOUNT,
-    TESTPROCESS,
-    TEST33,
     PAYORDER,
     SALESORDER,
     OCAS,
@@ -24,4 +22,13 @@ public enum DocType {
     public static List<DocType> asList(){
         return Arrays.asList(DocType.values());
     }
+    public static DocType getDocTypeByName(String name){
+    	 for(DocType docType : DocType.values()) {
+    	        if(docType.name().equalsIgnoreCase(name)) {
+    	        	return docType ;
+    	        }
+    	     }	
+    	 return null ;
+    }
+   
 }

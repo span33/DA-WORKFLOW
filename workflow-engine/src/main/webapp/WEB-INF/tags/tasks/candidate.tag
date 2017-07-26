@@ -16,6 +16,9 @@
 <spring:eval expression="T(com.da.activiti.model.document.DocType).BOOK_REPORT" var="bookReportTypeStr" />
 <spring:eval expression="T(com.da.activiti.model.document.DocType).INVOICE" var="invoiceTypeStr" />
 <spring:eval expression="T(com.da.activiti.model.document.DocType).JOURNAL" var="journalTypeStr" />
+<spring:eval expression="T(com.da.activiti.model.document.DocType).OPENACCOUNT" var="OpenAccountTypeStr" />
+<spring:eval expression="T(com.da.activiti.model.document.DocType).SALESORDER" var="SalesOrderTypeStr" />
+<spring:eval expression="T(com.da.activiti.model.document.DocType).OCAS" var="OCASTypeStr" />
 <c:choose>
     <c:when test="${empty candidateTasks}">
         <p>You do not currently have any tasks to complete.</p>

@@ -145,5 +145,55 @@ public abstract class BaseDao {
 
 		return rows;
 	}
+	
+	public Map<String, Object> getRowMap(String sqlQuery,
+			Map<String, Object> parameters) {
+		ResultSet rs = null;
+		Connection con = null;
+		Map<String, Object> rowMap = null;
+		PreparedStatement pstmt = null;
+		try {
+			con = ds.getConnection();
+			pstmt = con.prepareStatement(sqlQuery);
+			if (!parameters.isEmpty()) {
+				int counter = 0;
+				for (Map.Entry<String, Object> entry : parameters.entrySet())
+				{
+					counter++;
+					pstmt.setObject(counter, entry.getValue());
+		
+				}
+			}
+			rs = pstmt.executeQuery() ;
+			rowMap = new LinkedHashMap<>();
+			while (rs.next()) {
+				rowMap.put(rs.getString(1), rs.getObject(2));
+			}
+			rs.close();
+			pstmt.close();
+			con.close();
+			rs = null;
+			pstmt =null;
+			con = null;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (pstmt != null)
+					pstmt.close();
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+
+		return rowMap;
+	}
 
 }

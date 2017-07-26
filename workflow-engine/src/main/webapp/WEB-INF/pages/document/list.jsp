@@ -34,7 +34,7 @@
 
         <c:choose>
             <c:when test="${empty userForms}">
-                <p>The user does not have any group documents</p>
+                <p>The user does not have any  documents to initiate work flow</p>
             </c:when>
             <c:otherwise>
                 <table class="table table-striped">

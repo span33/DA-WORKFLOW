@@ -23,6 +23,8 @@
     <script type="text/javascript">
    // var mydata = [{id:"1",name:"Cash",num:"100",debit:"400.00",credit:"250.00",balance:"150.00",level:"0",parent:"",isLeaf:false,expanded:false}] ;
     //<![CDATA[
+               var jsonData= [{"1" : "1"},{"2" : "2"},{"3":"3"}] ;
+               var groupData= [{"Admin" : "Admin"},{"Approver" : "Approver"},{"User":"User"}] ;
         $(function(){
         	
         	 
@@ -62,17 +64,19 @@
             grid.jqGrid({
                 datatype: "json",
                 url:SERVLET_CONTEXT + '/admin/process/DynProcesslist.htm',
-                colNames:["processId","Process Name","Description","Owner","Process Type","Template","Level","Parent" ,"hasSibling" ,"" ,"",""],
+                colNames:["processId","Process Name","Doc Type", "Group","Description","Owner","Process Type","Template","Level","Parent" ,"hasSibling" ,"" ,"",""],
                 colModel:[
                     {name:'processId', index:'processId', width:50, key:true},
                     {name:'processName', index:'processName', width:80,align:"center",editable:true,required:true},
+                    {name:'docType', index:'docType', width:80,align:"center",editable:true,required:true,edittype:"select" ,editoptions:{value:"1:BOOK_REPORT;2:INVOICE;3:RECEIPT;4:JOURNAL;5:GENERAL;6:OPENACCOUNT;7:PAYORDER;8:SALESORDER;9:OCAS"}},
+                    {name:'groupId', index:'groupId', width:80,align:"center",editable:true,required:true,edittype:"select" ,editoptions:{value:"1:Admin;2:User,3:Approver"}},
                     {name:'processDescription', index:'processDescription', width:180, align:"center" ,editable:true},
                     {name:'processOwner', index:'processOwner', width:80, align:"center" ,editable:true},
                     {name:'processType', index:'processType', width:80,align:"center" , editable: true,edittype:"select" ,editoptions:{value:"1:1;2:2;3:3"}},
                     {name:'processTemplateId', index:'processTemplateId', width:80,align:"center" ,editable: true,edittype:"select" , editoptions:{value:"1:1;2:2;3:3"}},
-                    {name:'level', index:'level', width: 60, align:'center', editable: true,edittype:"select" , editoptions:{value:"1:1;2:2;3:3"}},
+                    {name:'processLevel', index:'processLevel', width: 60, align:'center', editable: true,edittype:"select" , editoptions:{value:"1:1;2:2;3:3"}},
                     {name:'parent', index:'parent', width: 60, align:'center', editable:true},
-                    {name:'processHasSibling', index:'processHasSibling', width: 60, align:'center' ,editoptions:{value:"1:1;2:2;3:3"}},
+                    {name:'processHasSibling', index:'processHasSibling',editable:true, width: 60, align:'center' ,editoptions:{value:"1:1;2:2;3:3"}},
                     {name:'AddSubprocess', index:'Addprocess', width: 60, align:'center',
                      formatter:function(){
                          return '<div tabindex="0" role="button" class="ui-corner-all ui-pg-button testClass"  title=""><div class="ui-pg-div">'
@@ -534,7 +538,13 @@
 </div>
 </div>
 <%-- <jsp:include page="/WEB-INF/pages/fragments/footer.jsp"/> --%>
-
+<script>
+    (function($){
+        $(document).ready(function () {
+            $('li#nav-docs').addClass('active');
+        });
+    })(jQuery);
+</script>
 
 </body>
 </html>

@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.core.RowMapper;
 
+import com.da.activiti.model.document.DocType;
 import com.da.activiti.model.document.ProcessInfo;
 
 public class ProcessRowMapper  implements RowMapper<ProcessInfo>{
@@ -24,6 +25,8 @@ public class ProcessRowMapper  implements RowMapper<ProcessInfo>{
 	        String processHasSibling = StringUtils.trim(rs.getString("process_hasSibling"));
 	        String createdBy = StringUtils.trim(rs.getString("created_by"));
 	        String updatedBy = StringUtils.trim(rs.getString("updated_by"));
+	        String docType = StringUtils.trim(rs.getString("doc_type"));
+	        
 	        
 	        processInfo.setProcessId(processId);
 	        processInfo.setProcessName(processName);
@@ -36,6 +39,7 @@ public class ProcessRowMapper  implements RowMapper<ProcessInfo>{
 	        processInfo.setProcessHasSibling(processHasSibling);
 	        processInfo.setCreatedBy(createdBy);
 	        processInfo.setUpdatedBy(updatedBy);
+	        processInfo.setDocType(DocType.getDocTypeByName(docType));
 	        
 	        
 		return processInfo;

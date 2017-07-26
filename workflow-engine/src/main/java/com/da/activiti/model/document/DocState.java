@@ -17,4 +17,13 @@ public enum DocState {
     EMAILED,
 	WAITING_FOR_DOCUMENT_TO_SUBMIT,
 	DOCUMENT_SUBMITED;
+	
+	public static DocState getDocStateByName(String name){
+   	 for(DocState docState : DocState.values()) {
+   	        if(docState.name().equalsIgnoreCase(name)) {
+   	        	return docState ;
+   	        }
+   	     }	
+   	 return null ;
+   }
 }

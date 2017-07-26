@@ -42,27 +42,32 @@ public class ProcessController extends BaseController {
 
 	@Autowired
 	WorkflowService workflowService;
-	
+
 	@Autowired
-	WorkflowBuilder workflowBuilder ;
+	WorkflowBuilder workflowBuilder;
+
+	@RequestMapping(value = "/buildForms.htm", method = RequestMethod.GET)
+	public String getDocuments(ModelMap model, HttpServletRequest request) {
+		return "FormBuilder/buildform";
+	}
 
 	@RequestMapping(value = "/saveGridData", method = RequestMethod.POST)
-	public  ResponseEntity<Response> postGridData(@RequestBody List<ProcessInfo> processInfos, BindingResult result,
+	public ResponseEntity<Response> postGridData(@RequestBody List<ProcessInfo> processInfos, BindingResult result,
 			final RedirectAttributes redirectAttributes, HttpServletRequest request, ModelMap model) {
-			processTaskMapping(processInfos);
-			String msg = "Process Created Successfully " ;
-			processInfos.forEach(processinfo -> {
-				try {
-					Process 	 process = workflowBuilder.createProcess(processinfo.getProcessName(), processinfo.getSubProcessList());
-					 String.join(msg, ",", process.getName());
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			});
-			Response<String> res = new Response<String>(true, msg);
-			res.setData(msg);
-			return new ResponseEntity<Response>(res, HttpStatus.OK);
+		processTaskMapping(processInfos);
+		String msg = "Process Created Successfully ";
+		processInfos.forEach(processinfo -> {
+			try {
+				Process process = workflowBuilder.createProcess(processinfo, processinfo.getSubProcessList());
+				String.join(msg, ",", process.getName());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		});
+		Response<String> res = new Response<String>(true, msg);
+		res.setData(msg);
+		return new ResponseEntity<Response>(res, HttpStatus.OK);
 
 	}
 
@@ -184,8 +189,8 @@ public class ProcessController extends BaseController {
 		return new ResponseEntity<Response>(res, HttpStatus.OK);
 
 	}
-	
-	private void processTaskMapping(List <ProcessInfo> processInfos) {
+
+	private void processTaskMapping(List<ProcessInfo> processInfos) {
 		processInfos.forEach(processInfo -> {
 			List<ProcessInfo> subprocesslist = processService.listAllSubProcesses(processInfo.getProcessId());
 			processInfo.setSubProcessList(subprocesslist);
