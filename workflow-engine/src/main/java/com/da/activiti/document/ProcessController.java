@@ -70,6 +70,28 @@ public class ProcessController extends BaseController {
 		return new ResponseEntity<Response>(res, HttpStatus.OK);
 
 	}
+	
+	@RequestMapping(value = "/editProcess", method = RequestMethod.POST)
+	public @ResponseBody ResponseEntity<Response> editProcess(@ModelAttribute ProcessInfo processInfo, BindingResult result,
+			final RedirectAttributes redirectAttributes, HttpServletRequest request, ModelMap model) {
+		processService.editProcess(processInfo);
+		String msg = "Process id : " + processInfo.getProcessId() + " -- Process Created Successfully ";
+		Response<String> res = new Response<String>(true, msg);
+		res.setData(Integer.toString(processInfo.getProcessId()));
+		return new ResponseEntity<Response>(res, HttpStatus.OK);
+
+	}
+	
+	@RequestMapping(value = "/deleteProcess", method = RequestMethod.POST)
+	public @ResponseBody ResponseEntity<Response> deleteProcess(@ModelAttribute ProcessInfo processInfo, BindingResult result,
+			final RedirectAttributes redirectAttributes, HttpServletRequest request, ModelMap model) {
+		processService.deleteProcess(processInfo);
+		String msg = "Process id : " + processInfo.getProcessId() + " -- Process Created Successfully ";
+		Response<String> res = new Response<String>(true, msg);
+		res.setData(Integer.toString(processInfo.getProcessId()));
+		return new ResponseEntity<Response>(res, HttpStatus.OK);
+
+	}
 
 	@RequestMapping(value = "/saveProcess", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<Response> post(@ModelAttribute ProcessInfo processInfo, BindingResult result,
@@ -92,6 +114,16 @@ public class ProcessController extends BaseController {
 		return new ResponseEntity<Response>(res, HttpStatus.OK);
 
 	}
+	
+	@RequestMapping(value = "/departmentList", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Response> createTask( BindingResult result,
+			final RedirectAttributes redirectAttributes, HttpServletRequest request, ModelMap model) {
+		List<Map<String, Object>> departMentList = processService.departMentList();
+		Response<List<Map<String, Object>>> res = new Response<List<Map<String, Object>>>(true, "Alert acknowledged");
+		res.setData(departMentList);
+		return new ResponseEntity<Response>(res, HttpStatus.OK);
+
+	}
 
 	@Override
 	@ModelAttribute
@@ -105,6 +137,7 @@ public class ProcessController extends BaseController {
 		 * 
 		 * model.addAttribute("processList", processList);
 		 */
+		//model.addAttribute("departMentList", processService.departMentList());
 	}
 
 	@InitBinder
@@ -189,6 +222,8 @@ public class ProcessController extends BaseController {
 		return new ResponseEntity<Response>(res, HttpStatus.OK);
 
 	}
+	
+	
 
 	private void processTaskMapping(List<ProcessInfo> processInfos) {
 		processInfos.forEach(processInfo -> {

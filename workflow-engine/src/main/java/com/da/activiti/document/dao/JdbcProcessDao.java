@@ -69,7 +69,7 @@ public class JdbcProcessDao extends BaseDao implements ProcessDao {
 	public String create(ProcessInfo obj) {
 		LOG.debug("Inserting  ProcessInfo into SQL backend: {}", obj);
 
-		String sql = "INSERT INTO PROCESS (process_name, process_description, process_type, process_template_id, process_level, process_parent_id, process_hasSibling, created_by,doc_type,group) "
+		String sql = "INSERT INTO PROCESS (process_name, process_description, process_type, process_template_id, process_level, process_parent_id, process_hasSibling, created_by,doc_type,group_Id) "
 				+ "VALUES (:processName, :processDescription, :processType, :processTemplateId, :processLevel, :parent, :processHasSibling, :createdBy,:docType,:groupId)";
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		BeanPropertySqlParameterSource source = new BeanPropertySqlParameterSource(obj);
@@ -99,16 +99,26 @@ public class JdbcProcessDao extends BaseDao implements ProcessDao {
 
 	@Override
 	public void update(ProcessInfo obj) {
-		// TODO Auto-generated method stub
+	
+			LOG.debug("Updating  ProcessInfo into SQL backend: {}", obj);
+
+			String sql = "update PROCESS set process_name=:processName, process_description=:processDescription, process_type=:processType, process_template_id=:processTemplateId, process_level=:processLevel, process_parent_id=:parent, process_hasSibling=:processHasSibling,doc_type =:docType,group_Id=:groupId,process_owner=:processOwner where process_Id=:id ";
+			
+			BeanPropertySqlParameterSource source = new BeanPropertySqlParameterSource(obj);
+			source.registerSqlType("docType", Types.VARCHAR);
+			int updated = this.namedJdbcTemplate.update(sql, source);
+			LOG.debug("updated: {} Process", updated);
+			//return Long.toString(keyHolder.getKey().longValue());
+		
 
 	}
 
 	@Override
-	public void delete(String id) {
-		String sql = "DELETE FROM Process WHERE id = :id";
-		Map<String, String> params = ImmutableMap.of("id", id);
+	public void delete(int id) {
+		String sql = "DELETE FROM Process WHERE process_Id = :id";
+		Map<String, Integer> params = ImmutableMap.of("id", id);
 		int deleted = this.namedJdbcTemplate.update(sql, params);
-		LOG.debug("Deleted: {} BookReports", deleted);
+		LOG.debug("Deleted: {} Process", deleted);
 
 	}
 
@@ -198,11 +208,26 @@ public class JdbcProcessDao extends BaseDao implements ProcessDao {
 	}
 
 	@Override
-	public List<Map<String, Object>> getProcessListByTaskMappingId(int taskMappingId) {
-		String sql = "select Process_id as 'Process Id ',Process_name as 'Process Name' from process where process_task_mapping_process_task_mapping_id =?";
-		Map<String, Object> parameters = new LinkedHashMap<String, Object>();
-		parameters.put("process_task_mapping_process_task_mapping_id", taskMappingId);
-		return executeDynamicNativeQueryWithParameter(sql, parameters);
+	public List<Map<String, Object>> getDepartmentList() {
+		String sql = "SELECT department_id,department_name FROM department ";
+		return executeDynamicNativeQuery(sql);
 	}
+	
+	@Override
+	public List<Map<String, Object>> getUserByDepartmentId(List <String>departments) {
+		String wdata = "" ;
+		for(String department : departments) {
+			wdata = wdata + department+ "OR";
+		}
+		String sql = " SELECT ID_,FIRST_  FROM act_id_user where department_id= "+wdata;
+		return executeDynamicNativeQuery(sql);
+	}
+
+	@Override
+	public List<Map<String, Object>> getProcessListByTaskMappingId(int taskMappingId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 
 }

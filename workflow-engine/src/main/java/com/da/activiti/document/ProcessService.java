@@ -1,5 +1,6 @@
 package com.da.activiti.document;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -143,7 +144,28 @@ public class ProcessService  {
     public String createProcess(ProcessInfo processInfo){
     	return processDao.create(processInfo);
     }
+    
+    @Transactional
+    public void editProcess(ProcessInfo processInfo){
+    	 processDao.update(processInfo);
+    }
    
+    @Transactional
+    public void deleteProcess(int  processId){
+    	 processDao.delete(processId);
+    }
 
+    @Transactional(readOnly = true)
+    public List<Map<String, Object>> departMentList() {
+        
+        return processDao.getDepartmentList();
+       
+    }
+    
+    @Transactional(readOnly = true)
+    public List<Map<String, Object>> userListByDepatmentId(List <String> departmentList) {
+        return processDao.getUserByDepartmentId(departmentList);
+       
+    }
    
 }

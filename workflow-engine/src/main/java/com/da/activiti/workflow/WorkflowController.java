@@ -1,6 +1,7 @@
 package com.da.activiti.workflow;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -15,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -22,7 +24,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.da.activiti.document.ProcessService;
 import com.da.activiti.model.Response;
 import com.da.activiti.model.document.DocType;
 import com.da.activiti.model.workflow.DynamicUserTask;
@@ -38,6 +43,8 @@ public class WorkflowController extends BaseController {
 
     @Autowired protected WorkflowService workflowSrvc;
     @Autowired protected WorkflowBuilder workflowBldr;
+    @Autowired
+	ProcessService processService;
     protected ObjectMapper objectMapper = new ObjectMapper();
 
 
@@ -45,6 +52,15 @@ public class WorkflowController extends BaseController {
     protected void initBinder(WebDataBinder binder) {
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
     }
+    
+    @RequestMapping(value = "/departmentList", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Response> departmentList(  ModelMap model) {
+		List<Map<String, Object>> departMentList = processService.departMentList();
+		Response<List<Map<String, Object>>> res = new Response<List<Map<String, Object>>>(true, "Alert acknowledged");
+		res.setData(departMentList);
+		return new ResponseEntity<Response>(res, HttpStatus.OK);
+
+	}
 
     @Override
     @ModelAttribute

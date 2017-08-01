@@ -61,6 +61,9 @@
   <script src="${pageContext.request.contextPath}/resources/formBuilder-master/demo/assets/js/form-render.min.js"></script>
   <script src="${pageContext.request.contextPath}/resources/formBuilder-master/docs/js/jquery.rateyo.min.js"></script>
   <script src="${pageContext.request.contextPath}/resources/formBuilder-master/demo/assets/js/demo.js"></script>
+  <script src="${pageContext.request.contextPath}/resources/js/bootstrap.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/bootbox.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/app/app.js"></script>
 <%-- <jsp:include page="/WEB-INF/pages/fragments/footer.jsp"/> --%>
 <script>
     (function($){

@@ -26,8 +26,6 @@ import org.activiti.bpmn.model.UserTask;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
-import org.activiti.engine.runtime.ProcessInstance;
-import org.activiti.engine.task.Task;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -551,7 +549,7 @@ public class WorkflowBuilder {
 		SubProcess subProcessUpDt = createDynamicSubProcess(tasks, new ErrorEventDefinition());
 		List<SequenceFlow> sequenceFlows = getSubReferences(proc, subProcessOrig, subProcessUpDt);
 		// only need to modify ref from original subProcess to next flow element
-		proc.removeFlowElement(subProcessOrig.getId());
+
 		proc.addFlowElement(subProcessUpDt);
 
 		BpmnModel updatedModel = new BpmnModel();
@@ -720,11 +718,11 @@ public class WorkflowBuilder {
 		for (FlowElement el : flowElements) {
 			if (el instanceof SequenceFlow) {
 				SequenceFlow seqFlow = (SequenceFlow) el;
-				if (WFConstants.SUBPROCESS_ID_DYNAMIC.equals(seqFlow.getTargetRef())) {
+				if (seqFlow.getTargetRef().startsWith(WFConstants.SUBPROCESS_ID_DYNAMIC)) {
 					refs.add(0, seqFlow);
 					continue;
 				}
-				if (WFConstants.SUBPROCESS_ID_DYNAMIC.equals(seqFlow.getSourceRef())) {
+				if (seqFlow.getSourceRef().startsWith(WFConstants.SUBPROCESS_ID_DYNAMIC)) {
 					refs.add(1, seqFlow);
 					continue;
 				}

@@ -27,7 +27,7 @@
                var groupData= [{"Admin" : "Admin"},{"Approver" : "Approver"},{"User":"User"}] ;
         $(function(){
         	
-        	 
+        	var dataurl =SERVLET_CONTEXT +'/workflow/departmentList' ;
                 $.ajax({
         	        type: 'GET',
         	        dataType: 'json',
@@ -64,20 +64,21 @@
             grid.jqGrid({
                 datatype: "json",
                 url:SERVLET_CONTEXT + '/admin/process/DynProcesslist.htm',
-                colNames:["processId","Process Name","Doc Type", "Group","Description","Owner","Process Type","Template","Level","Parent" ,"hasSibling" ,"" ,"",""],
+                colNames:["processId","Process Name","Process Description","Process Owner", "Doc Type", "User Group","Process Type","Template","Level","Parent" ,"hasSibling" ,"" ],
                 colModel:[
                     {name:'processId', index:'processId', width:50, key:true},
                     {name:'processName', index:'processName', width:80,align:"center",editable:true,required:true},
-                    {name:'docType', index:'docType', width:80,align:"center",editable:true,required:true,edittype:"select" ,editoptions:{value:"1:BOOK_REPORT;2:INVOICE;3:RECEIPT;4:JOURNAL;5:GENERAL;6:OPENACCOUNT;7:PAYORDER;8:SALESORDER;9:OCAS"}},
-                    {name:'groupId', index:'groupId', width:80,align:"center",editable:true,required:true,edittype:"select" ,editoptions:{value:"1:Admin;2:User,3:Approver"}},
-                    {name:'processDescription', index:'processDescription', width:180, align:"center" ,editable:true},
+                    {name:'processDescription', index:'processDescription', width:180, align:"center" ,editable:true, edittype:"textarea", editoptions: { rows:5,cols: 5 }},
+                  /*   {name:'department', index:'department', width:180, align:"center" ,editable:true, edittype: 'select',editoptions: {value:"FC:Financial Control;PY:Payables" }}, */
                     {name:'processOwner', index:'processOwner', width:80, align:"center" ,editable:true},
+                    {name:'docType', index:'docType', width:80,align:"center",editable:true,required:true,edittype:"select" ,editoptions:{value:"1:BOOK_REPORT;2:INVOICE;3:RECEIPT;4:JOURNAL;5:GENERAL;6:OPENACCOUNT;7:PAYORDER;8:SALESORDER;9:OCAS"}},
+                    {name:'groupId', index:'groupId', width:80,align:"center",editable:true,required:true,edittype:"select" ,editoptions:{value:"1:Admin;2:Aprrover;3:user"}},
                     {name:'processType', index:'processType', width:80,align:"center" , editable: true,edittype:"select" ,editoptions:{value:"1:1;2:2;3:3"}},
-                    {name:'processTemplateId', index:'processTemplateId', width:80,align:"center" ,editable: true,edittype:"select" , editoptions:{value:"1:1;2:2;3:3"}},
-                    {name:'processLevel', index:'processLevel', width: 60, align:'center', editable: true,edittype:"select" , editoptions:{value:"1:1;2:2;3:3"}},
+                    {name:'processTemplateId', index:'processTemplateId', width:80,align:"center" ,editable: true,edittype:"select" , editoptions:{value:"1:1;2:2;3:3"},hidden: true},
+                    {name:'processLevel', index:'processLevel', width: 60, align:'center', editable: true,edittype:"select" , editoptions:{value:"1:1;2:2;3:3"},hidden: true},
                     {name:'parent', index:'parent', width: 60, align:'center', editable:true},
-                    {name:'processHasSibling', index:'processHasSibling',editable:true, width: 60, align:'center' ,editoptions:{value:"1:1;2:2;3:3"}},
-                    {name:'AddSubprocess', index:'Addprocess', width: 60, align:'center',
+                    {name:'processHasSibling', index:'processHasSibling',editable:true, width: 60, align:'center' ,editoptions:{value:"1:1;2:2;3:3"},hidden: true},
+                   /*  {name:'AddSubprocess', index:'Addprocess', width: 60, align:'center',
                      formatter:function(){
                          return '<div tabindex="0" role="button" class="ui-corner-all ui-pg-button testClass"  title=""><div class="ui-pg-div">'
                          +'<span class="ui-pg-button-text">'+'Add SubProcess</span></div></div>';
@@ -86,7 +87,7 @@
                          formatter:function(){
                              return '<div tabindex="0" role="button" class="ui-corner-all ui-pg-button testClass"  title=""><div class="ui-pg-div">'
                              +'<span class="ui-pg-button-text">'+'Add Task</span></div></div>';
-                         }},
+                         }}, */
                      {
                          name: 'Actions', index: 'Actions', width: 80, formatter: 'actions',
                          formatoptions: {
@@ -107,10 +108,6 @@
                 rowNum: 10,
                	pager : "#ptreegrid",
                 sortname: 'id',
-               /*  treeGrid: true,
-                treeGridModel: 'adjacency',
-                treedatatype: "local", 
-                gridview: true, */
                 ExpandColumn: 'processName',
                 loadonce: true,
                 subGrid: true,
@@ -232,10 +229,11 @@
                      modal: true,
                      buttons: {
                          "Ok": function() {
-                         	//grid.trigger('reloadGrid');
+                         	
                          	
                              $(this).dialog("close");
                              $('#dialog').css('display', 'none');
+                             grid.trigger('reloadGrid');
                          }
                      }
                  });
@@ -296,22 +294,17 @@
  
             function editRow() {
                 // Get the currently selected row
-                var row = $("#grid").jqGrid('getGridParam', 'selrow');
+                var row = grid.jqGrid('getGridParam', 'selrow');
 
-                if (row != null) $("#grid").jqGrid('editGridRow', row, {
-                    url: "/jqgrid/event/edit",
+                if (row != null) grid.jqGrid('editGridRow', row, {
+                    url:  SERVLET_CONTEXT + '/admin/process/editProcess',
                     serializeEditData: function(data) {
-                        data.date = new Date(data.date).toISOString();
-                        return $.param(data);
+                        return $.param(data); 
                     },
                     recreateForm: true,
                     closeAfterEdit: true,
                     reloadAfterSubmit: true,
                     beforeShowForm: function(form) {
-                        $("#date").datepicker({
-                            changeMonth: true,
-                            changeYear: true
-                        });
                     },
                     afterSubmit: function(response, postdata) {
                         var result = eval('(' + response.responseText + ')');
@@ -342,17 +335,14 @@
 
             function deleteRow() {
                 // Get the currently selected row
-                var row = $("#grid").jqGrid('getGridParam', 'selrow');
-
-                // A pop-up dialog will appear to confirm the selected action
-                if (row != null) $("#grid").jqGrid('delGridRow', row, {
-                    url: '/jqgrid/event/delete',
+                var row = grid.jqGrid('getGridParam', 'selrow');
+                console.log(row);
+                if (row != null) grid.jqGrid('delGridRow', row, {
+                    url: '/admin/process/deleteProcess/'+row+'/',
                     recreateForm: true,
                     beforeShowForm: function(form) {
                         //change title
                         $(".delmsg").replaceWith('<span style="white-space: pre;">' + 'Delete selected record?' + '</span>');
-
-                        //hide arrows
                         $('#pData').hide();
                         $('#nData').hide();
                     },
@@ -387,11 +377,6 @@
                 });
                 else alert("Please select row");
             }
-        function addNewProcess() {
-        	alert("New Row added");
-        }
-        // the event handler on expanding parent row receives two parameters
-        // the ID of the grid tow  and the primary key of the row
         function showChildGrid(parentRowID, parentRowKey) {
             var childGridID = parentRowID + "_table";
             var childGridPagerID = parentRowID + "_pager";
@@ -414,10 +399,10 @@
                     {name:'processDescription', index:'processDescription', width:180, align:"center" ,editable:true},
                     {name:'processOwner', index:'processOwner', width:80, align:"center" ,editable:true},
                     {name:'processType', index:'processType', width:80,align:"center" , editable: true,edittype:"select" ,editoptions:{value:"1:1;2:2;3:3"}},
-                    {name:'processTemplateId', index:'processTemplateId', width:80,align:"center" ,editable: true,edittype:"select" , editoptions:{value:"1:1;2:2;3:3"}},
-                    {name:'level', index:'level', width: 60, align:'center', editable: true,edittype:"select" , editoptions:{value:"1:1;2:2;3:3"}},
-                    {name:'parent', index:'parent', width: 60, align:'center', editable:true},
-                    {name:'processHasSibling', index:'processHasSibling', width: 60, align:'center' ,editoptions:{value:"1:1;2:2;3:3"}},
+                    {name:'processTemplateId', index:'processTemplateId', width:80,align:"center" ,editable: true,edittype:"select" , editoptions:{value:"1:1;2:2;3:3"} ,hidden: true},
+                    {name:'level', index:'level', width: 60, align:'center', editable: true,edittype:"select" , editoptions:{value:"1:1;2:2;3:3"},hidden: true},
+                    {name:'parent', index:'parent', width: 60, align:'center', editable:true ,editoptions:{defaultValue:$(this).jqGrid("getLocalRow", parentRowKey).processId}},
+                    {name:'processHasSibling', index:'processHasSibling', width: 60, align:'center' ,editoptions:{value:"1:1;2:2;3:3"},hidden: true},
                     {
                          name: 'Actions', index: 'Actions', width: 80, formatter: 'actions',
                          formatoptions: {
@@ -471,7 +456,7 @@
                 mtype: "GET",
                 datatype: "json",
                 page: 1,
-                colNames: ["Id", "Name" ,"Description" ,"Owner" , "taskType" , "taskStatus" , "actorId" ,"processId" , "createdBy" , ""],
+                colNames: ["Id", "Name" ,"Description" ,"Owner" , "Task Type" , "Task Status" , "Actor Id" ,"Process Id" , "CreatedBy" , ""],
                 colModel: [
                   {name: "taskId", width: 130, key: true},
                   {name: "taskName", width: 130, editable:true},
@@ -480,7 +465,7 @@
                   {name: "taskType", width: 130 , editable:true},
                   {name: "taskStatus", width: 130 , editable:true},
                   {name: "actorId", width: 130 , editable:true},
-                  {name: "processId", width: 130 , editable:true},
+                  {name: "processId", width: 130 , editoptions:{defaultValue:$(this).jqGrid("getLocalRow", parentRowKey).processId}},
                   {name: "createdBy", width: 130 , editable:true},
                   {
                       name: 'Actions', index: 'Actions', width: 80, formatter: 'actions',
@@ -516,15 +501,11 @@
                 cursor: "pointer",
                 id:"addNewTask"
             });
-
         }
         });
     //]]>
     </script>
-    
-    
 </head>
-
 <body>
 <jsp:include page="../fragments/navbar-top.jsp"/>
 
@@ -537,7 +518,10 @@
         </div>
 </div>
 </div>
-<%-- <jsp:include page="/WEB-INF/pages/fragments/footer.jsp"/> --%>
+<%--  <jsp:include page="/WEB-INF/pages/fragments/footer.jsp"/>  --%>
+ <script src="${pageContext.request.contextPath}/resources/js/bootstrap.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/bootbox.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/app/app.js"></script>
 <script>
     (function($){
         $(document).ready(function () {

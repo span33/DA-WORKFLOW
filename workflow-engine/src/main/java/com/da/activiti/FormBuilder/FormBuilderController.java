@@ -191,10 +191,10 @@ public class FormBuilderController extends BaseController {
 		model.addAttribute("docType", docType);
 		model.addAttribute("fields", formService.fetchWordFlowDataById(workFlowId, processUserFormId));
 		if (doc.isEditable(doc.getAuthor(), currentUserName())) {
-			return "FormBuilder/index";
+			return "FormBuilder/view";
 		}
 		model.addAttribute("msg", "The Journal cannot be edited in its current state.");
-		return "FormBuilder/index";
+		return "FormBuilder/view";
 	}
 
 }

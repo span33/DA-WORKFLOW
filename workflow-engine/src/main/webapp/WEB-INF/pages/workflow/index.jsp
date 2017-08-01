@@ -100,7 +100,7 @@
                 </p>
             </div>
 
-            <div id="userTasks" class="panel panel-info">
+            <!-- <div id="userTasks" class="panel panel-info">
                 <div class="panel-heading">
                     <span class="glyphicon glyphicon-thumbs-up pull-right"></span>
 
@@ -125,7 +125,7 @@
                     <button id="update-button" type="button" style="margin-top: 20px" class="btn btn-primary">Update Workflow</button>
                 </p>
 
-            </div>
+            </div> -->
         </div>
         <%--<div>--%>
             <%--<select data-placeholder="Choose a Country..." class="chosen-select" style="width:350px;" multiple tabindex="1">--%>

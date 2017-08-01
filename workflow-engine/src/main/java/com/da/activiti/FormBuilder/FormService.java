@@ -111,12 +111,14 @@ public class FormService {
 		
 	}
 	
+	
 	public List<Field>  fetchWordFlowDataById(String workFlowId,int processUserFormId) {
 		List<Field> fieldList = fetchFormFields(processUserFormId);
 		fieldList.forEach(index-> index.setJsonData(null));
 		System.out.println("fieldList::::"+convertListToJson(fieldList));
 		Map<String, Object>   rowMap = formsDao.getWorkFlowDataById(workFlowId);
 		fieldList.forEach(index->index.setValue((String)rowMap.get(index.getName())));
+		fieldList.forEach(index -> System.out.println(index.getName() + ":::::"+index.getValue()));
 		return fieldList;
 		
 	}

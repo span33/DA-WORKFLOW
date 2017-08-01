@@ -11,7 +11,7 @@
 			<option label="Swift" value="">Swift</option>
 			<option label="Ruby" value="">Ruby</option>
 		</field>
-		<field type="button" label="Button" subtype="button" class="btn-default btn" name="button-1499513514372" style="default"></field>
+		<!-- <field type="button" label="Button" subtype="button" class="btn-default btn" name="button-1499513514372" style="default"></field> -->
 		<field type="checkbox-group" label="Checkbox Group" name="checkbox-group-1499513515651">
 			<option label="Option 1" value="option-1" selected="true">Option 1</option>
 		</field>

@@ -2158,9 +2158,9 @@ Expr.pseudos["nth"] = Expr.pseudos["eq"];
 for ( i in { radio: true, checkbox: true, file: true, password: true, image: true } ) {
 	Expr.pseudos[ i ] = createInputPseudo( i );
 }
-for ( i in { submit: true, reset: true } ) {
+/*for ( i in { submit: true, reset: true } ) {
 	Expr.pseudos[ i ] = createButtonPseudo( i );
-}
+}*/
 
 // Easy API for creating new setFilters
 function setFilters() {}
