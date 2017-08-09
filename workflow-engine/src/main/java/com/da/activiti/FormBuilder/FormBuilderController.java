@@ -36,10 +36,10 @@ import com.da.activiti.FormBuilder.gen.models.Field;
 import com.da.activiti.FormBuilder.gen.models.FormTemplate;
 import com.da.activiti.document.DocumentService;
 import com.da.activiti.document.ProcessUserfomInfo;
+import com.da.activiti.exception.BusinessException;
 import com.da.activiti.model.FormTemplateInfo;
 import com.da.activiti.model.Response;
 import com.da.activiti.model.document.DocState;
-import com.da.activiti.model.document.DocType;
 import com.da.activiti.model.document.Document;
 import com.da.activiti.model.task.HistoricTask;
 import com.da.activiti.task.LocalTaskService;
@@ -87,6 +87,15 @@ public class FormBuilderController extends BaseController {
 		model.addAttribute("fields", formService.fetchFormFields(userProcessFormId));
 		return "FormBuilder/index";
 	}
+	
+	@RequestMapping(value = "/userFormList", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Response> getUserFormList(ModelMap model,
+			HttpServletRequest request) {
+		Response<List<Map<String, Object>>> res = new Response<List<Map<String, Object>>>(true, "Alert acknowledged");
+		res.setData(formService.fetchUserFormList());
+		return new ResponseEntity<Response>(res, HttpStatus.OK);
+		
+	}
 
 	@RequestMapping(value = "/saveDynamicFormData.htm", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<Response> saveDynamicFormData(ModelMap model,
@@ -113,12 +122,11 @@ public class FormBuilderController extends BaseController {
 	@RequestMapping(value = "/saveXmlFormMetaData", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<Response> post(@RequestBody FormTemplate formTemplate,
 			@RequestParam String processId, BindingResult result, final RedirectAttributes redirectAttributes,
-			HttpServletRequest request, ModelMap model) {
+			HttpServletRequest request, ModelMap model) throws BusinessException {
 		FormTemplateInfo formTemplateInfo = new FormTemplateInfo();
 		formTemplateInfo.setProcessId(processId);
 		formTemplateInfo.setFormTemplate(formTemplate);
 		formTemplateInfo.setFormTemplateStr(jaxbObjectToXML(formTemplate));
-		formTemplateInfo.setDocType(DocType.JOURNAL);
 		String msg = formService.saveFormData(formTemplateInfo);
 		Response<String> res = new Response<String>(true, msg);
 		res.setData(processId);
@@ -126,17 +134,16 @@ public class FormBuilderController extends BaseController {
 	}
 
 	@RequestMapping(value = "/saveJsonFormMetaData", method = RequestMethod.POST)
-	public @ResponseBody ResponseEntity<Response> postJson(@RequestBody List<Field> fields,
-			@RequestParam String processId, BindingResult result, final RedirectAttributes redirectAttributes,
-			HttpServletRequest request, ModelMap model) {
+	public @ResponseBody ResponseEntity<Response> postJson(@RequestBody List<Field> fields,@RequestParam String formName,
+			HttpServletRequest request, ModelMap model) throws BusinessException {
 		FormTemplateInfo formTemplateInfo = new FormTemplateInfo();
-		formTemplateInfo.setProcessId(processId);
 		formTemplateInfo.setFields(fields);
 		formTemplateInfo.setCreatedBy(currentUserName());
-		formTemplateInfo.setDocType(DocType.JOURNAL);
-		String msg = formService.saveFormData(formTemplateInfo);
+		formTemplateInfo.setUserformName(formName);
+		String formId = formService.saveFormData(formTemplateInfo);
+		String msg = "Userfom id : " + formId + " -- Form Created Successfully ";
 		Response<String> res = new Response<String>(true, msg);
-		res.setData(processId);
+		res.setData(formId);
 		return new ResponseEntity<Response>(res, HttpStatus.OK);
 	}
 
@@ -168,7 +175,7 @@ public class FormBuilderController extends BaseController {
 			int userProcessFormId) {
 		if (isSubmit.equalsIgnoreCase("on")) {
 			LOG.debug("Submitting to dynamic workflow workFlowId {}", workFlowId);
-			this.documentService.submitToWorkflow(DocType.JOURNAL, workFlowId, userProcessFormId);
+			this.documentService.submitToWorkflow(docType, workFlowId, userProcessFormId);
 		}
 		if (isSubmit.equalsIgnoreCase("on")) {
 			redirAttr.addFlashAttribute("msg", "Your Journal has been submitted to the workflow.</br>"
@@ -180,10 +187,10 @@ public class FormBuilderController extends BaseController {
 
 	@RequestMapping(value = "/document/{docType}/view.htm", method = RequestMethod.GET)
 	public String view(ModelMap model, @RequestParam(value = "id", required = true) String id,
-			@PathVariable(value = "docType") DocType docType, @RequestParam int processUserFormId,@RequestParam String workFlowId) {
+			@PathVariable(value = "docType") String docType, @RequestParam int processUserFormId,@RequestParam String workFlowId) {
 		LOG.debug("viewing doc {} processUserFormId {}", id, processUserFormId);
 		Assert.hasText(id);
-		Document doc = documentService.getDocument(docType, id);
+		Document doc = documentService.getDocument(id);
 		List<HistoricTask> hts = this.localTaskSrvc.getTaskHistory(id);
 		model.addAttribute("document", doc);
 		model.addAttribute("historicTasks", hts);

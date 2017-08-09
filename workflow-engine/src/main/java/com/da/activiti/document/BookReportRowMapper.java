@@ -1,15 +1,14 @@
 package com.da.activiti.document;
 
+import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.da.activiti.model.document.BookReport;
 import com.da.activiti.model.document.DocState;
-import com.da.activiti.model.document.DocType;
-
-import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 /**
  \* @author Santosh Pandey
@@ -39,7 +38,7 @@ public class BookReportRowMapper implements RowMapper<BookReport> {
         BookReport.setBookTitle(bookTitle);
         BookReport.setGroupId(groupId);
         BookReport.setDocState(DocState.valueOf(docState));
-        BookReport.setDocType(DocType.valueOf(docType));
+        BookReport.setDocType(docType);
         BookReport.setCreatedDate(createdDate);
         return BookReport;
 

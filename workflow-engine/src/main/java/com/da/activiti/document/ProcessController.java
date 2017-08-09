@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.activiti.bpmn.model.Process;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -24,13 +26,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.da.activiti.exception.BusinessException;
 import com.da.activiti.model.Response;
+import com.da.activiti.model.UserForm;
 import com.da.activiti.model.document.ProcessInfo;
 import com.da.activiti.model.document.TaskInfo;
+import com.da.activiti.user.UserService;
 import com.da.activiti.web.BaseController;
 import com.da.activiti.workflow.WorkflowBuilder;
 import com.da.activiti.workflow.WorkflowService;
-import org.activiti.bpmn.model.Process;
 
 @Controller
 @RequestMapping("/admin/process")
@@ -45,6 +49,9 @@ public class ProcessController extends BaseController {
 
 	@Autowired
 	WorkflowBuilder workflowBuilder;
+	
+	@Autowired
+	UserService userService;
 
 	@RequestMapping(value = "/buildForms.htm", method = RequestMethod.GET)
 	public String getDocuments(ModelMap model, HttpServletRequest request) {
@@ -82,13 +89,12 @@ public class ProcessController extends BaseController {
 
 	}
 	
-	@RequestMapping(value = "/deleteProcess", method = RequestMethod.POST)
-	public @ResponseBody ResponseEntity<Response> deleteProcess(@ModelAttribute ProcessInfo processInfo, BindingResult result,
-			final RedirectAttributes redirectAttributes, HttpServletRequest request, ModelMap model) {
-		processService.deleteProcess(processInfo);
-		String msg = "Process id : " + processInfo.getProcessId() + " -- Process Created Successfully ";
+	@RequestMapping(value = "/deleteProcess/{processId}/", method = RequestMethod.POST)
+	public @ResponseBody ResponseEntity<Response> deleteProcess( ModelMap model,@PathVariable(value = "processId") int processId ) {
+		processService.deleteProcess(processId);
+		String msg = "Process id : " + processId + " -- Process Deleted Successfully ";
 		Response<String> res = new Response<String>(true, msg);
-		res.setData(Integer.toString(processInfo.getProcessId()));
+		res.setData(Integer.toString(processId));
 		return new ResponseEntity<Response>(res, HttpStatus.OK);
 
 	}
@@ -96,7 +102,15 @@ public class ProcessController extends BaseController {
 	@RequestMapping(value = "/saveProcess", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<Response> post(@ModelAttribute ProcessInfo processInfo, BindingResult result,
 			final RedirectAttributes redirectAttributes, HttpServletRequest request, ModelMap model) {
-		String processId = processService.createProcess(processInfo);
+		String processId;
+		try {
+			processId = processService.createProcess(processInfo);
+		} catch (BusinessException e) {
+			String msg = e.getMessage();
+			Response<String> res = new Response<String>(true, msg);
+			res.setData(msg);
+			return new ResponseEntity<Response>(res, HttpStatus.OK);
+		}
 		String msg = "Process id : " + processId + " -- Process Created Successfully ";
 		Response<String> res = new Response<String>(true, msg);
 		res.setData(processId);
@@ -116,11 +130,28 @@ public class ProcessController extends BaseController {
 	}
 	
 	@RequestMapping(value = "/departmentList", method = RequestMethod.GET)
-	public @ResponseBody ResponseEntity<Response> createTask( BindingResult result,
-			final RedirectAttributes redirectAttributes, HttpServletRequest request, ModelMap model) {
+	public @ResponseBody ResponseEntity<Response> departmentList( ModelMap model) {
 		List<Map<String, Object>> departMentList = processService.departMentList();
 		Response<List<Map<String, Object>>> res = new Response<List<Map<String, Object>>>(true, "Alert acknowledged");
 		res.setData(departMentList);
+		return new ResponseEntity<Response>(res, HttpStatus.OK);
+
+	}
+	
+	@RequestMapping(value = "/userListByDepartments", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Response> userListByDepartments( ModelMap model,@RequestParam String departments) {
+		List<Map<String, Object>> departMentList = userService.fetchUserByDepartments(departments);
+		Response<List<Map<String, Object>>> res = new Response<List<Map<String, Object>>>(true, "Alert acknowledged");
+		res.setData(departMentList);
+		return new ResponseEntity<Response>(res, HttpStatus.OK);
+
+	}
+	
+	@RequestMapping(value = "/approverUserList", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Response> approverUserList( ModelMap model) {
+		List<UserForm> userList = userService.getUserListByRole("Approver");
+		Response<List<UserForm>> res = new Response<List<UserForm>>(true, "Alert acknowledged");
+		res.setData(userList);
 		return new ResponseEntity<Response>(res, HttpStatus.OK);
 
 	}
@@ -128,6 +159,7 @@ public class ProcessController extends BaseController {
 	@Override
 	@ModelAttribute
 	public void addModelInfo(ModelMap model, HttpServletRequest request) {
+		model.addAttribute("approverUserList", userService.getUserListByRole("Approver"));
 		super.addModelInfo(model, request);
 		/*
 		 * List<ProcessInfo> processList = processService.listAllProcesses();

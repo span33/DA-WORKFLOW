@@ -1,9 +1,15 @@
 package com.da.activiti;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
+
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.identity.Group;
 import org.activiti.engine.identity.User;
-
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -12,10 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-
-import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration({"classpath:spring/testAppContext.xml"})
@@ -30,7 +32,7 @@ public class IdentityServiceTest {
         assertNotNull(this.identityService);
     }
 
-    @Test
+    @Ignore
     @Transactional
     public void testUsers() {
         List<User> users = identityService.createUserQuery().list();
@@ -64,7 +66,7 @@ public class IdentityServiceTest {
 
     }
 
-    @Test
+    @Ignore
     public void testGroups() {
         List<User> users2 = identityService.createUserQuery().list();
         for (User user2 : users2) {
@@ -75,7 +77,17 @@ public class IdentityServiceTest {
             }
         }
     }
+    
+    @Test
+    public void testUser() {
+    	 String baseQuerySql = "SELECT * FROM act_id_user where department_id ='CT'";
+    	List<User> data = identityService.createNativeUserQuery().sql(baseQuerySql)
+         .list();
+    	System.out.println(data);
+    }
 
 }
+
+
 
     

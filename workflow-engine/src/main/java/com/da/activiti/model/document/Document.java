@@ -30,7 +30,7 @@ public abstract class Document implements Serializable, Comparable<Document> {
     @NotNull
     protected DocState docState = DocState.DRAFT;
     @NotNull
-    protected DocType docType;
+    protected String docType;
     protected String createdBy;
     protected String updatedBy;
     protected Timestamp dtCreated;
@@ -119,11 +119,11 @@ public abstract class Document implements Serializable, Comparable<Document> {
         this.docState = docState;
     }
 
-    public DocType getDocType() {
+    public String getDocType() {
         return docType;
     }
 
-    public void setDocType(DocType docType) {
+    public void setDocType(String docType) {
         this.docType = docType;
     }
 

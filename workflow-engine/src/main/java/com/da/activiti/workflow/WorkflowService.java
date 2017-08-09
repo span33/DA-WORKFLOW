@@ -24,6 +24,7 @@ import org.activiti.engine.task.Task;
 import org.activiti.image.impl.DefaultProcessDiagramGenerator;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,12 +32,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import com.da.activiti.model.document.DocType;
 import com.da.activiti.model.document.ProcessInfo;
 import com.google.common.collect.Lists;
 
 /**
- * Various methods to find process definitions by group and {@link com.da.activiti.model.document.DocType}.
+ * Various methods to find process definitions by group and {@link com.da.activiti.model.document.DocType1}.
  * Be aware that all BPMN docs must have a namepsace equal to {@code da.com} or whatever is set in the
  * {@code WFConstants} class.
  *
@@ -99,8 +99,8 @@ public class WorkflowService {
      * @return true if the specific {@code DocType} and Group workflow exists, false if not
      * e.g. process Id of deployed definition would equal {@code BOOK_REPORT_engineering}
      */
-    public boolean groupWorkflowExists(DocType docType, String group) {
-        LOG.debug("Checking for workflow exists of doctype={} and group={}", docType.name(), group);
+    public boolean groupWorkflowExists(String docType, String group) {
+        LOG.debug("Checking for workflow exists of doctype={} and group={}", docType, group);
         String processIdStr = WFConstants.createProcId(docType, group);
         return (this.repoSrvc.createProcessDefinitionQuery().processDefinitionCategory(WFConstants.NAMESPACE_CATEGORY).
                 processDefinitionKey(processIdStr).latestVersion().singleResult()) != null;
@@ -112,7 +112,7 @@ public class WorkflowService {
      */
     public List<String> findExistingBaseDocTypes() {
         List<String> docTypes = Lists.newArrayList();
-        String likeQuery = String.format("%s%s%s", "%", WFConstants.PROCESS_GROUP_DIVIDER, WFConstants.WORKFLOW_GROUP_NONE);
+        String likeQuery = String.format("%s%s", "%", WFConstants.PROCESS_GROUP_DIVIDER);
         LOG.debug("using likeQuery for baseTypes = {}", likeQuery);
                 List < ProcessDefinition > processDefinitions = this.repoSrvc.createProcessDefinitionQuery().
                         processDefinitionCategory(WFConstants.NAMESPACE_CATEGORY).
@@ -147,9 +147,12 @@ public class WorkflowService {
      * with the {@code processId=DOC_TYPE_NONE} and the namespace set to default namespace
      * @see {@link com.da.activiti.workflow.WFConstants#NAMESPACE_CATEGORY}
      */
-    public boolean baseDocTypeWorkflowExists(DocType docType) {
-        LOG.debug("Checking for base workflow exists of doctype={}.", docType.name());
-        String processIdStr = WFConstants.createProcId(docType, WFConstants.WORKFLOW_GROUP_NONE);
+    public boolean baseDocTypeWorkflowExists(String docType ,String groupName) {
+        LOG.debug("Checking for base workflow exists of doctype={}.", docType);
+        if(StringUtils.isBlank(groupName)) {
+        	groupName = WFConstants.WORKFLOW_GROUP_NONE ;
+        }
+        String processIdStr = WFConstants.createProcId(docType, groupName);
         LOG.info("search for base doc workflow using processId={}", processIdStr);
         return this.repoSrvc.createProcessDefinitionQuery().processDefinitionCategory(WFConstants.NAMESPACE_CATEGORY).
                 processDefinitionKey(processIdStr).latestVersion().singleResult() != null;
@@ -159,8 +162,8 @@ public class WorkflowService {
      * @param docType
      * @return latest process definition for the given doc type and group or null if none exits.
      */
-    public ProcessDefinition findProcDefByDocTypeAndGroup(DocType docType, String group) {
-        LOG.debug("Checking for workflow exists of doctype={} and group={}", docType.name(), group);
+    public ProcessDefinition findProcDefByDocTypeAndGroup(String docType, String group) {
+        LOG.debug("Checking for workflow exists of doctype={} and group={}", docType, group);
         String processIdStr = WFConstants.createProcId(docType, group);
         ProcessDefinition pd = this.repoSrvc.createProcessDefinitionQuery().processDefinitionCategory(WFConstants.NAMESPACE_CATEGORY).
                 processDefinitionKey(processIdStr).latestVersion().singleResult();
@@ -172,9 +175,9 @@ public class WorkflowService {
      * @return the base workflow for a given document type (i.e. the process id of the process is {@code DocType_NONE})
      * or null if no base document exists.
      */
-    public ProcessDefinition findBaseProcDef(DocType docType) {
-        LOG.debug("Checking for base workflow exists of doctype={}", docType.name());
-        String processIdStr = WFConstants.createProcId(docType, WFConstants.WORKFLOW_GROUP_NONE);
+    public ProcessDefinition findBaseProcDef(String docType,String groupName) {
+        LOG.debug("Checking for base workflow exists of doctype={}", docType);
+        String processIdStr = WFConstants.createProcId(docType, groupName);
         ProcessDefinition pd = this.repoSrvc.createProcessDefinitionQuery().processDefinitionCategory(WFConstants.NAMESPACE_CATEGORY).
                 processDefinitionKey(processIdStr).latestVersion().singleResult();
         return pd;
@@ -188,11 +191,11 @@ public class WorkflowService {
      * @param docType
      * @return latest process definition for the given group and/or docType or null if neither (i.e. no group and also no docType) exits.
      */
-    public ProcessDefinition findProcDef(DocType docType, String group) {
+    public ProcessDefinition findProcDef(String docType, String group ) {
         ProcessDefinition pd = this.findProcDefByDocTypeAndGroup(docType, group);
         if (pd == null) {
-            LOG.debug("no group workflow exists of doctype={} and group={} -> checking for base wf.", docType.name(), group);
-            pd = this.findBaseProcDef(docType);
+            LOG.debug("no group workflow exists of doctype={} and group={} -> checking for base wf.", docType, group);
+            pd = this.findBaseProcDef(docType,group);
         }
         return pd;
     }
@@ -252,7 +255,7 @@ public class WorkflowService {
      */
     /*public ProcessDefinition findDefinitionByDocType(DocType docType) {
         LOG.debug("searching for process definition for docType={}", docType);
-        ProcessDefinition pd = repoSrvc.createProcessDefinitionQuery().processDefinitionCategory(docType.name()).singleResult();
+        ProcessDefinition pd = repoSrvc.createProcessDefinitionQuery().processDefinitionCategory(docType).singleResult();
         return pd;
 
     }

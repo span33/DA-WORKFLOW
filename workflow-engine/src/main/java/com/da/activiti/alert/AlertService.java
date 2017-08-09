@@ -1,5 +1,6 @@
 package com.da.activiti.alert;
 
+import com.da.activiti.exception.BusinessException;
 import com.da.activiti.model.Alert;
 import com.da.activiti.user.InvalidAccessException;
 import com.da.activiti.user.UserService;
@@ -15,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
@@ -64,9 +66,10 @@ public class AlertService {
      * @param priority
      * @param message
      * @return id of new alert
+     * @throws BusinessException 
      */
     @Transactional
-    public String sendSystemAlert(String to, int priority, String message) {
+    public String sendSystemAlert(String to, int priority, String message) throws SQLException, BusinessException {
         LOG.debug("sending system alert to: {} at priority {}", to, priority);
         Alert alert = new Alert();
         alert.setCreatedBy(UserService.SYSTEM_USER);
@@ -87,9 +90,10 @@ public class AlertService {
      * @param priority
      * @param message
      * @return id of new alert
+     * @throws BusinessException 
      */
     @Transactional
-    public String sendAlert(String to, int priority, String message) {
+    public String sendAlert(String to, int priority, String message) throws BusinessException  {
         LOG.debug("sending alert to: {} at priority {}", to, priority);
         Alert alert = new Alert();
         UserDetails from = this.userService.currentUser();

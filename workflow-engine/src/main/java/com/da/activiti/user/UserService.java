@@ -20,6 +20,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.da.activiti.FormBuilder.UserDao;
 import com.da.activiti.model.UserForm;
 import com.da.activiti.workflow.WFConstants;
 import com.da.activiti.workflow.WorkflowService;
@@ -39,6 +40,7 @@ public class UserService {
     @Autowired protected RuntimeService runtimeService;
     @Autowired protected TaskService taskService;
     @Autowired protected WorkflowService workflowService;
+    @Autowired protected UserDao userDao;
 
     /**
      * @return a {@link org.springframework.security.core.userdetails.UserDetails} using Spring Security.
@@ -51,7 +53,7 @@ public class UserService {
 
     @Transactional
     public void submitForApproval(UserForm userForm) {
-        User user = identityService.createUserQuery().userId(userForm.getUserName()).singleResult();
+        User user = identityService.createUserQuery().userId(userForm.getUserName()).memberOfGroup(""). singleResult();
         if (user != null) {
             throw new IllegalArgumentException("User with name: " + userForm.getUserName() + " already exists");
         }
@@ -171,5 +173,19 @@ public class UserService {
 				Integer.parseInt(identityService.getUserInfo(user.getId(), "LIMIT_TO_APPROVE")
 						) >= amount)).collect(Collectors.toList()).forEach(user -> { userForms.add(UserForm.fromUser(user));}) ; 
         return userForms;
+    }
+    
+    public List<UserForm> getUserListByRole(String role){
+    	List<User> users = identityService.createUserQuery().memberOfGroup(role).list();
+    	List<UserForm> userForms = Lists.newArrayList();
+    	users.forEach(user -> { userForms.add(UserForm.fromUser(user));} );
+    	return userForms;
+    	
+    }
+    
+    
+    
+    public List<Map<String, Object>> fetchUserByDepartments(String departments) {
+    	return userDao.getUserByDepartMentId(departments);
     }
 }

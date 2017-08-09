@@ -36,7 +36,6 @@ import com.da.activiti.document.DocumentService;
 import com.da.activiti.model.JournalDetail;
 import com.da.activiti.model.Response;
 import com.da.activiti.model.UserForm;
-import com.da.activiti.model.document.DocType;
 import com.da.activiti.model.document.Document;
 import com.da.activiti.model.task.HistoricTask;
 import com.da.activiti.task.LocalTaskService;
@@ -97,7 +96,7 @@ public class JouranalController  extends DocumentController {
 
 	}
     
-    private void checkSubmit(boolean isSubmit, String docId, RedirectAttributes redirAttr,DocType docType) {
+    private void checkSubmit(boolean isSubmit, String docId, RedirectAttributes redirAttr,String docType) {
         if (isSubmit) {
             LOG.debug("Submitting to dynamic workflow docId {}", docId);
             this.documentService.submitToWorkflow(docType,docId);
@@ -117,7 +116,7 @@ public class JouranalController  extends DocumentController {
                        @RequestParam(value = "id", required = true) String id){
         LOG.debug("viewing doc {} ", id);
         Assert.hasText(id);
-        Document doc = documentService.getDocument(DocType.JOURNAL,id);
+        Document doc = documentService.getDocument(id);
         model.addAttribute("document", doc);
         List<HistoricTask> hts = this.localTaskSrvc.getTaskHistory(id);
         model.addAttribute("historicTasks", hts);

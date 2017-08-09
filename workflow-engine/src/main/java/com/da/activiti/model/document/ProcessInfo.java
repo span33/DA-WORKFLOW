@@ -30,10 +30,30 @@ public class ProcessInfo extends Document {
 	private String processHasSibling;
 
 	private String createdBy;
+	
+	private String departmentId;
 
 	private List<TaskInfo> taskList;
 	
 	private int processTaskMappingId;
+	
+	private List<String> departmentList ;
+	
+	public String getDepartmentId() {
+		return departmentId;
+	}
+
+	public void setDepartmentId(String departmentId) {
+		this.departmentId = departmentId;
+	}
+
+	public List<String> getDepartmentList() {
+		return departmentList;
+	}
+
+	public void setDepartmentList(List<String> departmentList) {
+		this.departmentList = departmentList;
+	}
 
 	public List<TaskInfo> getTaskList() {
 		return taskList;
@@ -45,13 +65,15 @@ public class ProcessInfo extends Document {
 
 	
 
+
 	@Override
 	public String toString() {
 		return "ProcessInfo [processId=" + processId + ", processName=" + processName + ", processDescription="
 				+ processDescription + ", processOwner=" + processOwner + ", processType=" + processType
 				+ ", processTemplateId=" + processTemplateId + ", subProcessList=" + subProcessList + ", processLevel="
 				+ processLevel + ", parent=" + parent + ", processHasSibling=" + processHasSibling + ", createdBy="
-				+ createdBy + ", taskList=" + taskList + ", processTaskMappingId=" + processTaskMappingId + "]";
+				+ createdBy + ", departmentId=" + departmentId + ", taskList=" + taskList + ", processTaskMappingId="
+				+ processTaskMappingId + ", departmentList=" + departmentList + "]";
 	}
 
 	public String getCreatedBy() {

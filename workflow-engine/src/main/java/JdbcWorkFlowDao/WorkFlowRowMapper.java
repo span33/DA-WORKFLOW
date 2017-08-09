@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.RowMapper;
 
 import com.da.activiti.model.WorkFlowBean;
 import com.da.activiti.model.document.DocState;
-import com.da.activiti.model.document.DocType;
 
 public class WorkFlowRowMapper implements RowMapper<WorkFlowBean> {
 
@@ -22,7 +21,7 @@ public class WorkFlowRowMapper implements RowMapper<WorkFlowBean> {
 	        String createdBy = StringUtils.trim(rs.getString("created_by"));
 	        String group = StringUtils.trim(rs.getString("GROUP_ID"));
 	        workFlowBean.setId(Integer.toString(id));
-	        workFlowBean.setDocType(DocType.getDocTypeByName(docType));
+	        workFlowBean.setDocType(docType);
 	        workFlowBean.setDocState(DocState.getDocStateByName(docState));
 	        workFlowBean.setCreatedBy(createdBy);
 	        workFlowBean.setUserProcessFormId(processUerformId);

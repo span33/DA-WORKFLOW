@@ -80,7 +80,122 @@ public abstract class BaseDao {
 
 		return rows;
 	}
+	
+	
+	public List<Map<String, Object>> executeDynamicNativeQueryWithInParameter(String sqlQuery) {
+		List<Map<String, Object>> rows = new ArrayList<Map<String, Object>>();
+		ResultSet rs = null;
+		Connection con = null;
+		try {
+			con = ds.getConnection();
+			rs = con.prepareStatement(sqlQuery).executeQuery();
+			// ResultSetMetaData resultSetMetaData1 = rs.getMetaData();
+			ResultSetMetaData resultSetMetaData = rs.getMetaData();
+			// String name = resultSetMetaData.getColumnLabel(0);
+			int colCount = rs.getMetaData().getColumnCount();
+			Map<String, Object> rowUi = new LinkedHashMap<>();
 
+			for (int index = 1; index <= colCount; index++) {
+				rowUi.put("key" + index, resultSetMetaData.getColumnLabel(index));
+			}
+			//rows.add(rowUi);
+
+			while (rs.next()) {
+				Map<String, Object> row = new LinkedHashMap<>();
+				for (int index = 1; index <= colCount; index++) {
+					row.put(resultSetMetaData.getColumnLabel(index), rs.getObject(index));
+				}
+
+				rows.add(row);
+			}
+			rs.close();
+			con.close();
+			rs = null;
+			con = null;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+
+		return rows;
+	}
+	
+	public List<Map<String, Object>> executeDynamicNativeQueryWithInParameter(String sqlQuery,
+			List<String> parameters) {
+			List<Map<String, Object>> rows = new ArrayList<Map<String, Object>>();
+			ResultSet rs = null;
+			Connection con = null;
+			PreparedStatement pstmt = null;
+			try {
+				con = ds.getConnection();
+				pstmt = con.prepareStatement(sqlQuery);
+				if (!parameters.isEmpty()) {
+					int counter = 0;
+					for (String entry : parameters)
+					{
+						counter++;
+						pstmt.setString(counter, entry);
+			
+					}
+				}
+				rs = pstmt.executeQuery() ;
+				// ResultSetMetaData resultSetMetaData1 = rs.getMetaData();
+				ResultSetMetaData resultSetMetaData = rs.getMetaData();
+				// String name = resultSetMetaData.getColumnLabel(0);
+				int colCount = rs.getMetaData().getColumnCount();
+				Map<String, Object> rowUi = new LinkedHashMap<>();
+
+				for (int index = 1; index <= colCount; index++) {
+					rowUi.put("key" + index, resultSetMetaData.getColumnLabel(index));
+				}
+				//rows.add(rowUi);
+
+				while (rs.next()) {
+					Map<String, Object> row = new LinkedHashMap<>();
+					for (int index = 1; index <= colCount; index++) {
+						row.put(resultSetMetaData.getColumnLabel(index), rs.getObject(index));
+					}
+
+					rows.add(row);
+				}
+				rs.close();
+				pstmt.close();
+				con.close();
+				rs = null;
+				pstmt =null;
+				con = null;
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+				try {
+					if (rs != null)
+						rs.close();
+					if (pstmt != null)
+						pstmt.close();
+					if (con != null)
+						con.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
+
+			return rows;
+		}
+		
 	public List<Map<String, Object>> executeDynamicNativeQueryWithParameter(String sqlQuery,
 			Map<String, Object> parameters) {
 		List<Map<String, Object>> rows = new ArrayList<Map<String, Object>>();

@@ -1,29 +1,5 @@
 package com.da.activiti.workflow;
 
-import org.activiti.bpmn.model.*;
-
-import com.da.activiti.model.document.DocType;
-import com.da.activiti.model.workflow.DynamicUserTask;
-import com.da.activiti.model.workflow.DynamicUserTaskType;
-import com.google.common.collect.Lists;
-
-import org.activiti.bpmn.BpmnAutoLayout;
-import org.activiti.bpmn.model.*;
-import org.activiti.bpmn.model.Process;
-import org.activiti.engine.RepositoryService;
-import org.activiti.engine.repository.ProcessDefinition;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-
 /**
  * @author da
  */
@@ -110,8 +86,8 @@ public class BuilderDeprecated {
 //        BpmnModel model = new BpmnModel();
 //        model.setTargetNamespace(WFConstants.NAMESPACE_CATEGORY);
 //        org.activiti.bpmn.model.Process process = new Process();
-//        process.setId(String.format("%s_%s", docType.name(), group));
-//        process.setName(String.format("Generated workflow for docType=%s and Group=%s", docType.name(), group));
+//        process.setId(String.format("%s_%s", docType, group));
+//        process.setName(String.format("Generated workflow for docType=%s and Group=%s", docType, group));
 //
 //        model.addProcess(process);
 //

@@ -193,37 +193,26 @@ jQuery(function($) {
         for(var pair of formData.entries()) {
            console.log(pair[0]+ ': '+ pair[1]);
         }*/
-        alert(alert(SERVLET_CONTEXT));
+       formName = document.getElementById("userForm").value;
         $.ajax({
-	        url: SERVLET_CONTEXT + '/forms/saveJsonFormMetaData?processId=1',
+	        url: SERVLET_CONTEXT + '/forms/saveJsonFormMetaData?formName='+formName,
 	        type: "POST",
 	        dataType: 'json',
 	        data: formBuilder.actions.getData('json'),
 	        contentType: 'application/json',
 	        success: function (resposeResult) {
 	            if (!resposeResult.success) {
-	                alert("There was an error while saving process:::"+resposeResult.message);
+	            	$('#dialog').css('display', 'block');
+	                $("#dialog").text(resposeResult.message);
 	            }
 	            else {
 	            	$('#dialog').css('display', 'block');
-	                $("#dialog").text('Entry has been added successfully');
-	                $("#dialog").dialog({
-	                    title: 'Success',
-	                    modal: true,
-	                    buttons: {
-	                        "Ok": function() {
-	                        	//grid.trigger('reloadGrid');
-	                        	
-	                            $(this).dialog("close");
-	                            $('#dialog').css('display', 'none');
-	                        }
-	                    }
-	                });
-	            	console.log(allRowsInGrid);
+	                $("#dialog").text(resposeResult.message);	
 	            }
 	        },
 	        error: function (error) {
-	            alert("There was system error");
+	            $('#dialog').css('display', 'block');
+                $("#dialog").text(error.responseText);
 	        }
 	    });
       },

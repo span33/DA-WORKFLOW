@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +12,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.da.activiti.document.dao.ProcessDao;
+import com.da.activiti.exception.BusinessException;
 import com.da.activiti.model.document.ProcessInfo;
 import com.da.activiti.model.document.TaskInfo;
+import com.da.util.ServiceHelper;
 import com.google.common.collect.Lists;
 
 /**
@@ -141,7 +144,10 @@ public class ProcessService  {
    
     
     @Transactional
-    public String createProcess(ProcessInfo processInfo){
+    public String createProcess(ProcessInfo processInfo) throws BusinessException {
+    	if(!StringUtils.isBlank(processInfo.getDepartmentId())) {
+    		processInfo.setDepartmentList(ServiceHelper.convertCommaSepratedStringToList(processInfo.getDepartmentId()));
+    	}
     	return processDao.create(processInfo);
     }
     

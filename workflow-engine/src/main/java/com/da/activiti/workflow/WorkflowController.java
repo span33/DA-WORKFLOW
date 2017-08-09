@@ -16,7 +16,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -25,11 +24,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.da.activiti.document.ProcessService;
 import com.da.activiti.model.Response;
-import com.da.activiti.model.document.DocType;
 import com.da.activiti.model.workflow.DynamicUserTask;
 import com.da.activiti.model.workflow.DynamicUserTaskType;
 import com.da.activiti.web.BaseController;
@@ -95,7 +92,7 @@ public class WorkflowController extends BaseController {
     public ResponseEntity<Response<String>> userTasksByGroup(
             @RequestBody List<DynamicUserTask> dynamicUserTasks,
             @PathVariable(value = "group") String group,
-            @PathVariable(value = "docType") DocType docType)  {
+            @PathVariable(value = "docType") String docType)  {
         LOG.debug("updating tasks for docType: {} and group: {} --> {}", docType, group, dynamicUserTasks.toString());
         ProcessDefinition procDefinition = this.workflowBldr.updateDynamicTasks(docType, group, dynamicUserTasks);
 
@@ -108,19 +105,19 @@ public class WorkflowController extends BaseController {
     @RequestMapping(value = "/dynamicTasks/{docType}/{group}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Response<List<DynamicUserTask>>> dynamicTasksByDocAndGroup
             (@PathVariable(value = "group") String group,
-             @PathVariable(value = "docType") DocType docType) {
+             @PathVariable(value = "docType") String docType) {
 
         LOG.debug("finding dynamic tasks for docType = {} and group = {}", docType, group);
 
         // Do we have a DocType at least?
-        if (!workflowSrvc.baseDocTypeWorkflowExists(docType)) {
-            String errMsg = String.format("There is no defined work group for docType: %s", docType.name());
+        if (!workflowSrvc.baseDocTypeWorkflowExists(docType,group)) {
+            String errMsg = String.format("There is no defined work group for docType: %s", docType);
             Response res = new Response(false, errMsg);
             return new ResponseEntity<Response<List<DynamicUserTask>>>(res, HttpStatus.OK);
         }
 
         //Try to find the specific DocType/Group workflow
-        ProcessDefinition procDef = this.workflowSrvc.findBaseProcDef(docType);
+        ProcessDefinition procDef = this.workflowSrvc.findBaseProcDef(docType,group);
         if (procDef == null) {
             //we need to build a new group workflow based on the specified docType
             procDef = this.workflowBldr.createGroupWorkflow(docType, group);

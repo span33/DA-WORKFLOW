@@ -14,6 +14,9 @@ public interface FormsDao extends IBaseDao<FormTemplateInfo> {
 
 	List<Field> getFormFields(int processUserFormId);
 	
-	public Map<String, Object> getWorkFlowDataById(String workFlowId);
+    Map<String, Object> getWorkFlowDataById(String workFlowId);
+    
+    List<Map<String, Object>> getUserFormList();
+	
 	
 }

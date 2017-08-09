@@ -25,7 +25,7 @@ public class BookReport extends Document {
 
     public BookReport() {
         super();
-        this.docType = DocType.BOOK_REPORT;
+/*        this.docType = DocType1.BOOK_REPORT;*/
     }
 
     public String getBookAuthor() {

@@ -9,8 +9,6 @@ import org.springframework.jdbc.core.RowMapper;
 
 import com.da.activiti.model.JournalDetail;
 import com.da.activiti.model.document.DocState;
-import com.da.activiti.model.document.DocType;
-import com.da.activiti.model.document.Invoice;
 
 /**
  \* @author Santosh Pandey
@@ -43,7 +41,7 @@ public class JournalRowMapper implements RowMapper<JournalDetail> {
         journalDetail.setAuthor(author);
         journalDetail.setTitle(title);
         journalDetail.setDocState(DocState.valueOf(docState));
-        journalDetail.setDocType(DocType.valueOf(docType));
+        journalDetail.setDocType(docType);
         journalDetail.setPostingDate(postingDate);
         journalDetail.setPeriod(period);
         journalDetail.setReferance(referances);

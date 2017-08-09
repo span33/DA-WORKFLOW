@@ -1,18 +1,26 @@
 package com.da.activiti.workflow;
 
+import static org.junit.Assert.assertNotNull;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.List;
+
 import org.activiti.bpmn.BpmnAutoLayout;
-import org.activiti.bpmn.model.*;
+import org.activiti.bpmn.model.Artifact;
+import org.activiti.bpmn.model.BpmnModel;
+import org.activiti.bpmn.model.FlowElement;
+import org.activiti.bpmn.model.SubProcess;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
-import org.activiti.image.impl.DefaultProcessDiagramGenerator;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -25,16 +33,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.da.activiti.model.document.DocType;
-import com.da.activiti.workflow.WFConstants;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration({"classpath:spring/testAppContext.xml"})
@@ -52,7 +50,7 @@ public class WorkflowParserTest {
 
     @Test
     public void testGetTasksFromProcDef() throws Exception {
-        String key = WFConstants.createProcId(DocType.BOOK_REPORT, "engineering");
+        String key = WFConstants.createProcId(DocType.BOOK_REPORT.name(), "engineering");
         LOG.debug("Using key: {}", key);
         ProcessDefinition def = this.repoSrvc.createProcessDefinitionQuery().
                 processDefinitionCategory(WFConstants.NAMESPACE_CATEGORY).processDefinitionKey(key).latestVersion().singleResult();
@@ -82,7 +80,7 @@ public class WorkflowParserTest {
 
     @Test
     public void copyDocType() throws IOException {
-        String key = WFConstants.createProcId(DocType.BOOK_REPORT, "engineering");
+        String key = WFConstants.createProcId(DocType.BOOK_REPORT.name(), "engineering");
         LOG.debug("Using key: {}", key);
         ProcessDefinition def = this.repoSrvc.createProcessDefinitionQuery().
                 processDefinitionCategory(WFConstants.NAMESPACE_CATEGORY).processDefinitionKey(key).latestVersion().singleResult();
@@ -95,12 +93,12 @@ public class WorkflowParserTest {
 
         BpmnModel clone = new BpmnModel();
         clone.setTargetNamespace(WFConstants.NAMESPACE_CATEGORY);
-        proc.setId(WFConstants.createProcId(DocType.BOOK_REPORT, "blah"));
+        proc.setId(WFConstants.createProcId(DocType.BOOK_REPORT.name(), "blah"));
         proc.setName(DocType.BOOK_REPORT.name() + " for group: blah");
         clone.addProcess(proc);
 
         new BpmnAutoLayout(clone).execute();
-        String procId = WFConstants.createProcId(DocType.BOOK_REPORT, "blah");
+        String procId = WFConstants.createProcId(DocType.BOOK_REPORT.name(), "blah");
 
 
         String deployId = this.repoSrvc.createDeployment()

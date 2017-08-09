@@ -35,7 +35,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import com.da.activiti.model.document.DocType;
 import com.da.activiti.model.document.ProcessInfo;
 import com.da.activiti.model.document.TaskInfo;
 import com.da.activiti.model.workflow.DynamicUserTask;
@@ -63,18 +62,18 @@ public class WorkflowBuilder {
 		BpmnModel model = new BpmnModel();
 		Process process = new Process();
 		model.addProcess(process);
-		model.setTargetNamespace("da.com");
+		model.setTargetNamespace(WFConstants.NAMESPACE_CATEGORY);
 		// String deploymentId = processName+"___NONE";
 		String deploymentId = WFConstants.createProcId(processinfo.getDocType(), processinfo.getGroupId());
-		//String deploymentId = processName + "___NONE";
+		// String deploymentId = processName + "___NONE";
 		process.setId(deploymentId);
-		
+
 		StartEvent startEvent = workflowService.createStartEvent();
 		process.addFlowElement(startEvent);
 		SubProcess prevsub = null;
 		SubProcess nextsub = null;
-		
-		//ParallelGateway parallelGateway = new ParallelGateway();
+
+		// ParallelGateway parallelGateway = new ParallelGateway();
 		for (ProcessInfo subprocess : listOFSubprocess) {
 
 			ErrorEventDefinition errorDef = new ErrorEventDefinition();
@@ -86,7 +85,7 @@ public class WorkflowBuilder {
 			}
 
 			if (prevsub == null) {
-				prevsub = createDynamicSubProcess(dynamicUserTasks, errorDef,subprocess.getProcessName());
+				prevsub = createDynamicSubProcess(dynamicUserTasks, errorDef, subprocess.getProcessName());
 				process.addFlowElement(prevsub);
 				process.addFlowElement(createSequenceFlow(startEvent.getId(), prevsub.getId()));
 				process.addFlowElement(WorkflowBuilder.createSequenceFlow(startEvent.getId(), prevsub.getId()));
@@ -101,14 +100,14 @@ public class WorkflowBuilder {
 				//
 				nextsub = prevsub;
 			} else {
-				nextsub =createDynamicSubProcess(dynamicUserTasks, errorDef,subprocess.getProcessName());
+				nextsub = createDynamicSubProcess(dynamicUserTasks, errorDef, subprocess.getProcessName().replaceAll(" ", ""));
 				process.addFlowElement(nextsub);
 				process.addFlowElement(createSequenceFlow(prevsub.getId(), nextsub.getId()));
 				process.addFlowElement(WorkflowBuilder.createSequenceFlow(prevsub.getId(), nextsub.getId()));
 			}
 
 		}
-		
+
 		process.addFlowElement(workflowService.createEndEvent());
 		process.addFlowElement(WorkflowBuilder.createSequenceFlow(nextsub.getId(), "end"));
 		// 2. Generate graphical information
@@ -118,15 +117,18 @@ public class WorkflowBuilder {
 				.addBpmnModel(deploymentId + "dynamic-model.bpmn", model).name("Dynamic process deployment").deploy();
 		ProcessDefinition processDefinition = this.repoSrvc.createProcessDefinitionQuery()
 				.processDefinitionKey(deploymentId).latestVersion().singleResult();
-		/*ProcessInstance processInstance = workflowService.runtimeService.startProcessInstanceByKey(deploymentId);
-		// 5. Check if task is available
-		List<Task> tasks = workflowService.taskService.createTaskQuery().processInstanceId(processInstance.getId())
-				.list();
-		// 6. Save process diagram to a file
-		InputStream processDiagram = repoSrvc.getProcessDiagram(processInstance.getProcessDefinitionId());
-		FileUtils.copyInputStreamToFile(processDiagram, new File("target/diagram.png"));
-		// 7. Save resulting BPMN xml to a file
-*/		InputStream processBpmn = repoSrvc.getResourceAsStream(deployment.getId(), deploymentId + "dynamic-model.bpmn");
+		/*
+		 * ProcessInstance processInstance =
+		 * workflowService.runtimeService.startProcessInstanceByKey(deploymentId
+		 * ); // 5. Check if task is available List<Task> tasks =
+		 * workflowService.taskService.createTaskQuery().processInstanceId(
+		 * processInstance.getId()) .list(); // 6. Save process diagram to a
+		 * file InputStream processDiagram =
+		 * repoSrvc.getProcessDiagram(processInstance.getProcessDefinitionId());
+		 * FileUtils.copyInputStreamToFile(processDiagram, new
+		 * File("target/diagram.png")); // 7. Save resulting BPMN xml to a file
+		 */ InputStream processBpmn = repoSrvc.getResourceAsStream(deployment.getId(),
+				deploymentId + "dynamic-model.bpmn");
 		FileUtils.copyInputStreamToFile(processBpmn, new File("target/" + deploymentId + "process.bpmn20.xml"));
 		return process;
 	}
@@ -134,8 +136,8 @@ public class WorkflowBuilder {
 	protected static SequenceFlow approvalTask(SubProcess sub, EndEvent errorEnd, DynamicUserTask from, int currentIdx,
 			int total, SequenceFlow prev) {
 		UserTask current = new UserTask();
-		current.setId(String.format("%s_%d%s", WFConstants.TASK_ID_DOC_APPROVAL, currentIdx ,sub.getId()));
-		current.setName(String.format("Approval (%d / %d /%s)", currentIdx, total,sub.getId()));
+		current.setId(String.format("%s_%d%s", WFConstants.TASK_ID_DOC_APPROVAL, currentIdx, sub.getId()));
+		current.setName(String.format("Approval (%d / %d /%s)", currentIdx, total, sub.getId()));
 		/*
 		 * if (StringUtils.isBlank(from.getName())) {
 		 * current.setName(String.format("Approve Document (%d / %d)",
@@ -163,15 +165,15 @@ public class WorkflowBuilder {
 		current.setCandidateUsers(from.getCandidateUsers());
 
 		ExclusiveGateway gw = new ExclusiveGateway();
-		gw.setId(String.format("exclusivegateway_approval_%d_of_%d_of_%s", currentIdx, total , sub.getId()));
-		gw.setName(String.format("Exclusive Approval Gateway %d of %d of %s", currentIdx, total ,sub.getId()));
+		gw.setId(String.format("exclusivegateway_approval_%d_of_%d_of_%s", currentIdx, total, sub.getId()));
+		gw.setName(String.format("Exclusive Approval Gateway %d of %d of %s", currentIdx, total, sub.getId()));
 		sub.addFlowElement(gw);
 		sub.addFlowElement(createSequenceFlow(current.getId(), gw.getId()));
 
 		// -------------------------------------------------------------
 		SequenceFlow rejectedFlow = new SequenceFlow();
-		rejectedFlow.setId(String.format("docRejectedSubFlow_%d_of_%d_of_%s", currentIdx, total ,sub.getId()));
-		rejectedFlow.setName(String.format("Doc Rejected %d of %d of %s", currentIdx, total ,sub.getId()));
+		rejectedFlow.setId(String.format("docRejectedSubFlow_%d_of_%d_of_%s", currentIdx, total, sub.getId()));
+		rejectedFlow.setName(String.format("Doc Rejected %d of %d of %s", currentIdx, total, sub.getId()));
 		rejectedFlow.setSourceRef(gw.getId());
 		rejectedFlow.setTargetRef(errorEnd.getId());
 
@@ -185,8 +187,8 @@ public class WorkflowBuilder {
 
 		// -----------------------------------------------
 		SequenceFlow approvedFlow = new SequenceFlow();
-		approvedFlow.setId(String.format("docApprovedSubFlow_%d_of_%d_%s", currentIdx, total,sub.getId()));
-		approvedFlow.setName(String.format("Doc Approved %d of %d of %s", currentIdx, total,sub.getId()));
+		approvedFlow.setId(String.format("docApprovedSubFlow_%d_of_%d_%s", currentIdx, total, sub.getId()));
+		approvedFlow.setName(String.format("Doc Approved %d of %d of %s", currentIdx, total, sub.getId()));
 		approvedFlow.setSourceRef(gw.getId());
 
 		ActivitiListener approvedListener = new ActivitiListener();
@@ -254,8 +256,8 @@ public class WorkflowBuilder {
 	protected static SequenceFlow genricTask(SubProcess subProcess, DynamicUserTask from, int currentIdx, int total,
 			SequenceFlow prev) {
 		UserTask current = new UserTask();
-		current.setId(String.format("%s_%d", WFConstants.TASK_ID_DOC_GENRIC_TASK+subProcess.getId(), currentIdx));
-		current.setName(String.format(from.getName()+"(%d / %d / %s )", currentIdx, total,subProcess.getId()));
+		current.setId(String.format("%s_%d", WFConstants.TASK_ID_DOC_GENRIC_TASK + subProcess.getId(), currentIdx));
+		current.setName(String.format(from.getName() + "(%d / %d / %s )", currentIdx, total, subProcess.getId()));
 		/*
 		 * if (StringUtils.isBlank(from.getName())) {
 		 * current.setName(String.format("Document Collaboration (%d / %d)",
@@ -291,8 +293,8 @@ public class WorkflowBuilder {
 		prev.setTargetRef(current.getId());
 
 		SequenceFlow ref = new SequenceFlow();
-		ref.setId(String.format("dynamic_collab_subflow_%d_%d_%s", currentIdx, total , subProcess.getId()));
-		ref.setName(String.format("Collaboration SubFlow %d of %d of %s", currentIdx, total ,subProcess.getId()));
+		ref.setId(String.format("dynamic_collab_subflow_%d_%d_%s", currentIdx, total, subProcess.getId()));
+		ref.setName(String.format("Collaboration SubFlow %d of %d of %s", currentIdx, total, subProcess.getId()));
 		ref.setSourceRef(current.getId());
 
 		subProcess.addFlowElement(ref);
@@ -301,7 +303,7 @@ public class WorkflowBuilder {
 	}
 
 	protected static SequenceFlow createSequenceFlow(String from, String to) {
-		
+
 		SequenceFlow flow = new SequenceFlow();
 		flow.setSourceRef(from);
 		flow.setTargetRef(to);
@@ -323,14 +325,14 @@ public class WorkflowBuilder {
 	 * @return fully populated BpmnModel with with appropriate dynamic
 	 *         subprocesses. This doesn't actually deploy anything.
 	 */
-	public BpmnModel buildModel(List<DynamicUserTask> dynamicUserTasks, DocType docType, String group) {
+	public BpmnModel buildModel(List<DynamicUserTask> dynamicUserTasks, String docType, String group) {
 		Assert.notNull(docType);
 		Assert.hasText(group);
 		BpmnModel model = new BpmnModel();
 		model.setTargetNamespace(WFConstants.NAMESPACE_CATEGORY);
 		Process process = new Process();
-		process.setId(String.format("%s_%s", docType.name(), group));
-		process.setName(String.format("Generated workflow for DocType=%s and Group=%s", docType.name(), group));
+		process.setId(String.format("%s_%s", docType, group));
+		process.setName(String.format("Generated workflow for DocType=%s and Group=%s", docType, group));
 
 		model.addProcess(process);
 
@@ -378,16 +380,16 @@ public class WorkflowBuilder {
 	 * @return fully populated BpmnModel with with appropriate dynamic
 	 *         subprocesses. This doesn't actually deploy anything.
 	 */
-	public BpmnModel buildModel(List<DynamicUserTask> dynamicUserTasks, DocType docType, String group,
+	public BpmnModel buildModel(List<DynamicUserTask> dynamicUserTasks, String docType, String group,
 			String processName, BpmnModel model) {
 		Assert.notNull(docType);
 		Assert.hasText(group);
 		// BpmnModel model = new BpmnModel();
 		model.setTargetNamespace(WFConstants.NAMESPACE_CATEGORY);
 		Process process = new Process();
-		process.setId(String.format("%s_%s", docType.name(), group));
+		process.setId(String.format("%s_%s", docType, group));
 		// process.setName(String.format("Generated workflow for DocType=%s and
-		// Group=%s", docType.name(), group));
+		// Group=%s", docType, group));
 
 		process.setName(processName);
 		model.addProcess(process);
@@ -433,27 +435,27 @@ public class WorkflowBuilder {
 	 * @param docType
 	 * @param group
 	 * @return a newly created process definition cloned from the base
-	 *         {@link com.da.activiti.model.document.DocType}. The process
+	 *         {@link com.da.activiti.model.document.DocType1}. The process
 	 *         definition should be deployed to the repo with diagramming also
 	 *         created. An {@code IllegalStateException} is thrown if the group
 	 *         workflow already exits.
 	 */
-	public ProcessDefinition createGroupWorkflow(DocType docType, String group) {
+	public ProcessDefinition createGroupWorkflow(String docType, String group) {
 		LOG.info("Creating new workflow for docType {} and group: {}", docType, group);
 		String key = WFConstants.createProcId(docType, group);
 
 		// make sure the DocType is valid
-		if (!this.workflowService.baseDocTypeWorkflowExists(docType)) {
-			throw new IllegalStateException("The docType: " + docType.name() + " has no base workflow definition.");
+		if (!this.workflowService.baseDocTypeWorkflowExists(docType, group)) {
+			throw new IllegalStateException("The docType: " + docType + " has no base workflow definition.");
 		}
 
 		// make sure one doesn't already exist.
 		if (workflowService.groupWorkflowExists(docType, group)) {
 			throw new IllegalStateException(
-					"The workflow for docType: " + docType.name() + " and group: " + group + " already exists");
+					"The workflow for docType: " + docType + " and group: " + group + " already exists");
 		}
 
-		ProcessDefinition baseProcDef = this.workflowService.findBaseProcDef(docType);
+		ProcessDefinition baseProcDef = this.workflowService.findBaseProcDef(docType, group);
 
 		BpmnModel base = this.repoSrvc.getBpmnModel(baseProcDef.getId());
 		Process proc = base.getMainProcess();
@@ -461,7 +463,7 @@ public class WorkflowBuilder {
 		BpmnModel clone = new BpmnModel();
 		clone.setTargetNamespace(WFConstants.NAMESPACE_CATEGORY);
 		proc.setId(key);
-		proc.setName(String.format("%s for group %s", docType.name(), group));
+		proc.setName(String.format("%s for group %s", docType, group));
 		clone.addProcess(proc);
 
 		// create the diagramming
@@ -519,19 +521,21 @@ public class WorkflowBuilder {
 	 * @return the newly created ProcessDefinition of the replaced workflow for
 	 *         the given {@code docType} and group.
 	 */
-	public ProcessDefinition updateDynamicTasks(DocType docType, String group, List<DynamicUserTask> tasks) {
+	public ProcessDefinition updateDynamicTasks(String docType, String group, List<DynamicUserTask> tasks) {
 		LOG.info("updating tasks for DocType {} and group: {}", docType, group);
 		String key = WFConstants.createProcId(docType, group);
 
 		// make sure one doesn't already exist.
-		/*if (!workflowService.groupWorkflowExists(docType, group)) {
-			throw new IllegalStateException(
-					"The workflow for docType: " + docType.name() + " and group: " + group + " does not exist");
-		}*/
+		/*
+		 * if (!workflowService.groupWorkflowExists(docType, group)) { throw new
+		 * IllegalStateException( "The workflow for docType: " + docType +
+		 * " and group: " + group + " does not exist"); }
+		 */
 
-		//ProcessDefinition procDef = workflowService.findProcDefByDocTypeAndGroup(docType, group);
-		ProcessDefinition procDef = workflowService.findBaseProcDef(docType);
-		
+		// ProcessDefinition procDef =
+		// workflowService.findProcDefByDocTypeAndGroup(docType, group);
+		ProcessDefinition procDef = workflowService.findBaseProcDef(docType, group);
+
 		BpmnModel model = this.repoSrvc.getBpmnModel(procDef.getId());
 		Process proc = model.getMainProcess();
 		SubProcess subProcessOrig = this.getDynamicSubProcess(proc);
@@ -562,30 +566,31 @@ public class WorkflowBuilder {
 		// create the diagramming
 		String deployId = this.repoSrvc.createDeployment().addBpmnModel(key + ".bpmn", updatedModel)
 				.name("Dynamic Process Deployment - " + key).deploy().getId();
-		//ProcessDefinition updatedProcDef = workflowService.findProcDefByDocTypeAndGroup(docType, group);
-		ProcessDefinition updatedProcDef = workflowService.findBaseProcDef(docType);
+		// ProcessDefinition updatedProcDef =
+		// workflowService.findProcDefByDocTypeAndGroup(docType, group);
+		ProcessDefinition updatedProcDef = workflowService.findBaseProcDef(docType, group);
 		Assert.notNull(updatedProcDef, "something went wrong creating the new processDefinition: " + key);
 		return updatedProcDef;
 	}
 
 	public static SubProcess createDynamicSubProcess(List<DynamicUserTask> dynamicUserTasks,
-			ErrorEventDefinition errorDef,String subprocessName) {
+			ErrorEventDefinition errorDef, String subprocessName) {
 		SubProcess sub = new SubProcess();
-		sub.setId(WFConstants.SUBPROCESS_ID_DYNAMIC+subprocessName);
-		sub.setName(WFConstants.SUBPROCESS_NAME_DYNAMIC+subprocessName);
+		sub.setId(WFConstants.SUBPROCESS_ID_DYNAMIC + subprocessName);
+		sub.setName(WFConstants.SUBPROCESS_NAME_DYNAMIC + subprocessName);
 		StartEvent start = new StartEvent();
-		start.setId("dynamic_sub_process_start_event"+subprocessName);
-		start.setName("Start Dynamic SubProcess"+subprocessName);
+		start.setId("dynamic_sub_process_start_event" + subprocessName);
+		start.setName("Start Dynamic SubProcess" + subprocessName);
 		sub.addFlowElement(start);
 
 		EndEvent end = new EndEvent();
-		end.setId("dynamic_sub_process_end_event" +subprocessName);
-		end.setName("End Dynamic SubProcess" +subprocessName);
+		end.setId("dynamic_sub_process_end_event" + subprocessName);
+		end.setName("End Dynamic SubProcess" + subprocessName);
 		sub.addFlowElement(end);
 
 		EndEvent errorEnd = new EndEvent();
-		errorEnd.setId("rejectedErrorEndEvent"+subprocessName);
-		errorEnd.setName("ErrorEnd"+subprocessName);
+		errorEnd.setId("rejectedErrorEndEvent" + subprocessName);
+		errorEnd.setName("ErrorEnd" + subprocessName);
 		errorEnd.addEventDefinition(errorDef);
 		sub.addFlowElement(errorEnd);
 
@@ -598,12 +603,11 @@ public class WorkflowBuilder {
 		sub.addFlowElement(startFlow);
 		RecursiveTaskConverter recursiveTaskConverter = new RecursiveTaskConverter(dynamicUserTasks, sub, errorEnd);
 
-		
 		SequenceFlow lastRef = recursiveTaskConverter.recurseTasks(startFlow);
 		lastRef.setTargetRef(end.getId());
 		return sub;
 	}
-	
+
 	public static SubProcess createDynamicSubProcess(List<DynamicUserTask> dynamicUserTasks,
 			ErrorEventDefinition errorDef) {
 		SubProcess sub = new SubProcess();
@@ -727,9 +731,9 @@ public class WorkflowBuilder {
 					continue;
 				}
 			}
-		} 
-		if ( refs.get(0)== null || refs.get(1) == null) {
-			throw new IllegalStateException("Could not find source and ref sequenceflows"+refs);
+		}
+		if (refs.get(0) == null || refs.get(1) == null) {
+			throw new IllegalStateException("Could not find source and ref sequenceflows" + refs);
 		}
 		return refs;
 	}
@@ -744,7 +748,7 @@ public class WorkflowBuilder {
 		private int taskTotal = 0;
 		private SubProcess subProcess;
 		private EndEvent errorEnd;
-		private   boolean isCalled = false;
+		private boolean isCalled = false;
 
 		public RecursiveTaskConverter(List<DynamicUserTask> dynamicUserTasks, SubProcess subProcess,
 				EndEvent errorEnd) {
@@ -772,8 +776,9 @@ public class WorkflowBuilder {
 				this.isCalled = true;
 				return this._recurseTasksPriv(prev);
 			} else {
-				return prev ;
-				//throw new IllegalStateException("The recurseTasks method can only be called once");
+				return prev;
+				// throw new IllegalStateException("The recurseTasks method can
+				// only be called once");
 			}
 		}
 

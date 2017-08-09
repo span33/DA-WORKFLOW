@@ -21,7 +21,6 @@ public class Invoice extends Document {
 
     public Invoice() {
         super();
-        this.docType = DocType.INVOICE;
     }
 
     public BigDecimal getAmount() {

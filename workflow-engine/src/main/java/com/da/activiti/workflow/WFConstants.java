@@ -2,14 +2,12 @@ package com.da.activiti.workflow;
 
 import org.springframework.util.Assert;
 
-import com.da.activiti.model.document.DocType;
-
 /**
  \* @author Santosh Pandey
  * Date: 5/24/14
  */
 public class WFConstants {
-    public static final String NAMESPACE_CATEGORY = "da.com";
+    public static final String NAMESPACE_CATEGORY = "com.da";
     public static final String PROCESS_GROUP_DIVIDER = "___";
     public static final String WORKFLOW_GROUP_NONE = "Approver";
     public static final String SUBPROCESS_ID_DYNAMIC = "DYNAMIC_SUB_PROCESS";
@@ -35,10 +33,10 @@ public class WFConstants {
      * @param group
      * @return
      */
-    public static String createProcId(DocType docType, String group){
+    public static String createProcId(String docType, String group){
         Assert.notNull(docType);
         Assert.hasText(group);
-        return String.format("%s%s%s", docType.name(), PROCESS_GROUP_DIVIDER, group);
+        return String.format("%s%s%s", docType, PROCESS_GROUP_DIVIDER, group);
     }
 
 }

@@ -1,7 +1,9 @@
 package com.da.activiti.dao;
 
+import java.sql.SQLException;
 import java.util.List;
 
+import com.da.activiti.exception.BusinessException;
 import com.da.activiti.web.PagingCriteria;
 
 /**
@@ -40,7 +42,7 @@ public interface IBaseDao<T> {
      * @param obj without an ID
      * @return ID of newly created object
      */
-    public String create(T obj);
+    public String create(T obj) throws BusinessException ;
 
     /**
      * This is really a one-off usable method that allows creation of the object with the ID to be set.

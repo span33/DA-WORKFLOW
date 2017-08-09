@@ -1,10 +1,10 @@
 package com.da.activiti.document;
 
-import com.da.activiti.model.document.BookReport;
-import com.da.activiti.model.document.DocType;
-import com.da.activiti.model.document.Document;
-import com.da.activiti.model.task.HistoricTask;
-import com.da.activiti.task.LocalTaskService;
+import java.util.Date;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,13 +15,17 @@ import org.springframework.ui.ModelMap;
 import org.springframework.util.Assert;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.util.Date;
-import java.util.List;
+import com.da.activiti.model.document.BookReport;
+import com.da.activiti.model.document.Document;
+import com.da.activiti.model.task.HistoricTask;
+import com.da.activiti.task.LocalTaskService;
 
 @Controller
 @RequestMapping("/document/bookReport")
@@ -68,7 +72,7 @@ public class BookReportController extends DocumentController {
                        @RequestParam(value = "id", required = true) String id){
         LOG.debug("viewing doc {} ", id);
         Assert.hasText(id);
-        Document doc = docService.getDocument(DocType.BOOK_REPORT,id);
+        Document doc = docService.getDocument(id);
         model.addAttribute("document", doc);
         List<HistoricTask> hts = this.localTaskSrvc.getTaskHistory(id);
         model.addAttribute("historicTasks", hts);
@@ -101,7 +105,7 @@ public class BookReportController extends DocumentController {
     }
 
 
-    private void checkSubmit(boolean isSubmit, String docId, RedirectAttributes redirAttr,DocType docType) {
+    private void checkSubmit(boolean isSubmit, String docId, RedirectAttributes redirAttr,String docType) {
         if (isSubmit) {
             LOG.debug("Submitting to dynamic workflow docId {}", docId);
             this.docService.submitToWorkflow(docType,docId);
@@ -117,7 +121,7 @@ public class BookReportController extends DocumentController {
     private Document newBookReport() {
         Document document = new BookReport();
         document.setAuthor(currentUserName());
-        document.setDocType(DocType.BOOK_REPORT);
+        document.setDocType("BOOK_REPORT");
         document.setCreatedDate(new Date());
         return document;
     }

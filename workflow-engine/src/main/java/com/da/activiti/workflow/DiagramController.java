@@ -1,9 +1,10 @@
 package com.da.activiti.workflow;
 
-import com.da.activiti.model.Response;
-import com.da.activiti.model.document.DocType;
-import com.da.activiti.model.workflow.DynamicUserTask;
-import com.da.activiti.web.BaseController;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.util.List;
+import java.util.Random;
 
 import org.activiti.bpmn.BpmnAutoLayout;
 import org.activiti.bpmn.model.BpmnModel;
@@ -22,13 +23,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.util.List;
-import java.util.Random;
+import com.da.activiti.model.Response;
+import com.da.activiti.model.workflow.DynamicUserTask;
+import com.da.activiti.web.BaseController;
 
 @Controller
 @RequestMapping("/workflow/diagram")
@@ -59,11 +63,11 @@ public class DiagramController extends BaseController {
 
     @RequestMapping(value = "/dynamicTasks", method = RequestMethod.POST)
     public ResponseEntity<byte[]> getBaseDiagramByTasks(
-            @RequestBody List<DynamicUserTask> dynamicUserTasks) {
+            @RequestBody List<DynamicUserTask> dynamicUserTasks,@RequestParam String docType) {
 
         LOG.debug("fetching diagram for tasks: {}", dynamicUserTasks);
 
-        BpmnModel model = workflowBldr.buildModel(dynamicUserTasks, DocType.GENERAL, String.valueOf(new Random().nextInt()));
+        BpmnModel model = workflowBldr.buildModel(dynamicUserTasks, docType, String.valueOf(new Random().nextInt()));
         InputStream in = new DefaultProcessDiagramGenerator().generatePngDiagram(model);
         byte[] bytes = null;
         try {
@@ -81,11 +85,11 @@ public class DiagramController extends BaseController {
     @RequestMapping(value = "/dynamicTasks", method = RequestMethod.POST, params = "base64", produces = MediaType.TEXT_PLAIN_VALUE)
     public ResponseEntity<Response<String>> getBaseDiagramBase64ByTasks(
             @RequestBody List<DynamicUserTask> dynamicUserTasks,
-            @RequestParam(value = "base64") boolean base64) {
+            @RequestParam(value = "base64") boolean base64 ,@RequestParam String docType) {
 
         LOG.debug("fetching base64 encoded diagram for tasks: {}", dynamicUserTasks);
 
-        BpmnModel model = workflowBldr.buildModel(dynamicUserTasks, DocType.GENERAL, String.valueOf(new Random().nextInt()));
+        BpmnModel model = workflowBldr.buildModel(dynamicUserTasks, docType, String.valueOf(new Random().nextInt()));
         InputStream in = new DefaultProcessDiagramGenerator().generatePngDiagram(model);
         byte[] bytes = null;
         try {
@@ -104,7 +108,7 @@ public class DiagramController extends BaseController {
 
     @RequestMapping(value = "/{docType}/{group}", method = RequestMethod.GET)
     public ResponseEntity<byte[]> getDiagramByDocTypeAndGroup(
-            @PathVariable(value = "docType") DocType docType,
+            @PathVariable(value = "docType") String docType,
             @PathVariable(value = "group") String group) {
 
         LOG.debug("finding diagram for docType = {} and group = {}", docType, group);

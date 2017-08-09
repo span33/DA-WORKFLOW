@@ -3,6 +3,7 @@ package com.da.activiti.FormBuilder;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringWriter;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,9 +65,9 @@ public class JdbcFormsDao extends BaseDao implements FormsDao {
 	}
 
 	@Override
-	public String create(FormTemplateInfo obj) {
-		String sql = "INSERT INTO process_userfom (process_id, form_fields,doctype,user_Id,json_data) "
-				+ "VALUES (:processId, :formTemplateStr, :docType,:createdBy,:jsonData)";
+	public String create(FormTemplateInfo obj)  {
+		String sql = "INSERT INTO process_userfom (process_id, form_fields,doctype,user_Id,json_data,userform_name) "
+				+ "VALUES (:processId, :formTemplateStr, :docType,:createdBy,:jsonData,:userformName)";
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		BeanPropertySqlParameterSource source = new BeanPropertySqlParameterSource(obj);
 		source.registerSqlType("docType", Types.VARCHAR);
@@ -141,6 +142,13 @@ public class JdbcFormsDao extends BaseDao implements FormsDao {
 		Map<String, Object> parameters = new LinkedHashMap<String, Object>();
 		parameters.put("workflow_id", workFlowId);
 		return getRowMap(sql, parameters);
+	}
+
+	@Override
+	public List<Map<String, Object>> getUserFormList() {
+		String sql = "SELECT id,userform_name FROM demo_da.process_userfom";
+	return  executeDynamicNativeQuery(sql);
+		
 	}
 
 }

@@ -14,9 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.da.activiti.alert.AlertService;
+import com.da.activiti.exception.BusinessException;
 import com.da.activiti.model.Alert;
 import com.da.activiti.model.document.DocState;
-import com.da.activiti.model.document.DocType;
 import com.da.activiti.model.document.Document;
 
 /**
@@ -44,34 +44,35 @@ public class DocWorkflowListener {
      * Called when the process enters a approve/reject transition
      *
      * @param execution
+     * @throws BusinessException 
      */
-    public void onApproved(DelegateExecution execution) {
+    public void onApproved(DelegateExecution execution) throws BusinessException {
         LOG.debug("doc approved - process id: {}", execution.getProcessInstanceId());
         ProcessInstance pi = runtimeService.createProcessInstanceQuery().
                 processInstanceId(execution.getProcessInstanceId()).singleResult();
         String docId = pi.getBusinessKey();
-        Document doc = this.docSrvc.getDocument(DocType.JOURNAL,docId);
-        String message = String.format("%s entitled '%s'  has been approved. ", doc.getDocType().name(), doc.getId());
+        Document doc = this.docSrvc.getDocument(docId);
+        String message = String.format("%s entitled '%s'  has been approved. ", doc.getDocType(), doc.getId());
         this.alertService.sendAlert(doc.getAuthor(), Alert.SUCCESS, message);
         doc.setDocState(DocState.APPROVED);
         this.docSrvc.updateDocument(doc);
-        LOG.info("{} approved: {}", doc.getDocType().name(), doc.getTitle());
+        LOG.info("{} approved: {}", doc.getDocType(), doc.getTitle());
 
     }
 
-    public void onRejected(DelegateExecution execution) {
+    public void onRejected(DelegateExecution execution) throws BusinessException {
         LOG.debug("doc rejected - process id: {}", execution.getProcessInstanceId());
         ProcessInstance pi = runtimeService.createProcessInstanceQuery().
                 processInstanceId(execution.getProcessInstanceId()).singleResult();
         String docId = pi.getBusinessKey();
-        Document doc = this.docSrvc.getDocument(DocType.JOURNAL,docId);
+        Document doc = this.docSrvc.getDocument(docId);
         LOG.debug("setting doc {} with title = {}: state set to REJECTED", doc.getId(), doc.getId());
         String message = String.format("Document entitled '%s' has been rejected", doc.getId());
         this.alertService.sendAlert(doc.getAuthor(), Alert.DANGER, message);
 
         doc.setDocState(DocState.REJECTED);
         this.docSrvc.updateDocument(doc);
-        LOG.info("{} rejected: {}", doc.getDocType().name(), doc.getTitle());
+        LOG.info("{} rejected: {}", doc.getDocType(), doc.getTitle());
     }
 
 
@@ -89,7 +90,7 @@ public class DocWorkflowListener {
         if (StringUtils.isBlank(docId)) {
             return;
         }
-        Document doc = this.docSrvc.getDocument(DocType.JOURNAL,docId);
+        Document doc = this.docSrvc.getDocument(docId);
         if (doc == null) {
             return;
         }
@@ -124,8 +125,9 @@ public class DocWorkflowListener {
      *
      * @param execution
      * @param task
+     * @throws BusinessException 
      */
-    public void onCompleteGenricTask(Execution execution, DelegateTask task) {
+    public void onCompleteGenricTask(Execution execution, DelegateTask task) throws BusinessException {
         ProcessInstance pi = runtimeService.createProcessInstanceQuery().
                 processInstanceId(execution.getProcessInstanceId()).singleResult();
 
@@ -133,7 +135,7 @@ public class DocWorkflowListener {
         if (StringUtils.isBlank(docId)) {
             return;
         }
-        Document doc = this.docSrvc.getDocument(DocType.JOURNAL,docId);
+        Document doc = this.docSrvc.getDocument(docId);
         if (doc == null) {
             return;
         }
@@ -141,7 +143,7 @@ public class DocWorkflowListener {
         doc.setDocState(DocState.DOCUMENT_SUBMITED);
         this.docSrvc.updateDocument(doc);
 
-        String message = String.format("%s entitled '%s' has been collaborated on. ", doc.getDocType().name(), doc.getTitle());
+        String message = String.format("%s entitled '%s' has been collaborated on. ", doc.getDocType(), doc.getTitle());
         this.alertService.sendAlert(doc.getAuthor(), Alert.SUCCESS, message);
 
     }
@@ -151,8 +153,9 @@ public class DocWorkflowListener {
      *
      * @param execution
      * @param task
+     * @throws BusinessException 
      */
-    public void onCompleteCollaborate(Execution execution, DelegateTask task) {
+    public void onCompleteCollaborate(Execution execution, DelegateTask task) throws BusinessException {
         ProcessInstance pi = runtimeService.createProcessInstanceQuery().
                 processInstanceId(execution.getProcessInstanceId()).singleResult();
 
@@ -160,7 +163,7 @@ public class DocWorkflowListener {
         if (StringUtils.isBlank(docId)) {
             return;
         }
-        Document doc = this.docSrvc.getDocument(DocType.JOURNAL,docId);
+        Document doc = this.docSrvc.getDocument(docId);
         if (doc == null) {
             return;
         }
@@ -168,7 +171,7 @@ public class DocWorkflowListener {
         doc.setDocState(DocState.COLLABORATED);
         this.docSrvc.updateDocument(doc);
 
-        String message = String.format("%s entitled '%s' has been collaborated on. ", doc.getDocType().name(), doc.getTitle());
+        String message = String.format("%s entitled '%s' has been collaborated on. ", doc.getDocType(), doc.getTitle());
         this.alertService.sendAlert(doc.getAuthor(), Alert.SUCCESS, message);
 
     }
@@ -189,7 +192,7 @@ public class DocWorkflowListener {
             return;
         }
 
-        Document doc = this.docSrvc.getDocument(DocType.JOURNAL,docId);
+        Document doc = this.docSrvc.getDocument(docId);
         if (doc == null) {
             return;
         }
@@ -213,7 +216,7 @@ public class DocWorkflowListener {
         ProcessInstance pi = runtimeService.createProcessInstanceQuery().
                 processInstanceId(execution.getProcessInstanceId()).singleResult();
         String docId = pi.getBusinessKey();
-        Document doc = this.docSrvc.getDocument(DocType.JOURNAL,docId);
+        Document doc = this.docSrvc.getDocument(docId);
         taskService.addCandidateGroup(task.getId(), doc.getGroupId());
     }
 }

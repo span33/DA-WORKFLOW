@@ -1,16 +1,15 @@
 package com.da.activiti.document;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.jdbc.core.RowMapper;
-
-import com.da.activiti.model.document.DocState;
-import com.da.activiti.model.document.DocType;
-import com.da.activiti.model.document.Invoice;
-
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.jdbc.core.RowMapper;
+
+import com.da.activiti.model.document.DocState;
+import com.da.activiti.model.document.Invoice;
 
 /**
  \* @author Santosh Pandey
@@ -34,7 +33,7 @@ public class InvoiceRowMapper implements RowMapper<Invoice> {
         Invoice.setGroupId(groupId);
         Invoice.setTitle(title);
         Invoice.setDocState(DocState.valueOf(docState));
-        Invoice.setDocType(DocType.valueOf(docType));
+        Invoice.setDocType(docType);
         Invoice.setCreatedDate(createdDate);
         Invoice.setPayee(payee);
         Invoice.setAmount(amount);

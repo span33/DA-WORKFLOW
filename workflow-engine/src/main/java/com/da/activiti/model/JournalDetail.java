@@ -2,13 +2,11 @@ package com.da.activiti.model;
 
 import java.io.Serializable;
 
-import com.da.activiti.model.document.DocType;
 import com.da.activiti.model.document.Document;
 
 public class JournalDetail  extends Document implements Serializable {
 
 	public JournalDetail() {
-		this.docType = DocType.JOURNAL;
 		this.groupId = "Approver" ;
 	}
 

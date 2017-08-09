@@ -33,7 +33,13 @@ public interface ProcessDao extends IBaseDao<ProcessInfo> {
 	
 	List<ProcessInfo> readAllSubprocess(int processId);
 	
-	public List<Map<String, Object>> getDepartmentList();
+	List<Map<String, Object>> getDepartmentList();
 	
-	public List<Map<String, Object>>  getUserByDepartmentId(List<String >departmentId) ;
+	List<Map<String, Object>>  getUserByDepartmentId(List<String >departmentId) ;
+	
+    void delete(int id) ;
+	
+	boolean readByName(String processName) ;
+	String update(TaskInfo obj) ;
+	String delete(TaskInfo obj) ;
 }

@@ -803,7 +803,7 @@ select.form-control.ui-pg-selbox:not([size]):not([multiple]) {
 }
 .ui-jqdialog {
 	display: none;
-	width: 300px;
+	width: 400px;
 	position: absolute;
 	font-size: 11px;
 	overflow: visible;

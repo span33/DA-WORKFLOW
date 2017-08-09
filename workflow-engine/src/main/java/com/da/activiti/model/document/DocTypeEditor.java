@@ -11,15 +11,15 @@ import java.beans.PropertyEditorSupport;
 */
 public class DocTypeEditor extends PropertyEditorSupport {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DocTypeEditor.class);
+  /*  private static final Logger LOG = LoggerFactory.getLogger(DocTypeEditor.class);
 
     @Override
     public String getAsText() {
-        DocType DocType = (DocType) this.getValue();
+        DocType1 DocType = (DocType1) this.getValue();
         if (DocType == null) {
             return null;
         }
-        LOG.trace("Converted DocType: {} to string={}", DocType.name(), DocType.toString());
+        LOG.trace("Converted DocType: {} to string={}", docType, DocType.toString());
         return DocType.toString();
     }
 
@@ -29,9 +29,9 @@ public class DocTypeEditor extends PropertyEditorSupport {
             setValue(null);
             return;
         }
-        DocType docType = DocType.valueOf(s);
-        LOG.trace("Converted DocType: {} ---> {}", s, docType.name());
+        DocType1 docType = DocType1.valueOf(s);
+        LOG.trace("Converted DocType: {} ---> {}", s, docType);
         setValue(docType);
     }
-
+*/
 }

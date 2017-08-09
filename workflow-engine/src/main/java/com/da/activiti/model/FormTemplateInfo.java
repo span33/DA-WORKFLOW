@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.da.activiti.FormBuilder.gen.models.Field;
 import com.da.activiti.FormBuilder.gen.models.FormTemplate;
-import com.da.activiti.model.document.DocType;
 import com.da.activiti.model.document.Document;
 
 public class FormTemplateInfo  extends Document implements Serializable{
@@ -19,8 +18,16 @@ public class FormTemplateInfo  extends Document implements Serializable{
 	private List<Field> fields ;
 	private String formTemplateStr ;
 	private String createdBy ;
-	private DocType docType ;
+	private String docType ;
 	private String jsonData ;
+	private String userformName;
+	public String getUserformName() {
+		return userformName;
+	}
+	public void setUserformName(String userformName) {
+		this.userformName = userformName;
+	}
+	
 	public String getJsonData() {
 		return jsonData;
 	}
@@ -46,10 +53,10 @@ public class FormTemplateInfo  extends Document implements Serializable{
 	public void setFormTemplate(FormTemplate formTemplate) {
 		this.formTemplate = formTemplate;
 	}
-	public DocType getDocType() {
+	public String getDocType() {
 		return docType;
 	}
-	public void setDocType(DocType docType) {
+	public void setDocType(String docType) {
 		this.docType = docType;
 	}
 	public String getFormTemplateStr() {

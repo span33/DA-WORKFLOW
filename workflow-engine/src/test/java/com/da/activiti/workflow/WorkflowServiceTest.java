@@ -9,9 +9,7 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import org.activiti.bpmn.BpmnAutoLayout;
 import org.activiti.bpmn.model.BoundaryEvent;
@@ -114,11 +112,11 @@ public class WorkflowServiceTest {
     @Test
     public void testGroupWorkflowExists() throws Exception {
         String group = "engineering";
-        boolean exists = this.workflowService.groupWorkflowExists(DocType.BOOK_REPORT, group);
+        boolean exists = this.workflowService.groupWorkflowExists(DocType.BOOK_REPORT.name(), group);
         assertTrue("BOOK_WORKFLOW_engineering should exist.", exists);
 
         group = "FOO_SDFSFSF_SDFSDF";
-        exists = this.workflowService.groupWorkflowExists(DocType.BOOK_REPORT, group);
+        exists = this.workflowService.groupWorkflowExists(DocType.BOOK_REPORT.name(), group);
         assertFalse("random group workflow should NOT exist.", exists);
 
     }
@@ -132,35 +130,35 @@ public class WorkflowServiceTest {
 
     @Test
     public void testBaseDocTypeWorkflowExists() throws Exception {
-        boolean exists = this.workflowService.baseDocTypeWorkflowExists(DocType.BOOK_REPORT);
+        boolean exists = this.workflowService.baseDocTypeWorkflowExists(DocType.BOOK_REPORT.name(),null);
         assertTrue("BOOK_REPORT base workflow should exist.", exists);
 
-        exists = this.workflowService.baseDocTypeWorkflowExists(DocType.UNIT_TEST_NO_EXIST);
+        exists = this.workflowService.baseDocTypeWorkflowExists(DocType.UNIT_TEST_NO_EXIST.name(),null);
         assertFalse("NO_EXIST docType base workflow should NOT exist.", exists);
     }
 
     @Test
     public void testFindProcDef() {
-        ProcessDefinition pd = this.workflowService.findProcDef(DocType.BOOK_REPORT, "engineering");
+        ProcessDefinition pd = this.workflowService.findProcDef(DocType.BOOK_REPORT.name(), "engineering");
         LOG.debug("found {}", pd.getKey());
         assertNotNull("Should have engineering workflow for BOOK_REPORT", pd);
 
-        ProcessDefinition pd1 = this.workflowService.findProcDef(DocType.BOOK_REPORT, "foo");
+        ProcessDefinition pd1 = this.workflowService.findProcDef(DocType.BOOK_REPORT.name(), "foo");
         LOG.debug("found {}", pd1.getKey());
         assertNotNull("Should have base workflow for BOOK_REPORT", pd1);
 
         assertNotEquals("engineering and base should be different", pd.getId(), pd1.getId());
 
-        ProcessDefinition pd2 = this.workflowService.findProcDef(DocType.UNIT_TEST_NO_EXIST, "foo");
+        ProcessDefinition pd2 = this.workflowService.findProcDef(DocType.UNIT_TEST_NO_EXIST.name(), "foo");
         assertNull(pd2);
     }
 
     @Test
     public void testFindBaseProcDef() {
-        ProcessDefinition pd = this.workflowService.findBaseProcDef(DocType.BOOK_REPORT);
+        ProcessDefinition pd = this.workflowService.findBaseProcDef(DocType.BOOK_REPORT.name(),null);
         assertNotNull(pd);
 
-        pd = this.workflowService.findBaseProcDef(DocType.UNIT_TEST_NO_EXIST);
+        pd = this.workflowService.findBaseProcDef(DocType.UNIT_TEST_NO_EXIST.name(),null);
         assertNull(pd);
     }
 
@@ -251,9 +249,6 @@ public class WorkflowServiceTest {
     protected List<DynamicUserTask>  DynamicTask(String id, String name, String assignee) { 
     	 List<DynamicUserTask> dynamicUserTasks = Lists.newArrayList();
          DynamicUserTask dynamicUserTask = new DynamicUserTask();
-         DocType docType = DocType.GENERAL;
-         String group = String.valueOf(new Random().nextInt());
-
          dynamicUserTask.getCandidateGroups().add("management");
          dynamicUserTask.setIndex(0);
          dynamicUserTask.setDynamicUserTaskType(DynamicUserTaskType.APPROVE_REJECT);

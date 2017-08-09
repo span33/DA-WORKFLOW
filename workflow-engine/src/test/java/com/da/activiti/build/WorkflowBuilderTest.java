@@ -1,21 +1,26 @@
 package com.da.activiti.build;
 
-import com.da.activiti.model.document.DocType;
-import com.da.activiti.model.workflow.DynamicUserTask;
-import com.da.activiti.model.workflow.DynamicUserTaskType;
-import com.da.activiti.workflow.WFConstants;
-import com.da.activiti.workflow.WorkflowBuilder;
-import com.da.activiti.workflow.WorkflowService;
-import com.google.common.collect.Lists;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Random;
 
 import org.activiti.bpmn.converter.BpmnXMLConverter;
 import org.activiti.bpmn.model.BpmnModel;
-import org.activiti.engine.*;
+import org.activiti.engine.HistoryService;
+import org.activiti.engine.IdentityService;
+import org.activiti.engine.RepositoryService;
+import org.activiti.engine.RuntimeService;
+import org.activiti.engine.TaskService;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.image.impl.DefaultProcessDiagramGenerator;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -25,13 +30,12 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Random;
-
-import static org.junit.Assert.*;
+import com.da.activiti.model.workflow.DynamicUserTask;
+import com.da.activiti.model.workflow.DynamicUserTaskType;
+import com.da.activiti.workflow.WFConstants;
+import com.da.activiti.workflow.WorkflowBuilder;
+import com.da.activiti.workflow.WorkflowService;
+import com.google.common.collect.Lists;
 
 /**
  \* @author Santosh Pandey
@@ -66,7 +70,7 @@ public class WorkflowBuilderTest {
     public void testGeneratePng() throws IOException {
         List<DynamicUserTask> dynamicUserTasks = Lists.newArrayList();
         DynamicUserTask dynamicUserTask = new DynamicUserTask();
-        DocType docType = DocType.GENERAL;
+        String docType = "GENERAL";
         String group = String.valueOf(new Random().nextInt());
 
         dynamicUserTask.getCandidateGroups().add("management");
@@ -95,7 +99,7 @@ public class WorkflowBuilderTest {
     public void testUpdateDynamicTasks() throws IOException {
         List<DynamicUserTask> dynamicUserTasks = Lists.newArrayList();
         DynamicUserTask dynamicUserTask = new DynamicUserTask();
-        DocType bookReport = DocType.BOOK_REPORT;
+        String bookReport = "BOOK_REPORT";
         String group = "engineering";
 
         dynamicUserTask.getCandidateGroups().add(group);
@@ -136,7 +140,7 @@ public class WorkflowBuilderTest {
     @Test
     @DirtiesContext
     public void testCreateGroupWorkflow() throws IOException {
-        ProcessDefinition procDef = this.workflowBldr.createGroupWorkflow(DocType.BOOK_REPORT, "foo");
+        ProcessDefinition procDef = this.workflowBldr.createGroupWorkflow("BOOK_REPORT", "foo");
         LOG.debug(procDef.getKey());
         assertNotNull(procDef);
         BpmnModel model = repositoryService.getBpmnModel(procDef.getId());
@@ -149,20 +153,20 @@ public class WorkflowBuilderTest {
 
     @Test(expected = IllegalStateException.class)
     public void testInvalidDocType() {
-        this.workflowBldr.createGroupWorkflow(DocType.UNIT_TEST_NO_EXIST, "sales");
+        this.workflowBldr.createGroupWorkflow("UNIT_TEST_NO_EXIST", "sales");
         fail("Should not get here");
     }
 
     @Test(expected = IllegalStateException.class)
     public void testExistingGroup() {
-        this.workflowBldr.createGroupWorkflow(DocType.BOOK_REPORT, "engineering");
+        this.workflowBldr.createGroupWorkflow("BOOK_REPORT", "engineering");
         fail("Should not get here");
     }
 
     @Test
     @DirtiesContext
     public void testGetDynamicTasks() {
-        String key = WFConstants.createProcId(DocType.BOOK_REPORT, "engineering");
+        String key = WFConstants.createProcId("BOOK_REPORT", "engineering");
         ProcessDefinition processDefinition = this.repositoryService.createProcessDefinitionQuery().
                 processDefinitionCategory(WFConstants.NAMESPACE_CATEGORY).
                 processDefinitionKey(key).latestVersion().singleResult();

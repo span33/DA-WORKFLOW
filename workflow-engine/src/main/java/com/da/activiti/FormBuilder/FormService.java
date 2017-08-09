@@ -15,10 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.da.activiti.FormBuilder.gen.models.Field;
 import com.da.activiti.FormBuilder.gen.models.Value;
 import com.da.activiti.document.ProcessUserfomInfo;
+import com.da.activiti.exception.BusinessException;
 import com.da.activiti.model.FormTemplateInfo;
 import com.da.activiti.model.WorkFlowBean;
 import com.da.activiti.model.document.DocState;
-import com.da.activiti.model.document.DocType;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -36,7 +36,7 @@ public class FormService {
 	
 	
 	@Transactional
-	public String   saveFormData(FormTemplateInfo obj) {
+	public String   saveFormData(FormTemplateInfo obj) throws BusinessException {
 		obj.getFields().forEach(field -> {field.setJsonData(convertListToJson(field.getValues()));
 		if(field.getType().equalsIgnoreCase("radio-group")) {
 			field.setType("radio");
@@ -94,7 +94,7 @@ public class FormService {
 	@Transactional
 	public String  saveWorkFlowFormData(Map<String,String []> formData,DocState docState,String userName) {
 		Map<String, String> workflowmap = new HashMap<>();
-		DocType docType = DocType.getDocTypeByName(formData.get("docType")[0]) ;
+		String docType =formData.get("docType")[0] ;
 		WorkFlowBean workFlowBean  = new WorkFlowBean(docType, formData.get("userProcessFormId")[0], docState, userName);
 		List<Group> groups = this.identityService.createGroupQuery().groupMember(userName).groupType("security-role").list();
 		workFlowBean.setGroupId(groups.get(0).getId());
@@ -111,7 +111,7 @@ public class FormService {
 		
 	}
 	
-	
+	@Transactional
 	public List<Field>  fetchWordFlowDataById(String workFlowId,int processUserFormId) {
 		List<Field> fieldList = fetchFormFields(processUserFormId);
 		fieldList.forEach(index-> index.setJsonData(null));
@@ -121,5 +121,10 @@ public class FormService {
 		fieldList.forEach(index -> System.out.println(index.getName() + ":::::"+index.getValue()));
 		return fieldList;
 		
+	}
+	
+	@Transactional
+	public List<Map<String, Object>> fetchUserFormList() {
+		return formsDao.getUserFormList();
 	}
 }
