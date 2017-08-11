@@ -23,9 +23,8 @@ import com.da.activiti.dao.BaseDao;
 import com.da.activiti.model.WorkFlowBean;
 import com.da.activiti.model.WorkFlowMappingBean;
 import com.da.activiti.web.PagingCriteria;
+import com.da.workflow.WorkFlowRowMapper;
 import com.google.common.collect.ImmutableMap;
-
-import JdbcWorkFlowDao.WorkFlowRowMapper;
 
 @Repository
 @Component("workFlowDao")

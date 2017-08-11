@@ -49,7 +49,7 @@ public class ProcessController extends BaseController {
 
 	@Autowired
 	WorkflowBuilder workflowBuilder;
-	
+
 	@Autowired
 	UserService userService;
 
@@ -77,20 +77,22 @@ public class ProcessController extends BaseController {
 		return new ResponseEntity<Response>(res, HttpStatus.OK);
 
 	}
-	
+
 	@RequestMapping(value = "/editProcess", method = RequestMethod.POST)
-	public @ResponseBody ResponseEntity<Response> editProcess(@ModelAttribute ProcessInfo processInfo, BindingResult result,
-			final RedirectAttributes redirectAttributes, HttpServletRequest request, ModelMap model) {
+	public @ResponseBody ResponseEntity<Response> editProcess(@ModelAttribute ProcessInfo processInfo,
+			BindingResult result, final RedirectAttributes redirectAttributes, HttpServletRequest request,
+			ModelMap model) {
 		processService.editProcess(processInfo);
-		String msg = "Process id : " + processInfo.getProcessId() + " -- Process Created Successfully ";
+		String msg = "Process id : " + processInfo.getProcessId() + " -- Process Changed Successfully ";
 		Response<String> res = new Response<String>(true, msg);
 		res.setData(Integer.toString(processInfo.getProcessId()));
 		return new ResponseEntity<Response>(res, HttpStatus.OK);
 
 	}
-	
+
 	@RequestMapping(value = "/deleteProcess/{processId}/", method = RequestMethod.POST)
-	public @ResponseBody ResponseEntity<Response> deleteProcess( ModelMap model,@PathVariable(value = "processId") int processId ) {
+	public @ResponseBody ResponseEntity<Response> deleteProcess(ModelMap model,
+			@PathVariable(value = "processId") int processId) {
 		processService.deleteProcess(processId);
 		String msg = "Process id : " + processId + " -- Process Deleted Successfully ";
 		Response<String> res = new Response<String>(true, msg);
@@ -128,27 +130,28 @@ public class ProcessController extends BaseController {
 		return new ResponseEntity<Response>(res, HttpStatus.OK);
 
 	}
-	
+
 	@RequestMapping(value = "/departmentList", method = RequestMethod.GET)
-	public @ResponseBody ResponseEntity<Response> departmentList( ModelMap model) {
+	public @ResponseBody ResponseEntity<Response> departmentList(ModelMap model) {
 		List<Map<String, Object>> departMentList = processService.departMentList();
 		Response<List<Map<String, Object>>> res = new Response<List<Map<String, Object>>>(true, "Alert acknowledged");
 		res.setData(departMentList);
 		return new ResponseEntity<Response>(res, HttpStatus.OK);
 
 	}
-	
+
 	@RequestMapping(value = "/userListByDepartments", method = RequestMethod.GET)
-	public @ResponseBody ResponseEntity<Response> userListByDepartments( ModelMap model,@RequestParam String departments) {
+	public @ResponseBody ResponseEntity<Response> userListByDepartments(ModelMap model,
+			@RequestParam String departments) {
 		List<Map<String, Object>> departMentList = userService.fetchUserByDepartments(departments);
 		Response<List<Map<String, Object>>> res = new Response<List<Map<String, Object>>>(true, "Alert acknowledged");
 		res.setData(departMentList);
 		return new ResponseEntity<Response>(res, HttpStatus.OK);
 
 	}
-	
+
 	@RequestMapping(value = "/approverUserList", method = RequestMethod.GET)
-	public @ResponseBody ResponseEntity<Response> approverUserList( ModelMap model) {
+	public @ResponseBody ResponseEntity<Response> approverUserList(ModelMap model) {
 		List<UserForm> userList = userService.getUserListByRole("Approver");
 		Response<List<UserForm>> res = new Response<List<UserForm>>(true, "Alert acknowledged");
 		res.setData(userList);
@@ -169,7 +172,8 @@ public class ProcessController extends BaseController {
 		 * 
 		 * model.addAttribute("processList", processList);
 		 */
-		//model.addAttribute("departMentList", processService.departMentList());
+		// model.addAttribute("departMentList",
+		// processService.departMentList());
 	}
 
 	@InitBinder
@@ -254,8 +258,28 @@ public class ProcessController extends BaseController {
 		return new ResponseEntity<Response>(res, HttpStatus.OK);
 
 	}
-	
-	
+
+	@RequestMapping(value = "/editTask", method = RequestMethod.POST)
+	public @ResponseBody ResponseEntity<Response> editTask(@ModelAttribute TaskInfo taskInfo, BindingResult result,
+			final RedirectAttributes redirectAttributes, HttpServletRequest request, ModelMap model) {
+		processService.editTask(taskInfo);
+		String msg = "Process id : " + taskInfo.getId() + " -- Task edited  Successfully ";
+		Response<String> res = new Response<String>(true, msg);
+		res.setData(Integer.toString(taskInfo.getId()));
+		return new ResponseEntity<Response>(res, HttpStatus.OK);
+
+	}
+
+	@RequestMapping(value = "/deleteTask/{taskId}/", method = RequestMethod.POST)
+	public @ResponseBody ResponseEntity<Response> deleteTask(ModelMap model,
+			@PathVariable(value = "taskId") int taskId) {
+		processService.deleteTask(taskId);
+		String msg = "Process id : " + taskId + " -- Task Deleted Successfully ";
+		Response<String> res = new Response<String>(true, msg);
+		res.setData(Integer.toString(taskId));
+		return new ResponseEntity<Response>(res, HttpStatus.OK);
+
+	}
 
 	private void processTaskMapping(List<ProcessInfo> processInfos) {
 		processInfos.forEach(processInfo -> {

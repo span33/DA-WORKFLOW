@@ -23,7 +23,9 @@ import org.activiti.bpmn.model.SequenceFlow;
 import org.activiti.bpmn.model.StartEvent;
 import org.activiti.bpmn.model.SubProcess;
 import org.activiti.bpmn.model.UserTask;
+import org.activiti.engine.IdentityService;
 import org.activiti.engine.RepositoryService;
+import org.activiti.engine.identity.Group;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.apache.commons.io.FileUtils;
@@ -55,6 +57,7 @@ public class WorkflowBuilder {
 	RepositoryService repoSrvc;
 	@Autowired
 	WorkflowService workflowService;
+	@Autowired IdentityService identityService ;
 
 	@Transactional
 	public Process createProcess(ProcessInfo processinfo, List<ProcessInfo> listOFSubprocess) throws IOException {
@@ -657,7 +660,10 @@ public class WorkflowBuilder {
 	protected DynamicUserTask DynmicUserTask(TaskInfo taskInfo, int position) {
 		DynamicUserTask dut = new DynamicUserTask();
 		dut.setIndex(position);
-		dut.setCandidateGroups(Lists.newArrayList("Approver"));
+		List<Group> groups = this.identityService.createGroupQuery().groupMember(taskInfo.getActorId()).groupType("security-role").list();
+		List <String> groupNames = new ArrayList<>() ;
+		groups.forEach(index -> groupNames.add(index.getId()));
+		//dut.setCandidateGroups(groupNames);
 		dut.setCandidateUsers(Lists.newArrayList(taskInfo.getActorId()));
 		dut.setName(taskInfo.getTaskName());
 		dut.setId(taskInfo.getTaskName());

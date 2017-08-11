@@ -394,6 +394,96 @@
      });
  }
  
+ function editTask() {
+     // Get the currently selected row
+     var row = $(this).jqGrid('getGridParam', 'selrow');
+
+     if (row != null) $(this).jqGrid('editGridRow', row, {
+         url:  SERVLET_CONTEXT + '/admin/process/editTask',
+         serializeEditData: function(data) {
+        	console.log(data);
+             return $.param(data); 
+         },
+         recreateForm: true,
+         closeAfterEdit: true,
+         reloadAfterSubmit: true,
+         beforeShowForm: function(form) {
+         
+         },
+         afterSubmit: function(response, postdata) {
+             var result = eval('(' + response.responseText + ')');
+             var errors = "";
+
+             if (result.success == false) {
+                 for (var i = 0; i < result.message.length; i++) {
+                     errors += result.message[i] + "<br/>";
+                 }
+             } else {
+                 $("#dialog").text('Entry has been edited successfully');
+                 $("#dialog").dialog({
+                     title: 'Success',
+                     modal: true,
+                     buttons: {
+                         "Ok": function() {
+                             $(this).dialog("close");
+                             rloadGrid();
+                         }
+                     }
+                 });
+             }
+
+             return [result.success, errors, null];
+         }
+     });
+     else alert("Please select row");
+ }
+
+ function deleteTask() {
+     // Get the currently selected row
+     var row = $(this).jqGrid('getGridParam', 'selrow');
+     console.log(row);
+     if (row != null) $(this).jqGrid('delGridRow', row, {
+         url:  SERVLET_CONTEXT +'/admin/process/deleteTask/'+row+'/',
+         recreateForm: true,
+         beforeShowForm: function(form) {
+             //change title
+             $(".delmsg").replaceWith('<span style="white-space: pre;">' + 'Delete selected record?' + '</span>');
+             $('#pData').hide();
+             $('#nData').hide();
+         },
+         reloadAfterSubmit: false,
+         closeAfterDelete: true,
+         afterSubmit: function(response, postdata) {
+             var result = eval('(' + response.responseText + ')');
+             var errors = "";
+
+             if (result.success == false) {
+                 for (var i = 0; i < result.message.length; i++) {
+                     errors += result.message[i] + "<br/>";
+                 }
+             } else {
+             	$('#dialog').removeClass('hide').addClass('show');
+                 $("#dialog").text('Entry has been deleted successfully');
+                 $("#dialog").dialog({
+                     title: 'Success',
+                     modal: true,
+                     buttons: {
+                         "Ok": function() {
+                             $(this).dialog("close");
+                             rloadGrid();
+                         }
+                     }
+                 });
+             }
+             // only used for adding new records
+             var new_id = null;
+
+             return [result.success, errors, new_id];
+         }
+     });
+     else alert("Please select row");
+ }
+ 
  
             function editRow() {
                 // Get the currently selected row
@@ -594,7 +684,7 @@
                 page: 1,
                 colNames: ["Id", "Name" ,"Description" ,"UserForm", "Owner" , "Task Type" , "Task Status" , "Actor Name" ,"Process Id"  /* , "" */],
                 colModel: [
-                  {name: "taskId", width: 130, key: true},
+                  {name: "taskId", index:'taskId', width: 130, key: true},
                   {name: "taskName", width: 130, editable:true},
                   {name: "taskDescription", width: 130 , editable:true},
                   {name: "userForm", index:'userForm', width:180, align:"center" ,editable:true, edittype: 'select',editoptions: { multiple: false, value: userFormList }, editrules: { required: false }, formatoptions: { disabled: false}},
@@ -637,6 +727,23 @@
                 cursor: "pointer",
                 id:"addNewTask"
             });
+           $("#" + childGridID).navButtonAdd("#" + childGridPagerID, {
+               caption: "Edit",
+               buttonicon: "ui-icon-pencil",
+               onClickButton: editTask,
+               position: "last",
+               title: "",
+               cursor: "pointer"
+           });
+
+           $("#" + childGridID).navButtonAdd("#" + childGridPagerID, {
+               caption: "Delete",
+               buttonicon: "ui-icon-trash",
+               onClickButton: deleteTask,
+               position: "last",
+               title: "",
+               cursor: "pointer"
+           });
         }
        
         

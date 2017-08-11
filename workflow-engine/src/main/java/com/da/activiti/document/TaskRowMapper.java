@@ -30,7 +30,7 @@ public class TaskRowMapper  implements RowMapper<TaskInfo>{
 	        taskInfo.setTaskType(taskType);
 	        taskInfo.setTaskStatus(taskStatus);
 	        taskInfo.setActorId(actor);
-	        taskInfo.setTaskId(taskId);
+	        taskInfo.setId(taskId);
 		return taskInfo;
 	}
 

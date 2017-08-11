@@ -2,7 +2,8 @@ package com.da.activiti.model.document;
 
 public class TaskInfo {
 
-	private int taskId;
+	private int id;
+	
 	private String taskName;
 
 	private String taskDescription;
@@ -17,6 +18,14 @@ public class TaskInfo {
 	
 	private String processId ; 
 	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	public String getProcessId() {
 		return processId;
 	}
@@ -33,14 +42,6 @@ public class TaskInfo {
 
 	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
-	}
-
-	public int getTaskId() {
-		return taskId;
-	}
-
-	public void setTaskId(int taskId) {
-		this.taskId = taskId;
 	}
 
 	public String getTaskName() {

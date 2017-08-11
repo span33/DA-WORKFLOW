@@ -2,8 +2,10 @@ package com.da.activiti.FormBuilder;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.activiti.engine.IdentityService;
@@ -58,8 +60,19 @@ public class FormService {
 		 return jsonInString;
 	}
 	
-	public List<ProcessUserfomInfo>  userFormsByUserId (String userId) {
-		List<ProcessUserfomInfo>  retList = formsDao.userFormsListByUserId(userId) ;
+	public List<ProcessUserfomInfo>  userFormsByUserId (String userName) {
+		List<ProcessUserfomInfo>  retList = formsDao.userFormsListByUserId(userName) ;
+		retList.forEach(index->{
+			index.setFormLink("userProcessFormId="+index.getId()+"&docType="+index.getDocType());
+		}) ;
+		return retList ;
+	}
+	
+	public List<ProcessUserfomInfo>  userFormsByCurrentUserRoleType (String userName) {
+		 List<Group> groups = this.identityService.createGroupQuery().groupMember(userName).groupType("security-role").list();
+		Set <String> groupIds = new HashSet<>() ;
+		 groups.forEach(index -> groupIds.add(index.getId()));
+		 List<ProcessUserfomInfo>  retList = formsDao.userFormsListByGroups(groupIds) ;
 		retList.forEach(index->{
 			index.setFormLink("userProcessFormId="+index.getId()+"&docType="+index.getDocType());
 		}) ;

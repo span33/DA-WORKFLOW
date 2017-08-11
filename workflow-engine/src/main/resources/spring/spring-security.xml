@@ -26,7 +26,7 @@
         </session-management>
 		
 		<intercept-url pattern="/admin/**" access="hasRole('Admin')" />
-        <intercept-url pattern="/**" access="hasAnyRole('Submitter','Approver','Admin')" />
+        <intercept-url pattern="/**" access="hasAnyRole('Submitter','user','Approver','Admin')" />
 
         <form-login login-page="/login.htm" always-use-default-target="false" default-target-url="/"
                     authentication-failure-url="/loginfailed.htm" />

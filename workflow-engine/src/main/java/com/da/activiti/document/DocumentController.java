@@ -45,7 +45,7 @@ public class DocumentController extends BaseController {
 		super.addModelInfo(model, request);
 		List<Group> groups = userService.getAssignmentGroups(request.getRemoteUser());
 		model.addAttribute("groups", groups);
-		model.addAttribute("userForms", formService.userFormsByUserId(currentUserName()));
+		model.addAttribute("userForms", formService.userFormsByCurrentUserRoleType(currentUserName()));
 	}
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) {

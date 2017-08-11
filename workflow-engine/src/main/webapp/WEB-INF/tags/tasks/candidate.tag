@@ -50,7 +50,9 @@
                             </a>
                         </h4>
                     </div>
-                    <c:choose>
+                    <tf:userApproval candidateTask="${candidateTask}"/>
+                    <%-- <c:choose>
+                    
                         <c:when test="${fn:startsWith(candidateTask.taskDefinitionKey, userApprovalTask )}">
                             <tf:userApproval candidateTask="${candidateTask}"/>
                         </c:when>
@@ -63,7 +65,7 @@
                         <c:otherwise>
                             <tf:unknown candidateTask="${candidateTask}"/>
                         </c:otherwise>
-                    </c:choose>
+                    </c:choose> --%>
                 </div>
             </c:forEach>
         </div>

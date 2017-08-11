@@ -37,17 +37,13 @@ public class JdbcProcessDao extends BaseDao implements ProcessDao {
 		LOG.debug("Got count: {} of book reports", count);
 		return count;
 	}
-	
-	
 	public int getCount(String processName) {
 		String sql = "SELECT count(*) FROM PROCESS where process_name=:processName";
 		Map<String, String> params = ImmutableMap.of("processName", processName);
-		@SuppressWarnings("unchecked")
 		int count = this.namedJdbcTemplate.queryForObject(sql, params, Integer.class);
 		LOG.debug("Got count: {} of book reports", count);
 		return count;
 	}
-
 	@Override
 	public List<ProcessInfo> readAll() {
 		// TODO Auto-generated method stub
@@ -56,9 +52,7 @@ public class JdbcProcessDao extends BaseDao implements ProcessDao {
 		List<ProcessInfo> processInfos = this.namedJdbcTemplate.query(sql, new ProcessRowMapper());
 		LOG.debug("got all book reports: {}", processInfos.size());
 		return processInfos;
-
 	}
-
 	@Override
 	public List<ProcessInfo> readAllSubprocess(int processId) {
 		// TODO Auto-generated method stub
@@ -68,9 +62,7 @@ public class JdbcProcessDao extends BaseDao implements ProcessDao {
 		List<ProcessInfo> processInfos = this.namedJdbcTemplate.query(sql, params, new ProcessRowMapper());
 		LOG.debug("got all book reports: {}", processInfos.size());
 		return processInfos;
-
 	}
-
 	@Override
 	public List<ProcessInfo> readPage(PagingCriteria criteria) {
 		// TODO Auto-generated method stub
@@ -121,25 +113,20 @@ public class JdbcProcessDao extends BaseDao implements ProcessDao {
 		return Long.toString(keyHolder.getKey().longValue());
 	}
 	
-	public String update(TaskInfo obj) {
+	public boolean update(TaskInfo obj) {
 		LOG.debug("Updating  TaskInfo into SQL backend: {}", obj);
 
 		String sql = "update  Task set task_name =:taskName, task_description =:taskDescription, task_owner =:taskOwner, task_type =:taskType,  task_status =:taskStatus, task_actor =:actorId,process_id =:processId "
-				+ " where task_id=:task";
-		KeyHolder keyHolder = new GeneratedKeyHolder();
+				+ " where task_id=:id";
 		BeanPropertySqlParameterSource source = new BeanPropertySqlParameterSource(obj);
-		this.namedJdbcTemplate.update(sql, source, keyHolder);
-		return Long.toString(keyHolder.getKey().longValue());
+		return namedJdbcTemplate.update(sql, source) > 0 ;
 	}
 	
-	public String delete(TaskInfo obj) {
+	public boolean delete(TaskInfo obj) {
 		LOG.debug("Deleting  TaskInfo into SQL backend: {}", obj);
-
-		String sql = "delete from   Task where task_id=:taskId  ";
-		KeyHolder keyHolder = new GeneratedKeyHolder();
+		String sql = "delete from   Task where task_id=:id  ";
 		BeanPropertySqlParameterSource source = new BeanPropertySqlParameterSource(obj);
-		this.namedJdbcTemplate.update(sql, source, keyHolder);
-		return Long.toString(keyHolder.getKey().longValue());
+		return this.namedJdbcTemplate.update(sql, source) > 0 ;
 	}
 
 	@Override
@@ -159,8 +146,6 @@ public class JdbcProcessDao extends BaseDao implements ProcessDao {
 		source.registerSqlType("docType", Types.VARCHAR);
 		int updated = this.namedJdbcTemplate.update(sql, source);
 		LOG.debug("updated: {} Process", updated);
-		// return Long.toString(keyHolder.getKey().longValue());
-
 	}
 
 	@Override

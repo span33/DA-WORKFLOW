@@ -1,6 +1,5 @@
 package com.da.activiti.document;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.da.activiti.FormBuilder.FormsDao;
 import com.da.activiti.document.dao.ProcessDao;
 import com.da.activiti.exception.BusinessException;
 import com.da.activiti.model.document.ProcessInfo;
@@ -27,6 +27,9 @@ public class ProcessService  {
     private static final Logger LOG = LoggerFactory.getLogger(ProcessService.class);
    
     @Autowired protected ProcessDao processDao;
+    
+    @Autowired protected FormsDao formsDao;
+    
     @Transactional(readOnly = true)
     public List<Map<String, Object>> processesListByTraskMappingId(int mappingId) {
         return processDao.getProcessListByTaskMappingId(mappingId);
@@ -148,17 +151,38 @@ public class ProcessService  {
     	if(!StringUtils.isBlank(processInfo.getDepartmentId())) {
     		processInfo.setDepartmentList(ServiceHelper.convertCommaSepratedStringToList(processInfo.getDepartmentId()));
     	}
-    	return processDao.create(processInfo);
+    	
+    	String processId =  processDao.create(processInfo);
+    	processInfo.setProcessId(Integer.parseInt(processId));
+    	if(StringUtils.isBlank(processInfo.getParent())) {
+    		formsDao.updateProcessUserMapping(processInfo);
+    	}
+    	return processId ;
     }
     
     @Transactional
     public void editProcess(ProcessInfo processInfo){
     	 processDao.update(processInfo);
+    	 if(StringUtils.isBlank(processInfo.getParent())) {
+     		formsDao.updateProcessUserMapping(processInfo);
+     	}
     }
    
     @Transactional
     public void deleteProcess(int  processId){
     	 processDao.delete(processId);
+    }
+    
+    @Transactional
+    public void editTask(TaskInfo taskInfo){
+    	 processDao.update(taskInfo);
+    }
+   
+    @Transactional
+    public void deleteTask(int id){
+    	TaskInfo taskInfo = new TaskInfo();
+    	taskInfo.setId(id);
+    	 processDao.delete(taskInfo);
     }
 
     @Transactional(readOnly = true)
