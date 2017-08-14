@@ -125,7 +125,7 @@ public class FormService {
 	}
 	
 	@Transactional
-	public List<Field>  fetchWordFlowDataById(String workFlowId,int processUserFormId) {
+	public List<Field>  fetchWorkFlowDataById(String workFlowId,int processUserFormId) {
 		List<Field> fieldList = fetchFormFields(processUserFormId);
 		fieldList.forEach(index-> index.setJsonData(null));
 		System.out.println("fieldList::::"+convertListToJson(fieldList));

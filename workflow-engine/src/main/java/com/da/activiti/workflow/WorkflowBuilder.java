@@ -28,6 +28,7 @@ import org.activiti.engine.RepositoryService;
 import org.activiti.engine.identity.Group;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
+import org.activiti.engine.runtime.ProcessInstance;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -86,12 +87,18 @@ public class WorkflowBuilder {
 
 				dynamicUserTasks.add(DynmicUserTask(subprocess.getTaskList().get(counter), counter));
 			}
+			
+			/*UserTask submitTask = new UserTask();
+			submitTask.setId("submitDocUserTask");
+			submitTask.setName("Submit doc to Workflow");
+			process.addFlowElement(submitTask);
+			process.addFlowElement(createSequenceFlow(startEvent.getId(), submitTask.getId()));*/
 
 			if (prevsub == null) {
-				prevsub = createDynamicSubProcess(dynamicUserTasks, errorDef, subprocess.getProcessName());
+				prevsub = createDynamicSubProcess(dynamicUserTasks, errorDef, subprocess.getProcessName().replaceAll(" ", ""));
 				process.addFlowElement(prevsub);
 				process.addFlowElement(createSequenceFlow(startEvent.getId(), prevsub.getId()));
-				process.addFlowElement(WorkflowBuilder.createSequenceFlow(startEvent.getId(), prevsub.getId()));
+				//process.addFlowElement(WorkflowBuilder.createSequenceFlow(startEvent.getId(), prevsub.getId()));
 
 				BoundaryEvent boundaryEvent = new BoundaryEvent();
 				boundaryEvent.setId(WFConstants.REJECTED_BOUNDARY_EVENT_ID);
@@ -106,7 +113,7 @@ public class WorkflowBuilder {
 				nextsub = createDynamicSubProcess(dynamicUserTasks, errorDef, subprocess.getProcessName().replaceAll(" ", ""));
 				process.addFlowElement(nextsub);
 				process.addFlowElement(createSequenceFlow(prevsub.getId(), nextsub.getId()));
-				process.addFlowElement(WorkflowBuilder.createSequenceFlow(prevsub.getId(), nextsub.getId()));
+				//process.addFlowElement(WorkflowBuilder.createSequenceFlow(prevsub.getId(), nextsub.getId()));
 			}
 
 		}
@@ -120,6 +127,8 @@ public class WorkflowBuilder {
 				.addBpmnModel(deploymentId + "dynamic-model.bpmn", model).name("Dynamic process deployment").deploy();
 		ProcessDefinition processDefinition = this.repoSrvc.createProcessDefinitionQuery()
 				.processDefinitionKey(deploymentId).latestVersion().singleResult();
+		/*ProcessInstance processInstance =
+				 workflowService.runtimeService.startProcessInstanceByKey(deploymentId);*/
 		/*
 		 * ProcessInstance processInstance =
 		 * workflowService.runtimeService.startProcessInstanceByKey(deploymentId
@@ -362,9 +371,7 @@ public class WorkflowBuilder {
 		boundaryEvent.setAttachedToRef(sub);
 		boundaryEvent.addEventDefinition(errorDef);
 		process.addFlowElement(boundaryEvent);
-
 		process.addFlowElement(createSequenceFlow(boundaryEvent.getId(), submitTask.getId(), "Rejected"));
-
 		EndEvent endEvent = new EndEvent();
 		endEvent.setId("end");
 
@@ -663,7 +670,7 @@ public class WorkflowBuilder {
 		List<Group> groups = this.identityService.createGroupQuery().groupMember(taskInfo.getActorId()).groupType("security-role").list();
 		List <String> groupNames = new ArrayList<>() ;
 		groups.forEach(index -> groupNames.add(index.getId()));
-		//dut.setCandidateGroups(groupNames);
+		dut.setCandidateGroups(groupNames);
 		dut.setCandidateUsers(Lists.newArrayList(taskInfo.getActorId()));
 		dut.setName(taskInfo.getTaskName());
 		dut.setId(taskInfo.getTaskName());

@@ -1,13 +1,11 @@
 package com.da.activiti.FormBuilder;
 
 import java.sql.Types;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.activiti.engine.identity.Group;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -52,7 +50,7 @@ public class JdbcFormsDao extends BaseDao implements FormsDao {
 	
 	@Override
 	public boolean  updateProcessUserMapping(ProcessInfo processInfo) {
-		String sql = "update process_userfom  set process_id=:id, doctype=:docType, group_id =:groupId ,user_Id=:processOwner where id =:processTemplateId " ;
+		String sql = "update process_userfom  set process_id=:processId, doctype=:docType, group_id =:groupId ,user_Id=:processOwner where id =:processTemplateId " ;
 		BeanPropertySqlParameterSource source = new BeanPropertySqlParameterSource(processInfo);
 		return this.namedJdbcTemplate.update(sql, source) > 0 ;
 

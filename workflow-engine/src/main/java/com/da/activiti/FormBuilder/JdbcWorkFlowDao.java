@@ -4,11 +4,10 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
-import org.activiti.engine.identity.Group;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,14 +33,15 @@ public class JdbcWorkFlowDao extends BaseDao implements WorkFlowDao {
 
 	@Override
 	public String createWorkFlow(WorkFlowBean workFlowBean) {
-		String sql = "INSERT INTO workflow (doc_type,process_userform_id,DOC_STATE,created_by,GROUP_ID)"
-				+ "VALUES (:docType, :userProcessFormId, :docState,:createdBy,:groupId)";
+		String id  = UUID.randomUUID().toString();
+		workFlowBean.setId(id);
+		String sql = "INSERT INTO workflow (id ,doc_type,process_userform_id,DOC_STATE,created_by,GROUP_ID)"
+				+ "VALUES (:id,:docType, :userProcessFormId, :docState,:createdBy,:groupId)";
 		BeanPropertySqlParameterSource source = new BeanPropertySqlParameterSource(workFlowBean);
 		source.registerSqlType("docState", Types.VARCHAR);
         source.registerSqlType("docType", Types.VARCHAR);
-		KeyHolder keyHolder = new GeneratedKeyHolder();
-		this.namedJdbcTemplate.update(sql, source, keyHolder);
-		return  Long.toString(keyHolder.getKey().longValue());
+		this.namedJdbcTemplate.update(sql, source);
+		return  id;
 	}
 
 	@Override
@@ -69,8 +69,8 @@ public class JdbcWorkFlowDao extends BaseDao implements WorkFlowDao {
 
 	@Override
 	public List<WorkFlowBean> readAll() {
-		// TODO Auto-generated method stub
-		return null;
+		String sql = "SELECT * FROM workflow";
+        return  this.namedJdbcTemplate.query(sql, new WorkFlowRowMapper());
 	}
 
 	@Override

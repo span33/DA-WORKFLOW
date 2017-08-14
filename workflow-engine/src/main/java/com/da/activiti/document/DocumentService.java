@@ -86,16 +86,13 @@ public class DocumentService {
     }
     
     @Transactional(readOnly = true)
-    public List<Document> getDocumentsByUser(String userId) {
+    public List<Document> getDocumentsByUser(final String userId) {
         List<Document> docs = Lists.newArrayList();
-        
-        User user =  identityService.createUserQuery().memberOfGroup("Approver").userId(userId).singleResult() ;
-        for (Document doc : this.journalDao.readAll()) {
-            if (doc.getAuthor().equals(userId) || user!= null) {
+        for (Document doc : this.workFlowDao.readAll()) {
+            if (doc.getAuthor().equals(userId)) {
                 docs.add(doc);
             }
         }
-        Collections.sort(docs);
         return docs;
     }
 
@@ -151,6 +148,8 @@ public class DocumentService {
             processVariables.put("docType", doc.getDocType());
             processVariables.put("processUserFormId", processUserFormId);
             processVariables.put("workFlowId",workFlowId);
+            processVariables.put("approved", true);
+            LOG.debug("processVariables {}. ", processVariables);
             taskService.setVariables(task.getId(), processVariables);
             taskService.complete(task.getId());
             });
@@ -198,6 +197,7 @@ public class DocumentService {
             processVariables.put("businessKey", doc.getId());
             processVariables.put("docAuthor", doc.getAuthor());
             processVariables.put("docType", doc.getDocType());
+            processVariables.put("approved", false);
             taskService.setVariables(task.getId(), processVariables);
             taskService.complete(task.getId());
             });

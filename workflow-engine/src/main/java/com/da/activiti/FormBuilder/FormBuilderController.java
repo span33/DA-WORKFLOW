@@ -196,7 +196,7 @@ public class FormBuilderController extends BaseController {
 		model.addAttribute("historicTasks", hts);
 		model.addAttribute("userProcessFormId", processUserFormId);
 		model.addAttribute("docType", docType);
-		model.addAttribute("fields", formService.fetchWordFlowDataById(workFlowId, processUserFormId));
+		model.addAttribute("fields", formService.fetchWorkFlowDataById(workFlowId, processUserFormId));
 		if (doc.isEditable(doc.getAuthor(), currentUserName())) {
 			return "FormBuilder/view";
 		}

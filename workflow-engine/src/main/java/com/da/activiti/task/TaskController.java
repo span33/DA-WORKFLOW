@@ -53,7 +53,7 @@ public class TaskController extends BaseController {
         return "tasks";
     }
 
-    @RequestMapping(value = "/tasks", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    /*@RequestMapping(value = "/tasks", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Response<List<CandidateTask>>> getTasks(HttpServletRequest request) {
         String userName = currentUserName();
         LOG.debug("TaskController: tasks for user: " + userName);
@@ -61,7 +61,7 @@ public class TaskController extends BaseController {
         LOG.debug("returning json response of: " + tasks.size() + " for user : " + userName);
         Response res = new Response(true, "tasks for user: " + userName, tasks);
         return new ResponseEntity<Response<List<CandidateTask>>>(res, HttpStatus.OK);
-    }
+    }*/
 
     @RequestMapping(value = "/tasks/approve", method = RequestMethod.POST)
     public String approve(@Valid @ModelAttribute TaskApprovalForm approvalForm,

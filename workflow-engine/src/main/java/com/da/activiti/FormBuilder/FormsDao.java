@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.activiti.engine.identity.Group;
-
 import com.da.activiti.FormBuilder.gen.models.Field;
 import com.da.activiti.dao.IBaseDao;
 import com.da.activiti.document.ProcessUserfomInfo;

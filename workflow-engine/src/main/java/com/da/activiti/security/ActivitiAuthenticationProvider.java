@@ -83,7 +83,7 @@ public class ActivitiAuthenticationProvider extends AbstractUserDetailsAuthentic
             groupStr.add(g.getId());
         }
         Collection<GrantedAuthority> auths = AuthorityUtils.commaSeparatedStringToAuthorityList(Joiner.on(",").skipNulls().join(groupStr));
-        boolean enabled = groupStr.contains("user")||  groupStr.contains("Admin");
+        boolean enabled = groupStr.contains("user")||  groupStr.contains("Admin") ||  groupStr.contains("Approver");
 
         UserDetails userDetails = new org.springframework.security.core.userdetails.User(userName, pw, enabled, true, true, true, auths);
         LOG.debug("returning new userDetails: {}", userDetails);
