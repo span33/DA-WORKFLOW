@@ -8,14 +8,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.identity.Group;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.da.activiti.FormBuilder.gen.models.Field;
 import com.da.activiti.FormBuilder.gen.models.Value;
+import com.da.activiti.document.DocumentService;
 import com.da.activiti.document.ProcessUserfomInfo;
 import com.da.activiti.exception.BusinessException;
 import com.da.activiti.model.FormTemplateInfo;
@@ -35,6 +39,35 @@ public class FormService {
 	@Autowired protected WorkFlowDao workFlowDao ;
 	
 	@Autowired protected IdentityService identityService ;
+	
+	@Autowired protected DocumentService  documentService ;
+	
+	
+	
+	@Transactional
+	public String  excute(HttpServletRequest request ,RedirectAttributes redirectAttributes,int userProcessFormId,String userName ) {
+		Map<String, String[]> requestMap = request.getParameterMap();
+		String workFlowid = saveWorkFlowFormData(requestMap, DocState.DRAFT, userName);
+		String msg = "WorkFow id : " + workFlowid + " -- WorkFlow Created Successfully ";
+		redirectAttributes.addFlashAttribute("msg", msg);
+		checkSubmit(request.getParameter("isSubmit"), workFlowid, redirectAttributes, request.getParameter("docType"),
+				userProcessFormId);
+		return workFlowid ;
+	}
+	
+	private void checkSubmit(String isSubmit, String workFlowId, RedirectAttributes redirAttr, String docType,
+			int userProcessFormId) {
+		if (isSubmit.equalsIgnoreCase("on")) {
+			//LOG.debug("Submitting to dynamic workflow workFlowId {}", workFlowId);
+			this.documentService.submitToWorkflow(docType, workFlowId, userProcessFormId);
+		}
+		if (isSubmit.equalsIgnoreCase("on")) {
+			redirAttr.addFlashAttribute("msg", "Your Journal has been submitted to the workflow.</br>"
+					+ "You will receive alerts as it processed.");
+		} else {
+			redirAttr.addFlashAttribute("msg", "Your invoice has been Saved");
+		}
+	}
 	
 	
 	@Transactional

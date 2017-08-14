@@ -252,7 +252,7 @@
             });
             
             grid.navButtonAdd('#ptreegrid', {
-                caption: "Save",
+                caption: "CreateWorkFlow",
                 buttonicon: "ui-icon-eject",
                 onClickButton: saveGridData,
                 position: "last",
@@ -689,8 +689,8 @@
                   {name: "taskDescription", width: 130 , editable:true},
                   {name: "userForm", index:'userForm', width:180, align:"center" ,editable:true, edittype: 'select',editoptions: { multiple: false, value: userFormList }, editrules: { required: false }, formatoptions: { disabled: false}},
                   {name: "taskOwner", width: 130 , editable:true,editoptions:{defaultValue:$(this).jqGrid("getLocalRow", parentRowKey).processOwner}},
-                  {name: "taskType", width: 130 , edittype: 'select',editoptions:{value:"APPROVE_REJECT:APPROVE_REJECT;COLLABORATION:COLLABORATION;USERTASK:USERTASK"},editable:true},
-                  {name: "taskStatus", width: 130 , editable:true},
+                  {name: "taskType", width: 130 , edittype: 'select',editoptions:{value:"APPROVE_REJECT:APPROVE_REJECT;COLLABORATION:COLLABORATION;USERTASK:USERTASK;SYSTEMTASK:SYSTEMTASK"},editable:true},
+                  {name: "taskStatus", width: 130 , editable:true ,edittype: 'select',editoptions:{value:"CONFIGURED:CONFIGURED"}},
                   {name: "actorId", width: 130 , editable:true,edittype: 'select',editrules: { required: true },editoptions:{value:approverList}},
                   {name: "processId", width: 130 ,editable:true, editoptions:{defaultValue:$(this).jqGrid("getLocalRow", parentRowKey).processId}},
                 /*   {

@@ -414,8 +414,10 @@ public class WorkflowService {
     
     
     public String getProcesDefinationByProcessName(String processName ) {
+    	
     	 ProcessDefinition pd =
                  this.repoSrvc.createProcessDefinitionQuery().processDefinitionKey(processName).latestVersion().singleResult();
+    	
    return pd.getId();
     }
    protected StartEvent createStartEvent() { 
@@ -429,5 +431,10 @@ public class WorkflowService {
        endEvent.setId("end"); 
        return endEvent; 
       } 
+    public void deleteWroflow(String processName) {
+    	 ProcessDefinition pd =
+                 this.repoSrvc.createProcessDefinitionQuery().processDefinitionKey(processName).latestVersion().singleResult();
+    	repoSrvc.deleteDeployment(pd.getDeploymentId(), true);
     
+    }
 }

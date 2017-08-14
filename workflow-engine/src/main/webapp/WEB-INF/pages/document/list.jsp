@@ -64,7 +64,7 @@
             <c:otherwise>
                 <table class="table table-striped">
                     <tr>
-                        <th>Journal Id</th>
+                        <th>Document Id</th>
                         <th>Author</th>
                         <th>Group</th>
                         <th>Created Date</th>

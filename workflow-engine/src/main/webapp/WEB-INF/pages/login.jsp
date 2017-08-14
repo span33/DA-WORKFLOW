@@ -80,9 +80,9 @@
         </div>
 
 
-        <div class="centered" style="margin: 15px 0;">
+       <%--  <div class="centered" style="margin: 15px 0;">
             <h4><a href="${pageContext.request.contextPath}/userRegistration.htm">New User Registration</a></h4>
-        </div>
+        </div> --%>
 
 
         </button>

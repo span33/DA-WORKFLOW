@@ -15,7 +15,10 @@ public enum DocState {
     COLLABORATED,
     PUBLISHED,
     EMAILED,
+    WAITING_FOR_DOCUMENT_TO_EMAIL,
+    WAITING_FOR_DOCUMENT_TO_PUBLISH,
 	WAITING_FOR_DOCUMENT_TO_SUBMIT,
+	GENRIC_STATUS,
 	DOCUMENT_SUBMITED;
 	
 	public static DocState getDocStateByName(String name){
@@ -24,6 +27,17 @@ public enum DocState {
    	        	return docState ;
    	        }
    	     }	
-   	 return null ;
+   	 return GENRIC_STATUS ;
    }
+	
+	public static DocState getDocStateStatusByName(String name){
+		String lname = name.split("_")[0] ;
+		lname = "WAITING_FOR_DOCUMENT_TO_"+lname ;
+	   	 for(DocState docState : DocState.values()) {
+	   	        if(docState.name().equalsIgnoreCase(lname)) {
+	   	        	return docState ;
+	   	        }
+	   	     }	
+	   	 return GENRIC_STATUS ;
+	   }
 }

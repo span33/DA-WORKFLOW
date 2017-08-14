@@ -15,6 +15,7 @@ public class WorkFlowBean extends Document implements Serializable {
 		this.userProcessFormId = userProcessFormId;
 		this.docState = docState;
 		this.createdBy = createdBy;
+		this.title = docType + " Document" ;
 	}
 	
 	public WorkFlowBean() {

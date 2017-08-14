@@ -33,15 +33,14 @@ public class JdbcWorkFlowDao extends BaseDao implements WorkFlowDao {
 
 	@Override
 	public String createWorkFlow(WorkFlowBean workFlowBean) {
-		String id  = UUID.randomUUID().toString();
-		workFlowBean.setId(id);
-		String sql = "INSERT INTO workflow (id ,doc_type,process_userform_id,DOC_STATE,created_by,GROUP_ID)"
-				+ "VALUES (:id,:docType, :userProcessFormId, :docState,:createdBy,:groupId)";
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		String sql = "INSERT INTO workflow (doc_type,process_userform_id,DOC_STATE,created_by,GROUP_ID)"
+				+ "VALUES (:docType, :userProcessFormId, :docState,:createdBy,:groupId)";
 		BeanPropertySqlParameterSource source = new BeanPropertySqlParameterSource(workFlowBean);
 		source.registerSqlType("docState", Types.VARCHAR);
         source.registerSqlType("docType", Types.VARCHAR);
-		this.namedJdbcTemplate.update(sql, source);
-		return  id;
+		this.namedJdbcTemplate.update(sql, source,keyHolder);
+		return  Long.toString(keyHolder.getKey().longValue());
 	}
 
 	@Override

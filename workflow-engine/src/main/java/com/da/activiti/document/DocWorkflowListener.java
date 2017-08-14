@@ -111,7 +111,7 @@ public class DocWorkflowListener {
 	 */
 	public void onCreateGenricTask(Execution execution, DelegateTask task) {
 
-		ProcessInstance pi = runtimeService.createProcessInstanceQuery()
+		/*ProcessInstance pi = runtimeService.createProcessInstanceQuery()
 				.processInstanceId(execution.getProcessInstanceId()).singleResult();
 
 		String docId = pi.getBusinessKey();
@@ -123,10 +123,10 @@ public class DocWorkflowListener {
 			return;
 		}
 		LOG.debug("Setting doc: {} to state = {}", doc.getTitle(),
-				DocState.getDocStateByName(task.getEventName()) != null
-						? DocState.getDocStateByName(task.getEventName()).name() : "");
-		doc.setDocState(DocState.getDocStateByName(task.getEventName()));
-		this.docSrvc.updateDocument(doc);
+				DocState.getDocStateStatusByName(task.getEventName()) != null
+						? DocState.getDocStateStatusByName(task.getEventName()).name() : "");
+		doc.setDocState(DocState.getDocStateStatusByName(task.getEventName()));
+		this.docSrvc.updateDocument(doc);*/
 
 	}
 
@@ -149,11 +149,13 @@ public class DocWorkflowListener {
 		if (doc == null) {
 			return;
 		}
-		LOG.debug("Setting doc: {} to state = {}", doc.getTitle(), DocState.COLLABORATED.name());
-		doc.setDocState(DocState.DOCUMENT_SUBMITED);
+		LOG.debug("Setting doc: {} to state = {}", doc.getTitle(),
+				DocState.getDocStateStatusByName(task.getName()) != null
+						? DocState.getDocStateStatusByName(task.getName()).name() : "");
+		doc.setDocState(DocState.getDocStateStatusByName(task.getName()));
 		this.docSrvc.updateDocument(doc);
-
-		String message = String.format("%s entitled '%s' has been collaborated on. ", doc.getDocType(), doc.getTitle());
+		doc.setTitle(doc.getDocType() + " Document");
+		String message = String.format("%s entitled '%s' has been %s on. ", doc.getDocType(),doc.getDocState(), doc.getTitle());
 		this.alertService.sendAlert(doc.getAuthor(), Alert.SUCCESS, message);
 
 	}

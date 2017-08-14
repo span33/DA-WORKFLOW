@@ -101,16 +101,18 @@ public class FormBuilderController extends BaseController {
 	public @ResponseBody ResponseEntity<Response> saveDynamicFormData(ModelMap model,
 			@RequestParam int userProcessFormId, HttpServletRequest request, RedirectAttributes redirectAttributes) {
 		Map<String, String[]> requestMap = request.getParameterMap();
-		String workFlowid = formService.saveWorkFlowFormData(requestMap, DocState.DRAFT, currentUserName());
+		/*String workFlowid = formService.saveWorkFlowFormData(requestMap, DocState.DRAFT, currentUserName());
 		String msg = "WorkFow id : " + workFlowid + " -- WorkFlow Created Successfully ";
 		redirectAttributes.addFlashAttribute("msg", msg);
 		checkSubmit(request.getParameter("isSubmit"), workFlowid, redirectAttributes, request.getParameter("docType"),
-				userProcessFormId);
+				userProcessFormId);*/
+		String workFlowid = formService.excute(request, redirectAttributes, userProcessFormId, currentUserName());
 		Response<String> res = new Response<String>(true, (String) redirectAttributes.getFlashAttributes().get("msg"));
 		res.setData(workFlowid);
 		return new ResponseEntity<Response>(res, HttpStatus.OK);
 	}
 
+	
 	
 	@RequestMapping(value = "/listForms.htm", method = RequestMethod.GET)
 	public List<ProcessUserfomInfo> getUserFormsByUserId(ModelMap model, @RequestParam String userId,
