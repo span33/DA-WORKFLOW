@@ -25,12 +25,15 @@
     //<![CDATA[
                var jsonData= [{"1" : "1"},{"2" : "2"},{"3":"3"}] ;
                var groupData= [{"Admin" : "Admin"},{"Approver" : "Approver"},{"User":"User"}] ;
+               var dynprocesslist ;
+               var departmentList;
+               var userList ;
                
         $(function(){
         	var departmentList = ajaxCall('/admin/process/departmentList');
         	departmentList = getOption(departmentList);
-            var userFormList = ajaxCall('/forms/userFormList');
-            var userList = ajaxCall('/admin/process/userListByDepartments?departments=CT');
+            userFormList = ajaxCall('/forms/userFormList');
+             userList = ajaxCall('/admin/process/userListByDepartments?departments=CT');
             console.log(userList)
              console.log(departmentList);
             userList = getOptionForUser(userList);
@@ -133,7 +136,7 @@
                     }
                     return -1;
                 }
-                var processlist ;
+               
                /*  resetStatesValues = function () {
                     // set 'value' property of the editoptions to initial state
                     grid.jqGrid('setColProp', 'State', { editoptions: { value: states} });
@@ -169,7 +172,7 @@
                     repeatitems: true,
                     id: "id",
                     root: function (obj) {
-                    	processlist =obj.data;
+                    	dynprocesslist =obj.data;
                         return obj.data;
                     }
                 },
@@ -575,6 +578,7 @@
             }
             
             function getOptionForParent(inputData){
+            	console.log(inputData);
         		var dropDownData = '' ;
         		 $.each(inputData, function(i, obj) {
         			 dropDownData =dropDownData+ obj['processId']+":"+obj['processId'] ;
@@ -593,7 +597,7 @@
             // add a table and pager HTML elements to the parent grid row - we will render the child grid here
             $('#' + parentRowID).append('<table id=' + childGridID + '></table><div id=' + childGridPagerID + ' class=scroll></div>');
 			
-            processlist =getOptionForParent(processlist);
+            processlist =getOptionForParent(dynprocesslist);
             
            
             $("#" + childGridID).jqGrid({
