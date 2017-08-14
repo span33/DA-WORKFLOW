@@ -110,18 +110,24 @@ public class DocWorkflowListener {
 	 * @param task
 	 */
 	public void onCreateGenricTask(Execution execution, DelegateTask task) {
-		/*
-		 * ProcessInstance pi = runtimeService.createProcessInstanceQuery().
-		 * processInstanceId(execution.getProcessInstanceId()).singleResult();
-		 * 
-		 * String docId = pi.getBusinessKey(); if (StringUtils.isBlank(docId)) {
-		 * return; } Document doc =
-		 * this.docSrvc.getDocument(DocType.JOURNAL,docId); if (doc == null) {
-		 * return; } LOG.debug("Setting doc: {} to state = {}", doc.getTitle(),
-		 * DocState.WAITING_FOR_DOCUMENT_TO_SUBMIT.name());
-		 * doc.setDocState(DocState.WAITING_FOR_DOCUMENT_TO_SUBMIT);
-		 * this.docSrvc.updateDocument(doc);
-		 */
+
+		ProcessInstance pi = runtimeService.createProcessInstanceQuery()
+				.processInstanceId(execution.getProcessInstanceId()).singleResult();
+
+		String docId = pi.getBusinessKey();
+		if (StringUtils.isBlank(docId)) {
+			return;
+		}
+		Document doc = this.docSrvc.getDocument(docId);
+		if (doc == null) {
+			return;
+		}
+		LOG.debug("Setting doc: {} to state = {}", doc.getTitle(),
+				DocState.getDocStateByName(task.getEventName()) != null
+						? DocState.getDocStateByName(task.getEventName()).name() : "");
+		doc.setDocState(DocState.getDocStateByName(task.getEventName()));
+		this.docSrvc.updateDocument(doc);
+
 	}
 
 	/**

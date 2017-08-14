@@ -190,12 +190,14 @@ div#diagram {
     	    var result=data;
     	    $("#displaymsgTag").show();
     	    $("#dispalyMessage").html('<Strong>'+result.message+'</Strong>');
+    	    window.scrollTo(0, 0);
     	    },
     	    
     	    error: function (e) {
     	    	 $("#displaymsgTag").show();
                 $("#displaymsgTag").html('<Strong>'+e.responseText+'</Strong>');
                 console.log("ERROR : ", e);
+                window.scrollTo(0, 0);
                
 
             }
