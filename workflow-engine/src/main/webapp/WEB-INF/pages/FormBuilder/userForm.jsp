@@ -69,7 +69,7 @@
                 ondblClickRow: function (rowid) {
                     var rowData = $(this).getRowData(rowid);
                     console.log(rowData);
-                    document.location.href = SERVLET_CONTEXT + "/admin/process/genrateForm?userFormId=" + rowData['id'];
+                    document.location.href = SERVLET_CONTEXT + "/admin/process/genrateForm?userFormId=" + rowData['id']+'&userFormName='+rowData['userform_name'];
                 },
                 height:'100%',
                 rowNum: 10,

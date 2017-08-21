@@ -25,18 +25,19 @@
 		<div id="dialog" title="Feature not supported" style="display: none">
 			<p>That feature is not supported.</p>
 		</div>
-		<div id="stage1" class="build-wrap"></div>
-		<form class="render-wrap"></form>
-		<br/><br/>
 		<div class="form-group">
-			<label class="col-md-4 control-label" for="userForm">User Form Name</label>
-			<div class="col-md-5">
+			<label class="col-md-4 control-label" for="userForm">Form Name</label>
+			<div class="col-md-4" style="margin-left: 100px;">
 				<input class="form-control" name="userForm" placeholder="USER FORM"
-					type="text" required="required" id="userForm" />
+					type="text" required="required" id="userForm" value = "${userFormName}" />
 				<input class="form-control" name="setFormData" placeholder="SETFORMDATA"
 					type="hidden"  id="setFormData"  />
 			</div>
 		</div>
+		<div id="stage1" class="build-wrap"></div>
+		<form class="render-wrap"></form>
+		<br/><br/>
+		
 		<button id="edit-form">Edit Form</button>
 		<div class="action-buttons">
 			<h2>Actions</h2>

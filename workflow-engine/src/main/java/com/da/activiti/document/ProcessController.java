@@ -64,8 +64,9 @@ public class ProcessController extends BaseController {
 	}
 
 	@RequestMapping(value = "/genrateForm", method = RequestMethod.GET)
-	public String genrateFormById(ModelMap model, HttpServletRequest request, @RequestParam String userFormId) {
+	public String genrateFormById(ModelMap model, HttpServletRequest request, @RequestParam String userFormId ,@RequestParam String userFormName) {
 		model.addAttribute("userFormId", userFormId);
+		model.addAttribute("userFormName", userFormName);
 		return "FormBuilder/buildform";
 	}
 
@@ -94,7 +95,7 @@ public class ProcessController extends BaseController {
 				Process process = workflowBuilder.createProcess(processinfo, processinfo.getSubProcessList());
 				String.join(msg, ",", process.getName());
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+			
 				e.printStackTrace();
 			}
 		});
