@@ -33,6 +33,8 @@
 			<div class="col-md-5">
 				<input class="form-control" name="userForm" placeholder="USER FORM"
 					type="text" required="required" id="userForm" />
+				<input class="form-control" name="setFormData" placeholder="SETFORMDATA"
+					type="hidden"  id="setFormData"  />
 			</div>
 		</div>
 		<button id="edit-form">Edit Form</button>
@@ -48,7 +50,7 @@
 			<button id="addField" type="button">Add Field</button>
 			<button id="removeField" type="button">Remove Field</button>
 			<button id="testSubmit" type="submit">Submit</button>
-			<button id="resetDemo" type="button">Reset Demo</button>
+			<button id="resetDemo" type="button">Reset</button>
 			<!-- <h2>i18n</h2>
       <select id="setLanguage">
         <option value="ar-TN" dir="rtl">ØªÙˆÙ†Ø³ÙŠ</option>
@@ -68,6 +70,9 @@
       </select> -->
 		</div>
 	</div>
+	<script>
+	 var  userFormId = ${userFormId} ;
+	</script>
 	<script
 		src="${pageContext.request.contextPath}/resources/formBuilder-master/demo/assets/js/vendor.js"></script>
 	<script
@@ -76,22 +81,47 @@
 		src="${pageContext.request.contextPath}/resources/formBuilder-master/demo/assets/js/form-render.min.js"></script>
 	<script
 		src="${pageContext.request.contextPath}/resources/formBuilder-master/docs/js/jquery.rateyo.min.js"></script>
-	<script
-		src="${pageContext.request.contextPath}/resources/formBuilder-master/demo/assets/js/demo.js"></script>
+	
 	<script
 		src="${pageContext.request.contextPath}/resources/js/bootstrap.js"></script>
 	<script
 		src="${pageContext.request.contextPath}/resources/js/bootbox.js"></script>
 	<script
 		src="${pageContext.request.contextPath}/resources/js/app/app.js"></script>
+		<script
+		src="${pageContext.request.contextPath}/resources/formBuilder-master/demo/assets/js/demo.js"></script>
 	<%-- <jsp:include page="/WEB-INF/pages/fragments/footer.jsp"/> --%>
 	<script>
     (function($){
+    	function ajaxCall(url) {
+        	var dataFromServer ;
+			$.ajax({
+				type : 'GET',
+				dataType : 'json',
+				url : SERVLET_CONTEXT + url,
+				async: false,
+				success : function(jsonData) {
+					dataFromServer= jsonData.data;
+				},
+				error: function (error) {
+	 	            alert("There was an error while accessing :::"+url+"::::::"+error);
+	 	        }
+			});
+			 
+			return JSON.stringify(dataFromServer);
+		}
         $(document).ready(function () {
-            $('nav-buildForms').addClass('active');
+        	$('li#nav-buildForms').addClass('active');
+            var setFormData =  ajaxCall('/admin/process/jsonDataForForm?userFormId='+userFormId) ;
+            $('#setFormData').val(setFormData);
+            console.log(setFormData);
+           $('#setData').trigger('click');
+           
         });
     })(jQuery);
 </script>
+
+	
 </body>
 
 </html>

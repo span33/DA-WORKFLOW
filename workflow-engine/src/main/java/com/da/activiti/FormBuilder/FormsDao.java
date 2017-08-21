@@ -23,5 +23,7 @@ public interface FormsDao extends IBaseDao<FormTemplateInfo> {
 	boolean updateProcessUserMapping(ProcessInfo processInfo);
 
 	public List<ProcessUserfomInfo> userFormsListByGroups(Set<String> groups);
+	
+	public List<ProcessUserfomInfo> userFormsListById(int id) ;
 
 }

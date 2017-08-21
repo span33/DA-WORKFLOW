@@ -20,6 +20,7 @@ public class FormTemplateInfo  extends Document implements Serializable{
 	private String createdBy ;
 	private String docType ;
 	private String jsonData ;
+	private String actualJsonData ;
 	private String userformName;
 	public String getUserformName() {
 		return userformName;
@@ -70,6 +71,12 @@ public class FormTemplateInfo  extends Document implements Serializable{
 	}
 	public void setFields(List<Field> fields) {
 		this.fields = fields;
+	}
+	public String getActualJsonData() {
+		return actualJsonData;
+	}
+	public void setActualJsonData(String actualJsonData) {
+		this.actualJsonData = actualJsonData;
 	}
 
 }

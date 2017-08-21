@@ -1,7 +1,6 @@
 package com.da.activiti.web;
 
-import com.da.activiti.model.Response;
-import com.google.common.collect.Maps;
+import java.util.Map;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -10,9 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.servlet.ModelAndView;
 
-import java.util.Map;
+import com.da.activiti.exception.BusinessException;
+import com.da.activiti.model.Response;
+import com.google.common.collect.Maps;
 
 /**
  * Annotated ControllerAdvice bean that globally configures all other controllers with exception handling, bean binding, etc.
@@ -54,6 +54,16 @@ public class DefaultControllerAdvice {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Response> handleException(Exception ex) {
+        LOG.error("Caught Exception - returning error response: {}", ex.getMessage());
+        LOG.error("Root cause: {}", ExceptionUtils.getRootCauseMessage(ex));
+        ex.printStackTrace();
+        Map<String, Object> model = Maps.newHashMap();
+        Response response = new Response(false, ex.getMessage() + "    Root Cause: " + ExceptionUtils.getRootCauseMessage(ex));
+        model.put("response", response);
+        return new ResponseEntity<Response>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<Response> handleBusinessException(Exception ex) {
         LOG.error("Caught Exception - returning error response: {}", ex.getMessage());
         LOG.error("Root cause: {}", ExceptionUtils.getRootCauseMessage(ex));
         ex.printStackTrace();

@@ -15,9 +15,11 @@ public class ProcessUserfomRowMapper implements RowMapper<ProcessUserfomInfo>{
 		int id = rs.getInt("id");
         String docType = StringUtils.trim(rs.getString("doctype"));
         int processId = rs.getInt("process_id");
+        String jsonData  = rs.getString("json_data");        
         processUserfomInfo.setDocType(docType);
         processUserfomInfo.setProcessId(processId);
         processUserfomInfo.setId(id);
+        processUserfomInfo.setJsonData(jsonData);
         return processUserfomInfo; 
 	}
 

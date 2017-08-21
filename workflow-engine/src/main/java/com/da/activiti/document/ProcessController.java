@@ -26,6 +26,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.da.activiti.FormBuilder.FormService;
+import com.da.activiti.FormBuilder.gen.models.Field;
 import com.da.activiti.exception.BusinessException;
 import com.da.activiti.model.Response;
 import com.da.activiti.model.UserForm;
@@ -53,9 +55,33 @@ public class ProcessController extends BaseController {
 	@Autowired
 	UserService userService;
 
+	@Autowired
+	FormService formService;
+
 	@RequestMapping(value = "/buildForms.htm", method = RequestMethod.GET)
 	public String getDocuments(ModelMap model, HttpServletRequest request) {
 		return "FormBuilder/buildform";
+	}
+
+	@RequestMapping(value = "/genrateForm", method = RequestMethod.GET)
+	public String genrateFormById(ModelMap model, HttpServletRequest request, @RequestParam String userFormId) {
+		model.addAttribute("userFormId", userFormId);
+		return "FormBuilder/buildform";
+	}
+
+	@RequestMapping(value = "/jsonDataForForm", method = RequestMethod.GET)
+	public ResponseEntity<Response> genrateFormData(ModelMap model, HttpServletRequest request,
+			@RequestParam String userFormId) {
+		List<Field> jsonData = formService.fetchFormFields(Integer.parseInt(userFormId));
+		jsonData.forEach(index -> {
+			if (index.getType().equalsIgnoreCase("radio")) {
+				index.setType("radio-group");
+			}
+		}
+		);
+		Response<List<Field>> res = new Response<List<Field>>(true, "Alert acknowledged");
+		res.setData(jsonData);
+		return new ResponseEntity<Response>(res, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/saveGridData", method = RequestMethod.POST)

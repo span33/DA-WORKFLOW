@@ -791,7 +791,7 @@
 <script>
     (function($){
         $(document).ready(function () {
-            $('li#nav-docs').addClass('active');
+            $('li#configure-process').addClass('active');
         });
     })(jQuery);
 </script>

@@ -159,7 +159,8 @@ jQuery(function($) {
     return editing = !editing;
   }
 
-  var setFormData = '[{"name":"date-1501004302939","label":"Posting Date","required":"true","type":"date","value":null,"subtype":null,"fieldId":"field14","userFromId":null,"jsonData":null,"values":null,"class":null},{"name":"text-1501004346172","label":"period","required":"true","type":"text","value":null,"subtype":"text","fieldId":"field15","userFromId":null,"jsonData":null,"values":null,"class":null},{"name":"select-1501004387965","label":"Doc Type","required":"true","type":"select","value":null,"subtype":null,"fieldId":"field16","userFromId":null,"jsonData":null,"values":[{"value":"SA","label":"SA - G/L Account Document"},{"value":"ZJ","label":"ZJ - Non-Cost Transfer"},{"value":"ZK","label":"ZK - Cost Transfer"},{"value":"ZV","label":"ZV - Cost Transfer Over 90 Days"}],"class":null},{"name":"select-1501004741318","label":"Referances","required":"true","type":"select","value":null,"subtype":null,"fieldId":"field17","userFromId":null,"jsonData":null,"values":[{"value":"Select","label":"Select"},{"value":"G/L Adjustment","label":"G/L Adjustment"}],"class":null},{"name":"text-1501004836404","label":"Company Code","required":"true","type":"text","value":null,"subtype":"text","fieldId":"field18","userFromId":null,"jsonData":null,"values":null,"class":null},{"name":"text-1501004838844","label":"Document Header","required":"true","type":"text","value":null,"subtype":"text","fieldId":"field19","userFromId":null,"jsonData":null,"values":null,"class":null},{"name":"text-1501004895256","label":"Debit Amount","required":"true","type":"text","value":null,"subtype":"text","fieldId":"field20","userFromId":null,"jsonData":null,"values":null,"class":null},{"name":"text-1501004896976","label":"Credit Amount","required":"true","type":"text","value":null,"subtype":"text","fieldId":"field21","userFromId":null,"jsonData":null,"values":null,"class":null},{"name":"text-1501004945288","label":"Author","required":"true","type":"text","value":null,"subtype":"text","fieldId":"field22","userFromId":null,"jsonData":null,"values":null,"class":null},{"name":"file-1501004973224","label":"Upload Evidence","required":"true","type":"file","value":null,"subtype":"file","fieldId":"field23","userFromId":null,"jsonData":null,"values":null,"class":null}]';
+  //var setFormData = '[{"name":"date-1501004302939","label":"Posting Date","required":"true","type":"date","value":null,"subtype":null,"fieldId":"field14","userFromId":null,"jsonData":null,"values":null,"class":null},{"name":"text-1501004346172","label":"period","required":"true","type":"text","value":null,"subtype":"text","fieldId":"field15","userFromId":null,"jsonData":null,"values":null,"class":null},{"name":"select-1501004387965","label":"Doc Type","required":"true","type":"select","value":null,"subtype":null,"fieldId":"field16","userFromId":null,"jsonData":null,"values":[{"value":"SA","label":"SA - G/L Account Document"},{"value":"ZJ","label":"ZJ - Non-Cost Transfer"},{"value":"ZK","label":"ZK - Cost Transfer"},{"value":"ZV","label":"ZV - Cost Transfer Over 90 Days"}],"class":null},{"name":"select-1501004741318","label":"Referances","required":"true","type":"select","value":null,"subtype":null,"fieldId":"field17","userFromId":null,"jsonData":null,"values":[{"value":"Select","label":"Select"},{"value":"G/L Adjustment","label":"G/L Adjustment"}],"class":null},{"name":"text-1501004836404","label":"Company Code","required":"true","type":"text","value":null,"subtype":"text","fieldId":"field18","userFromId":null,"jsonData":null,"values":null,"class":null},{"name":"text-1501004838844","label":"Document Header","required":"true","type":"text","value":null,"subtype":"text","fieldId":"field19","userFromId":null,"jsonData":null,"values":null,"class":null},{"name":"text-1501004895256","label":"Debit Amount","required":"true","type":"text","value":null,"subtype":"text","fieldId":"field20","userFromId":null,"jsonData":null,"values":null,"class":null},{"name":"text-1501004896976","label":"Credit Amount","required":"true","type":"text","value":null,"subtype":"text","fieldId":"field21","userFromId":null,"jsonData":null,"values":null,"class":null},{"name":"text-1501004945288","label":"Author","required":"true","type":"text","value":null,"subtype":"text","fieldId":"field22","userFromId":null,"jsonData":null,"values":null,"class":null},{"name":"file-1501004973224","label":"Upload Evidence","required":"true","type":"file","value":null,"subtype":"file","fieldId":"field23","userFromId":null,"jsonData":null,"values":null,"class":null}]';
+  var setFormData = $('#setFormData').val();
   var formBuilder = $('.build-wrap').formBuilder(fbOptions);
   var fbPromise = formBuilder.promise;
 
@@ -171,6 +172,8 @@ jQuery(function($) {
         console.log(fb.actions.getData());
       },
       setData: function() {
+    	var setFormData = $('#setFormData').val();
+    	console.log("setFormData:::::"+setFormData);
         fb.actions.setData(setFormData);
       },
       addField: function() {
@@ -204,15 +207,18 @@ jQuery(function($) {
 	            if (!resposeResult.success) {
 	            	$('#dialog').css('display', 'block');
 	                $("#dialog").text(resposeResult.message);
+	                window.scrollTo(0, 0);
 	            }
 	            else {
 	            	$('#dialog').css('display', 'block');
-	                $("#dialog").text(resposeResult.message);	
+	                $("#dialog").text(resposeResult.message);
+	                window.scrollTo(0, 0);
 	            }
 	        },
 	        error: function (error) {
 	            $('#dialog').css('display', 'block');
                 $("#dialog").text(error.responseText);
+                window.scrollTo(0, 0);
 	        }
 	    });
       },

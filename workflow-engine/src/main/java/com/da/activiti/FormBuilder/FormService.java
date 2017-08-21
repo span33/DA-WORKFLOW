@@ -72,6 +72,7 @@ public class FormService {
 	
 	@Transactional
 	public String   saveFormData(FormTemplateInfo obj) throws BusinessException {
+		obj.setActualJsonData(convertListToJson(obj.getFields()));
 		obj.getFields().forEach(field -> {field.setJsonData(convertListToJson(field.getValues()));
 		if(field.getType().equalsIgnoreCase("radio-group")) {
 			field.setType("radio");
@@ -172,5 +173,11 @@ public class FormService {
 	@Transactional
 	public List<Map<String, Object>> fetchUserFormList() {
 		return formsDao.getUserFormList();
+	}
+	
+	public String fetchFormsListById(int id) {
+		
+		return formsDao.userFormsListById(id).get(0).getJsonData();
+		
 	}
 }

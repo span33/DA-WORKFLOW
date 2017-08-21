@@ -7,6 +7,15 @@ public class ProcessUserfomInfo {
 	private String docType;
 	private String formLink;
 	private String userId ;
+	private String jsonData ;
+
+	public String getJsonData() {
+		return jsonData;
+	}
+
+	public void setJsonData(String jsonData) {
+		this.jsonData = jsonData;
+	}
 
 	public String getUserId() {
 		return userId;

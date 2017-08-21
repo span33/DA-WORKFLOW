@@ -68,8 +68,8 @@ public class JdbcFormsDao extends BaseDao implements FormsDao {
 
 	@Override
 	public String create(FormTemplateInfo obj)  {
-		String sql = "INSERT INTO process_userfom (process_id,doctype,user_Id,json_data,userform_name) "
-				+ "VALUES (:processId, :docType,:createdBy,:jsonData,:userformName)";
+		String sql = "INSERT INTO process_userfom (process_id,doctype,user_Id,json_data,actual_json_data,userform_name) "
+				+ "VALUES (:processId, :docType,:createdBy,:jsonData,:actualJsonData,:userformName)";
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		BeanPropertySqlParameterSource source = new BeanPropertySqlParameterSource(obj);
 		source.registerSqlType("docType", Types.VARCHAR);
@@ -148,7 +148,7 @@ public class JdbcFormsDao extends BaseDao implements FormsDao {
 
 	@Override
 	public List<Map<String, Object>> getUserFormList() {
-		String sql = "SELECT id,userform_name FROM demo_da.process_userfom";
+		String sql = "SELECT * FROM demo_da.process_userfom";
 	return  executeDynamicNativeQuery(sql);
 		
 	}
@@ -158,6 +158,14 @@ public class JdbcFormsDao extends BaseDao implements FormsDao {
 		MapSqlParameterSource parameters = new MapSqlParameterSource();
 		parameters.addValue("groups", groups);
 		String sql = "SELECT * FROM process_userfom where group_id in(:groups)";
+		return this.namedJdbcTemplate.query(sql, parameters,new ProcessUserfomRowMapper());
+	}
+	
+	@Override
+	public List<ProcessUserfomInfo> userFormsListById(int id) {
+		MapSqlParameterSource parameters = new MapSqlParameterSource();
+		parameters.addValue("id", id);
+		String sql = "SELECT * FROM process_userfom where id =:id";
 		return this.namedJdbcTemplate.query(sql, parameters,new ProcessUserfomRowMapper());
 	}
 

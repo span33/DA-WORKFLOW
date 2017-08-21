@@ -39,7 +39,6 @@ import com.da.activiti.document.ProcessUserfomInfo;
 import com.da.activiti.exception.BusinessException;
 import com.da.activiti.model.FormTemplateInfo;
 import com.da.activiti.model.Response;
-import com.da.activiti.model.document.DocState;
 import com.da.activiti.model.document.Document;
 import com.da.activiti.model.task.HistoricTask;
 import com.da.activiti.task.LocalTaskService;
@@ -88,6 +87,12 @@ public class FormBuilderController extends BaseController {
 		return "FormBuilder/index";
 	}
 	
+	@RequestMapping(value = "/dynFormlist.htm", method = RequestMethod.GET)
+	public String userFormList(ModelMap model,
+			HttpServletRequest request) {
+		return "FormBuilder/userForm";
+	}
+	
 	@RequestMapping(value = "/userFormList", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Response> getUserFormList(ModelMap model,
 			HttpServletRequest request) {
@@ -96,7 +101,14 @@ public class FormBuilderController extends BaseController {
 		return new ResponseEntity<Response>(res, HttpStatus.OK);
 		
 	}
-
+	@RequestMapping(value = "/userFormById", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Response> getUserFormById(ModelMap model,
+			HttpServletRequest request) {
+		Response<List<Map<String, Object>>> res = new Response<List<Map<String, Object>>>(true, "Alert acknowledged");
+		res.setData(formService.fetchUserFormList());
+		return new ResponseEntity<Response>(res, HttpStatus.OK);
+		
+	}
 	@RequestMapping(value = "/saveDynamicFormData.htm", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<Response> saveDynamicFormData(ModelMap model,
 			@RequestParam int userProcessFormId, HttpServletRequest request, RedirectAttributes redirectAttributes) {
