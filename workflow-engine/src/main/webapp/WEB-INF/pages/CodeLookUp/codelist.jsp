@@ -46,10 +46,10 @@
                 colNames:["Id","Code Type","Key Code","Key Value","Date Created"],
                 colModel:[
                     {name:'id', index:'id', width:100, key:true},
-                    {name:'codeType', index:'codeType', width:100, editable:true},
-                    {name:'keyCode', index:'keyCode', width:200,align:"center",editable:true,required:true},
-                    {name:'keyValue', index:'keyValue', width:200,align:"center",editable:true,required:true},
-                    {name:'dateCreated', index:'dateCreated', width:300,align:"center",required:true}
+                    {name:'codeType', index:'codeType', width:100, editable:true ,editoptions: { dataInit: function (el) { $(el).css('text-transform', 'uppercase'); }}},
+                    {name:'keyCode', index:'keyCode', width:200,align:"center",editable:true,required:true,editoptions: { dataInit: function (el) { $(el).css('text-transform', 'uppercase'); }}},
+                    {name:'keyValue', index:'keyValue', width:200,align:"center",editable:true,required:true ,editoptions: { dataInit: function (el) { $(el).css('text-transform', 'uppercase'); }}},
+                    {name:'dateCreated', index:'dateCreated', width:300,align:"center",required:true ,editoptions: { dataInit: function (el) { $(el).css('text-transform', 'uppercase'); }}}
                 ],
                 jsonReader: {
                     repeatitems: true,
@@ -71,6 +71,10 @@
                 ExpandColumn: 'processName',
                 loadonce: true,
                 subGrid: false,
+                beforeSubmit: function (postData) {
+                    postData.name = postData.name.toUpperCase();
+                    return [true, ''];
+                },
                 caption: "Code List",
                 	/* loadComplete: function () {
                         $(".testClass").on("click",function(){
@@ -112,6 +116,9 @@
                 $(this).jqGrid('editGridRow', 'new', {
                     url: SERVLET_CONTEXT + '/admin/codelookup/addCodeType',
                     serializeEditData: function(data) {
+                    	data.codeType = data.codeType.toUpperCase();
+                    	data.keyCode = data.keyCode.toUpperCase();
+                    	data.keyValue = data.keyValue.toUpperCase();
                         return $.param(data);
                     },
                     recreateForm: true,
@@ -208,6 +215,9 @@
                 if (row != null) $(this).jqGrid('editGridRow', row, {
                     url:  SERVLET_CONTEXT + '/admin/codelookup/updateCodeType',
                     serializeEditData: function(data) {
+                    	data.codeType = data.codeType.toUpperCase();
+                    	data.keyCode = data.keyCode.toUpperCase();
+                    	data.keyValue = data.keyValue.toUpperCase();
                         return $.param(data); 
                     },
                     recreateForm: true,

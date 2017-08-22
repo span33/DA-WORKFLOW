@@ -289,6 +289,13 @@ public class WorkflowServiceTest {
      return endEvent; 
     } 
     
+    @Test
+    public void testDeleteWorkFlow() {
+    	
+    	workflowService.deleteWorkflow(DocType.BOOK_REPORT.name(), "Admin");
+    	workflowService.deleteWorkflow(DocType.INVOICE.name(), "Admin");
+    	
+    }
 
     @Test
     @Ignore

@@ -167,7 +167,7 @@ public class JdbcProcessDao extends BaseDao implements ProcessDao {
 
 	@Override
 	public ProcessInfo read(String id) {
-		String sql = "SELECT * FROM Process where id = :id";
+		String sql = "SELECT * FROM Process where process_Id = :id";
 		Map<String, String> params = ImmutableMap.of("id", id);
 		ProcessInfo processInfo = this.namedJdbcTemplate.queryForObject(sql, params, new ProcessRowMapper());
 		return processInfo;

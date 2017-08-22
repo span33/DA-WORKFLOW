@@ -147,7 +147,7 @@
             grid.jqGrid({
                 datatype: "json",
                 url:SERVLET_CONTEXT + '/admin/process/DynProcesslist.htm',
-                colNames:["processId","Process Name","Process Description","Department", "Process Owner", "Doc Type", "User Group","Process Type","User Form","Level","Parent" ,"hasSibling" /* ,"" */ ],
+                colNames:["processId","Process Name","Process Description","Department", "Process Owner", "Doc Type", "User Group","Process Type","User Form","Level" ,"hasSibling" /* ,"" */ ],
                 colModel:[
                     {name:'processId', index:'processId', width:50, key:true},
                     {name:'processName', index:'processName', width:80,align:"center",editable:true,required:true},
@@ -159,7 +159,6 @@
                     {name:'processType', index:'processType', width:80,align:"center" , editable: true,edittype:"select" ,editrules: { required: true },editoptions:{value:"Form Sumission:Form Sumission;Time Based:Time Based"} ,required:true},
                     {name:'processTemplateId', index:'processTemplateId', width:80,align:"center" ,editable: true,edittype:"select" , editrules: { required: true },editoptions:{value:userFormList}, required:true},
                     {name:'processLevel', index:'processLevel', width: 60, align:'center', editable: true,edittype:"select" , editrules: { required: true },editoptions:{value:"1:1;2:2;3:3"},hidden: true},
-                    {name:'parent', index:'parent', width: 60, align:'center', editable:false},
                     {name:'processHasSibling', index:'processHasSibling',editable:true, width: 60, align:'center' ,editoptions:{value:"1:1;2:2;3:3"},hidden: true}/*,
                      {
                          name: 'Actions', index: 'Actions', width: 80, formatter: 'actions',
@@ -338,8 +337,6 @@
                      modal: true,
                      buttons: {
                          "Ok": function() {
-                         	
-                         	
                              $(this).dialog("close");
                              $('#dialog').css('display', 'none');
                              rloadGrid();

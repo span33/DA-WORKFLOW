@@ -15,6 +15,7 @@ import com.da.activiti.document.dao.ProcessDao;
 import com.da.activiti.exception.BusinessException;
 import com.da.activiti.model.document.ProcessInfo;
 import com.da.activiti.model.document.TaskInfo;
+import com.da.activiti.workflow.WorkflowService;
 import com.da.util.ServiceHelper;
 import com.google.common.collect.Lists;
 
@@ -29,6 +30,10 @@ public class ProcessService  {
     @Autowired protected ProcessDao processDao;
     
     @Autowired protected FormsDao formsDao;
+    
+    @Autowired
+	WorkflowService workflowService;
+
     
     @Transactional(readOnly = true)
     public List<Map<String, Object>> processesListByTraskMappingId(int mappingId) {
@@ -170,7 +175,10 @@ public class ProcessService  {
    
     @Transactional
     public void deleteProcess(int  processId){
-    	 processDao.delete(processId);
+    	ProcessInfo processInfo = processDao.read(Integer.toString(processId));
+    	if(StringUtils.isNoneBlank(processInfo.getDocType()) &&  StringUtils.isNoneBlank(processInfo.getGroupId()))
+    	workflowService.deleteWorkflow(processInfo.getDocType(), processInfo.getGroupId());
+    	processDao.delete(processId);
     }
     
     @Transactional

@@ -93,11 +93,11 @@ public class ProcessController extends BaseController {
 		final Response<String> res  ;
 		processInfos.forEach(processinfo -> {
 		
-				workflowService.deleteWroflow(processinfo.getDocType(), processinfo.getGroupId());
+				workflowService.deleteWorkflow(processinfo.getDocType(), processinfo.getGroupId());
 				Process process;
 				try {
-					//process = workflowBuilder.createProcess(processinfo, processinfo.getSubProcessList());
-					//String.join(msg, ",", process.getName());
+					process = workflowBuilder.createProcess(processinfo, processinfo.getSubProcessList());
+					String.join(msg, ",", process.getName());
 				} catch (Exception e) {
 					throw new BusinessException(e.getMessage()) ;
 					
@@ -128,6 +128,7 @@ public class ProcessController extends BaseController {
 	@RequestMapping(value = "/deleteProcess/{processId}/", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<Response> deleteProcess(ModelMap model,
 			@PathVariable(value = "processId") int processId) {
+		
 		processService.deleteProcess(processId);
 		String msg = "Process id : " + processId + " -- Process Deleted Successfully ";
 		Response<String> res = new Response<String>(true, msg);

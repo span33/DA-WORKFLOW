@@ -442,13 +442,13 @@ public class WorkflowService {
 	}
 
 	@Transactional
-	public void deleteWroflow(String docType, String groupId) {
+	public void deleteWorkflow(String docType, String groupId) {
 		String deploymentId = WFConstants.createProcId(docType, groupId);
 		ProcessDefinition pd = this.repoSrvc.createProcessDefinitionQuery().processDefinitionKey(deploymentId)
 				.latestVersion().singleResult();
 		if(pd!= null) {
 			killInstances(pd);
-			repoSrvc.deleteDeployment(pd.getDeploymentId(), true);
+			repoSrvc.deleteDeployment(pd.getDeploymentId(),true);
 			
 		}else  {
 			LOG.info("Process in not defined");
