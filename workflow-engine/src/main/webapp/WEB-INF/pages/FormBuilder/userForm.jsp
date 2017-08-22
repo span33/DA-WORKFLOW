@@ -87,6 +87,58 @@
                     } */
 
             }).jqGrid("navGrid", {add:false ,edit:false,del:false, reloadGridOptions: { fromServer: true } });
+            grid.navButtonAdd('#ptreegrid', {
+                caption: "Delete",
+                buttonicon: "ui-icon-trash",
+                onClickButton: deleteRow,
+                position: "last",
+                title: "",
+                cursor: "pointer"
+            });
+            
+            function deleteRow() {
+                // Get the currently selected row
+                var row = $(this).jqGrid('getGridParam', 'selrow');
+                console.log(row);
+                if (row != null) $(this).jqGrid('delGridRow', row, {
+                    url:  SERVLET_CONTEXT +'/forms/deleteFormById/'+row+'/',
+                    recreateForm: true,
+                    beforeShowForm: function(form) {
+                        //change title
+                        $(".delmsg").replaceWith('<span style="white-space: pre;">' + 'Delete selected record?' + '</span>');
+                        $('#pData').hide();
+                        $('#nData').hide();
+                    },
+                    reloadAfterSubmit: false,
+                    closeAfterDelete: true,
+                    afterSubmit: function(response, postdata) {
+                        var result = eval('(' + response.responseText + ')');
+                        var errors = "";
+
+                        if (result.success == false) {
+                            for (var i = 0; i < result.message.length; i++) {
+                                errors += result.message[i] + "<br/>";
+                            }
+                        } else {
+                        	$('#dialog').removeClass('hide').addClass('show');
+                            $("#dialog").text('Entry has been deleted successfully');
+                            $("#dialog").dialog({
+                                title: 'Success',
+                                modal: true,
+                                buttons: {
+                                    "Ok": function() {
+                                        $(this).dialog("close");
+                                        rloadGrid();
+                                    }
+                                }
+                            });
+                        }
+                        var new_id = null;
+                        return [result.success, errors, new_id];
+                    }
+                });
+                else alert("Please select row");
+            }
         });
     //]]>
     </script>

@@ -71,7 +71,7 @@ public class WorkflowBuilder {
 		String deploymentId = WFConstants.createProcId(processinfo.getDocType(), processinfo.getGroupId());
 		// String deploymentId = processName + "___NONE";
 		process.setId(deploymentId);
-
+		process.setName(deploymentId);
 		StartEvent startEvent = workflowService.createStartEvent();
 		process.addFlowElement(startEvent);
 		SubProcess prevsub = null;

@@ -1,6 +1,7 @@
 package com.da.activiti.FormBuilder;
 
 import java.sql.Types;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,6 +80,14 @@ public class JdbcFormsDao extends BaseDao implements FormsDao {
 		return userFromId;
 	}
 
+	public String updateExistingForm (FormTemplateInfo obj , String id) {
+		String sql = "update process_userfom  set doctype =:docType,user_Id =:createdBy, json_data =:jsonData, actual_json_data =:actualJsonData where userform_name =:userformName ";
+		BeanPropertySqlParameterSource source = new BeanPropertySqlParameterSource(obj);
+		this.namedJdbcTemplate.update(sql, source);
+		create(obj.getFields(), id);
+		return id ;
+		
+	}
 	private void create(List<Field> fieldList, String userFromId) {
 		fieldList.forEach(field -> {
 			String sql = "INSERT INTO user_from_mapping (name, type,subtype,required,label,class,process_userform_id,data) "
@@ -127,8 +136,19 @@ public class JdbcFormsDao extends BaseDao implements FormsDao {
 
 	@Override
 	public void delete(String id) {
-		// TODO Auto-generated method stub
+		deleteMapping(id);
+		String sql = "DELETE FROM process_userfom WHERE id = :id";
+		Map<String, String> params = ImmutableMap.of("id", id);
+		int deleted = this.namedJdbcTemplate.update(sql, params);
+		LOG.debug("Deleted: {} Process", deleted);
 
+	}
+	
+	public  void deleteMapping(String id) {
+		String sql = "DELETE FROM user_from_mapping WHERE process_userform_id = :id";
+		Map<String, String> params = ImmutableMap.of("id", id);
+		int deleted = this.namedJdbcTemplate.update(sql, params);
+		LOG.debug("Deleted: {} Process", deleted);
 	}
 
 	@Override
@@ -167,6 +187,20 @@ public class JdbcFormsDao extends BaseDao implements FormsDao {
 		parameters.addValue("id", id);
 		String sql = "SELECT * FROM process_userfom where id =:id";
 		return this.namedJdbcTemplate.query(sql, parameters,new ProcessUserfomRowMapper());
+	}
+
+	@Override
+	public int duplicateCheck(String formName) {
+		 String sql = "SELECT id  FROM process_userfom where userForm_name =:formName";
+		 Map<String, String> params = ImmutableMap.of("formName", formName);
+		 List<ProcessUserfomInfo> processUserfomInfo  = this.namedJdbcTemplate.query(sql, params, new ProcessUserfomRowMapper());
+		 if(processUserfomInfo != null && processUserfomInfo .size() >0 ) {
+			 LOG.debug("Got count: {} of book reports", processUserfomInfo.get(0));
+		        return processUserfomInfo.get(0).getId() ; 
+		 }else {
+			 return 0 ;
+		 }
+	        
 	}
 
 }

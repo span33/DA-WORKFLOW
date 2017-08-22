@@ -217,5 +217,15 @@ public class FormBuilderController extends BaseController {
 		model.addAttribute("msg", "The Journal cannot be edited in its current state.");
 		return "FormBuilder/view";
 	}
+	
+	@RequestMapping(value = "/deleteFormById/{id}", method = RequestMethod.POST)
+	public @ResponseBody ResponseEntity<Response> deleteUserFormById(ModelMap model, @ModelAttribute ProcessUserfomInfo processUserfomInfo ,@PathVariable String id,
+			HttpServletRequest request) {
+		Response<String> res = new Response<String>(true, "User Form " + id + " deleted successfully");
+		formService.deleteUserFormEntry(id);
+		res.setData(id);
+		return new ResponseEntity<Response>(res, HttpStatus.OK);
+		
+	}
 
 }

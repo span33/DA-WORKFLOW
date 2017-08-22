@@ -79,6 +79,12 @@ public class FormService {
 		}
 		});
 		obj.setJsonData(convertListToJson(obj.getFields()));
+		int formId = formsDao.duplicateCheck(obj.getUserformName());
+		if(formId > 0) {
+			formsDao.deleteMapping(Integer.toString(formId));
+		 return formsDao.updateExistingForm(obj, Integer.toString(formId));
+		}
+		
 		return formsDao.create(obj);
 	}
 	
@@ -179,5 +185,9 @@ public class FormService {
 		
 		return formsDao.userFormsListById(id).get(0).getJsonData();
 		
+	}
+	
+	public void deleteUserFormEntry(String id) {
+		formsDao.delete(id);
 	}
 }

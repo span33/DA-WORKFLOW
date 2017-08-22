@@ -90,16 +90,24 @@ public class ProcessController extends BaseController {
 			final RedirectAttributes redirectAttributes, HttpServletRequest request, ModelMap model) {
 		processTaskMapping(processInfos);
 		String msg = "Process Created Successfully ";
+		final Response<String> res  ;
 		processInfos.forEach(processinfo -> {
-			try {
-				Process process = workflowBuilder.createProcess(processinfo, processinfo.getSubProcessList());
-				String.join(msg, ",", process.getName());
-			} catch (Exception e) {
+		
+				workflowService.deleteWroflow(processinfo.getDocType(), processinfo.getGroupId());
+				Process process;
+				try {
+					//process = workflowBuilder.createProcess(processinfo, processinfo.getSubProcessList());
+					//String.join(msg, ",", process.getName());
+				} catch (Exception e) {
+					throw new BusinessException(e.getMessage()) ;
+					
+					
+				}
+				
 			
-				e.printStackTrace();
-			}
 		});
-		Response<String> res = new Response<String>(true, msg);
+		
+		res = new Response<String>(true, msg);
 		res.setData(msg);
 		return new ResponseEntity<Response>(res, HttpStatus.OK);
 

@@ -33,11 +33,13 @@
         	var departmentList = ajaxCall('/admin/process/departmentList');
         	departmentList = getOption(departmentList);
             userFormList = ajaxCall('/forms/userFormList');
+            userFormList = getOptionByCompKey(userFormList , 'userform_name');
              userList = ajaxCall('/admin/process/userListByDepartments?departments=CT');
             console.log(userList)
              console.log(departmentList);
             userList = getOptionForUser(userList);
-            userFormList = getOption(userFormList);
+            console.log(userFormList);
+            
             
            var approverList =  ajaxCall('/admin/process/approverUserList');
            approverList = getOptionByCompKey(approverList, 'userName');
@@ -255,7 +257,7 @@
             });
             
             grid.navButtonAdd('#ptreegrid', {
-                caption: "CreateWorkFlow",
+                caption: "Create Work Flow",
                 buttonicon: "ui-icon-eject",
                 onClickButton: saveGridData,
                 position: "last",
@@ -298,8 +300,9 @@
         	            	//console.log(allRowsInGrid);
         	            }
         	        },
-        	        error: function (error) {
-        	            alert("There was system error"+error);
+        	        error: function(jqXHR, textStatus, errorThrown) {
+        	        	
+        	            alert("There was system error::: Status Code:::"+jqXHR.status + " ErrorThrown:::::" +errorThrown);
         	        }
         	    });
             	
