@@ -124,7 +124,7 @@ public class UserService {
          }
 		
 	 }
-	 
+	 @Transactional
 	 public void saveGroup(String groupId, String type) {
 	        if (identityService.createGroupQuery().groupId(groupId).count() == 0) {
 	            Group newGroup = identityService.newGroup(groupId);
@@ -136,6 +136,14 @@ public class UserService {
 	        }
 	    }
 
+	 @Transactional
+	 public void deleteGroup(String groupId) {
+		 if (identityService.createGroupQuery().groupId(groupId).count() != 0) {
+			 identityService.deleteGroup(groupId);
+	        } else {
+	        	LOG.debug("Demo group: {} not exists - not creating", groupId);
+	        }
+	 }
 	/*
 	 * @Transactional public void submitForApproval(DocDetails docDetails) {
 	 * Map<String, Object> processVariables = Maps.newHashMap();

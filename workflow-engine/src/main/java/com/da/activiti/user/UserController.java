@@ -105,16 +105,16 @@ public class UserController extends BaseController {
 	}
 	
 	@RequestMapping(value = "/admin/deleteGroup/{groupid}/", method = RequestMethod.POST)
-	public ResponseEntity<Response> addCodeType(@PathVariable String groupid,final RedirectAttributes redirectAttributes) {
+	public ResponseEntity<Response> deleteGroup(@PathVariable String groupId,final RedirectAttributes redirectAttributes) {
 			Response<String> res = null  ;
-		userService.deleteUser(userId);
-		res = new Response<String>(true, userId + " Deleted Successfully");
-		res.setData(userId);
+		userService.deleteGroup(groupId);
+		res = new Response<String>(true, groupId + " Deleted Successfully");
+		res.setData(groupId);
 		return new ResponseEntity<Response>(res, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/admin/deleteUser/{userId}/", method = RequestMethod.POST)
-	public ResponseEntity<Response> addCodeType(@PathVariable String userId,final RedirectAttributes redirectAttributes) {
+	public ResponseEntity<Response> deleteUser(@PathVariable String userId,final RedirectAttributes redirectAttributes) {
 			Response<String> res = null  ;
 		userService.deleteUser(userId);
 		res = new Response<String>(true, userId + " Deleted Successfully");
