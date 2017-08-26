@@ -102,7 +102,7 @@
                         </div>
                     </div>
                     <div class="pull-right">
-                        <button type="submit" class="btn btn-primary">Submit for Approval</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
                     </div>
                 </form>
             </div>

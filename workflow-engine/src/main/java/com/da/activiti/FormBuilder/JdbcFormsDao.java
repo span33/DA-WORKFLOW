@@ -51,7 +51,7 @@ public class JdbcFormsDao extends BaseDao implements FormsDao {
 	
 	@Override
 	public boolean  updateProcessUserMapping(ProcessInfo processInfo) {
-		String sql = "update process_userfom  set process_id=:processId, doctype=:docType, group_id =:groupId ,user_Id=:processOwner where id =:processTemplateId " ;
+		String sql = "update process_userfom  set process_id=:processId, doctype=:docType, group_id =:groupId ,user_Id=:processOwner where userform_name =:processTemplateId " ;
 		BeanPropertySqlParameterSource source = new BeanPropertySqlParameterSource(processInfo);
 		return this.namedJdbcTemplate.update(sql, source) > 0 ;
 
@@ -160,7 +160,7 @@ public class JdbcFormsDao extends BaseDao implements FormsDao {
 	@Override
 	public Map<String, Object> getWorkFlowDataById(String workFlowId) {
 		// TODO Auto-generated method stub
-		String sql = "SELECT field_name,field_value FROM demo_da.workflow_mapping where workflow_id=?";
+		String sql = "SELECT field_name,field_value FROM workflow_mapping where workflow_id=?";
 		Map<String, Object> parameters = new LinkedHashMap<String, Object>();
 		parameters.put("workflow_id", workFlowId);
 		return getRowMap(sql, parameters);
@@ -168,7 +168,14 @@ public class JdbcFormsDao extends BaseDao implements FormsDao {
 
 	@Override
 	public List<Map<String, Object>> getUserFormList() {
-		String sql = "SELECT * FROM demo_da.process_userfom";
+		String sql = "SELECT * FROM process_userfom";
+	return  executeDynamicNativeQuery(sql);
+		
+	}
+	
+	@Override
+	public List<Map<String, Object>> getUserFormListForSelectedColumn() {
+		String sql = "SELECT id,docType,group_id,userform_name FROM process_userfom";
 	return  executeDynamicNativeQuery(sql);
 		
 	}

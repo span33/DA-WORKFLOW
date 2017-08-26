@@ -196,7 +196,17 @@ jQuery(function($) {
         for(var pair of formData.entries()) {
            console.log(pair[0]+ ': '+ pair[1]);
         }*/
+        
        formName = document.getElementById("userForm").value;
+      
+    	   if (formName==null || formName=="") {
+    		
+    		   $('#dialog').css('display', 'block');
+               $("#dialog").txt('Form Name Required');
+               window.scrollTo(0, 0);
+               return false ;
+    		   
+    	   }
         $.ajax({
 	        url: SERVLET_CONTEXT + '/forms/saveJsonFormMetaData?formName='+formName,
 	        type: "POST",

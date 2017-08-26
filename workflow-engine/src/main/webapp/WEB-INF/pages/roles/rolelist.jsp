@@ -24,6 +24,7 @@
    // var mydata = [{id:"1",name:"Cash",num:"100",debit:"400.00",credit:"250.00",balance:"150.00",level:"0",parent:"",isLeaf:false,expanded:false}] ;
     //<![CDATA[
         $(function(){
+        	
             
             function rloadGrid() {
                  window.location.reload();
@@ -42,15 +43,13 @@
                 }
             grid.jqGrid({
                 datatype: "json",
-                url:SERVLET_CONTEXT + '/admin/codelookup/dynCodelist',
-                colNames:["Id","Code Type","Key Code","Key Value","Date Created"],
+                url:SERVLET_CONTEXT + '/groups',
+                colNames:["Id","Name","Type"],
                 colModel:[
-                    {name:'id', index:'id', width:100, key:true},
-                    {name:'codeType', index:'codeType', width:100, editable:true , editrules:{required:true },editoptions: { maxlength : 15 ,dataInit: function (el) { $(el).css('text-transform', 'uppercase'); }}},
-                    {name:'keyCode', index:'keyCode', width:200,align:"center",editable:true,editrules:{required:true },editoptions: { maxlength: 15, dataInit: function (el) { $(el).css('text-transform', 'uppercase'); }}},
-                    {name:'keyValue', index:'keyValue', width:200,align:"center",editable:true,editrules:{required:true } ,editoptions: { maxlength : 15 ,dataInit: function (el) { $(el).css('text-transform', 'uppercase'); }}},
-                    {name:'dateCreated', index:'dateCreated', width:300,align:"center",required:true ,editoptions: { dataInit: function (el) { $(el).css('text-transform', 'uppercase'); }}}
-                ],
+                    {name:'id', index:'id', width:200, key:true},
+                    {name:'name', index:'name', width:300, editable:true , editrules:{required:true },editoptions: { maxlength : 15 ,dataInit: function (el) { $(el).css('text-transform', 'uppercase'); }}},
+                    {name:'type', index:'keyCode', width:300,align:"center",editable:true,editrules:{required:true },editoptions: { maxlength: 15, dataInit: function (el) { $(el).css('text-transform', 'uppercase'); }}}
+                    ],
                 jsonReader: {
                     repeatitems: true,
                     id: "id",
@@ -75,7 +74,7 @@
                     postData.name = postData.name.toUpperCase();
                     return [true, ''];
                 },
-                caption: "Code List",
+                caption: "Roles",
                 	/* loadComplete: function () {
                         $(".testClass").on("click",function(){
                         	//grid.editGridRow( "new" );
@@ -276,7 +275,7 @@
 <script>
     (function($){
         $(document).ready(function () {
-            $('li#nav-code').addClass('active');
+            $('li#nav-roles').addClass('active');
         });
     })(jQuery);
 </script>

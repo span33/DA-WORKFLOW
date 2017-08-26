@@ -464,7 +464,7 @@ public class WorkflowService {
             .list();
         for (ProcessInstance instance : instances)
         {
-        	runtimeService.deleteProcessInstance(instance.getId(), "For test");
+        	runtimeService.deleteProcessInstance(instance.getId(), "By Admin");
         }
     }
 }

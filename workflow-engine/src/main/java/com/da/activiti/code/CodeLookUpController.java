@@ -16,14 +16,10 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.da.activiti.FormBuilder.gen.models.Field;
-import com.da.activiti.exception.BusinessException;
 import com.da.activiti.model.CodeLookUp;
 import com.da.activiti.model.Response;
 import com.da.activiti.web.BaseController;
@@ -86,6 +82,15 @@ public class CodeLookUpController extends BaseController {
 		codeLookUpService.editCodeType(codeLookUp);
 		Response<String> res = new Response<String>(true, codeLookUp.getCodeType() + " Updated Successfully");
 		res.setData(codeLookUp.getCodeType());
+		return new ResponseEntity<Response>(res, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/readCodeByCodeType/{codeType}", method = RequestMethod.GET)
+	public ResponseEntity<Response> readCodeByCodeType(ModelMap model, HttpServletRequest request,
+			@PathVariable String  codeType,final RedirectAttributes redirectAttributes) {
+		List<CodeLookUp> codeList = codeLookUpService.fetchCodeList(codeType);
+		Response<List<CodeLookUp>> res = new Response<List<CodeLookUp>>(true, codeType + " fectched Successfully");
+		res.setData(codeList);
 		return new ResponseEntity<Response>(res, HttpStatus.OK);
 	}
 

@@ -29,8 +29,8 @@
 			<label class="col-md-4 control-label" for="userForm">Form Name</label>
 			<div class="col-md-4" style="margin-left: 100px;">
 				<input class="form-control" name="userForm" placeholder="USER FORM"
-					type="text" required="required" id="userForm" value = "${userFormName}" />
-				<input class="form-control" name="setFormData" placeholder="SETFORMDATA"
+					type="text" required id="userForm" value = "${userFormName}" maxlength="30" />
+				<input class="form-control" name="setFormData" placeholder="SETFORMDATA" 
 					type="hidden"  id="setFormData"  />
 			</div>
 		</div>

@@ -1,6 +1,5 @@
 package com.da.activiti.code;
 
-import java.sql.Types;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import com.da.activiti.dao.BaseDao;
 import com.da.activiti.document.CodeLookUpRowMapper;
+import com.da.activiti.document.ProcessRowMapper;
 import com.da.activiti.exception.BusinessException;
 import com.da.activiti.model.CodeLookUp;
 import com.da.activiti.web.PagingCriteria;
@@ -80,6 +80,15 @@ public class JdbcCodeLookUpDao extends BaseDao implements CodeLookUpDao {
 	public CodeLookUp read(String id) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public List<CodeLookUp> readByCodeType(String codeType) {
+		String sql = "SELECT * FROM codelookup where Code_Type=:codeType";
+		Map<String, String> params = ImmutableMap.of("codeType", codeType);
+		List<CodeLookUp> codeList = this.namedJdbcTemplate.query(sql, params, new CodeLookUpRowMapper());
+		LOG.debug(" all readByCodeType reports: {}", codeList.size());
+		return codeList ;
 	}
 
 }

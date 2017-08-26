@@ -159,6 +159,7 @@ public class DemoDataGenerator implements ModelDataJsonConstants {
             user.setPassword(password);
             user.setEmail(email);
             identityService.saveUser(user);
+            
 
             if (groups != null) {
                 for (String group : groups) {

@@ -29,4 +29,7 @@ public class CodeLookUpService {
 	public void deleteCodeType(String id) {
 		codeLookUpDao.delete(id);
 	}
+	public List<CodeLookUp> fetchCodeList(String codeType ) {
+		return codeLookUpDao.readByCodeType(codeType);
+	}
 }

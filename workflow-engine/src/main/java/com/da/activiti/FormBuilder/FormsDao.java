@@ -31,5 +31,7 @@ public interface FormsDao extends IBaseDao<FormTemplateInfo> {
 	void deleteMapping(String id) ;
 	
 	String updateExistingForm (FormTemplateInfo obj , String id) ;
+	
+	public List<Map<String, Object>> getUserFormListForSelectedColumn() ;
 
 }

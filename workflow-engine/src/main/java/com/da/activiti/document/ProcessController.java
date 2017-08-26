@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import org.activiti.bpmn.model.Process;
 import org.slf4j.Logger;
@@ -37,6 +38,7 @@ import com.da.activiti.user.UserService;
 import com.da.activiti.web.BaseController;
 import com.da.activiti.workflow.WorkflowBuilder;
 import com.da.activiti.workflow.WorkflowService;
+import com.da.util.ServiceHelper;
 
 @Controller
 @RequestMapping("/admin/process")
@@ -64,7 +66,8 @@ public class ProcessController extends BaseController {
 	}
 
 	@RequestMapping(value = "/genrateForm", method = RequestMethod.GET)
-	public String genrateFormById(ModelMap model, HttpServletRequest request, @RequestParam String userFormId ,@RequestParam String userFormName) {
+	public String genrateFormById(ModelMap model, HttpServletRequest request, @RequestParam String userFormId,
+			@RequestParam String userFormName) {
 		model.addAttribute("userFormId", userFormId);
 		model.addAttribute("userFormName", userFormName);
 		return "FormBuilder/buildform";
@@ -78,35 +81,36 @@ public class ProcessController extends BaseController {
 			if (index.getType().equalsIgnoreCase("radio")) {
 				index.setType("radio-group");
 			}
-		}
-		);
+		});
 		Response<List<Field>> res = new Response<List<Field>>(true, "Alert acknowledged");
 		res.setData(jsonData);
 		return new ResponseEntity<Response>(res, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/saveGridData", method = RequestMethod.POST)
-	public ResponseEntity<Response> postGridData(@RequestBody List<ProcessInfo> processInfos, BindingResult result,
+	public ResponseEntity<Response> postGridData(@Valid @RequestBody ProcessInfo processInfo, BindingResult result,
 			final RedirectAttributes redirectAttributes, HttpServletRequest request, ModelMap model) {
-		processTaskMapping(processInfos);
+		processTaskMapping(processInfo);
 		String msg = "Process Created Successfully ";
-		final Response<String> res  ;
-		processInfos.forEach(processinfo -> {
-		
-				workflowService.deleteWorkflow(processinfo.getDocType(), processinfo.getGroupId());
-				Process process;
-				try {
-					process = workflowBuilder.createProcess(processinfo, processinfo.getSubProcessList());
-					String.join(msg, ",", process.getName());
-				} catch (Exception e) {
-					throw new BusinessException(e.getMessage()) ;
-					
-					
-				}
-				
+		final Response<String> res;
+		if(!ServiceHelper.validateProcessInfo(processInfo)) {
+			msg = "Subprocess list is required" ;
+			res = new Response<String>(false, msg);
+			res.setData(msg);
+			return new ResponseEntity<Response>(res, HttpStatus.OK);
 			
-		});
-		
+		}
+		workflowService.deleteWorkflow(processInfo.getDocType(), processInfo.getGroupId());
+		Process process;
+		try {
+			process = workflowBuilder.createProcess(processInfo, processInfo.getSubProcessList());
+			String.join(msg, ",", process.getName());
+		} catch (Exception e) {
+			LOG.error("Error occured while creating process :::"+e.getMessage(),e);
+			e.printStackTrace();
+			throw new BusinessException(e.getMessage());
+
+		}
 		res = new Response<String>(true, msg);
 		res.setData(msg);
 		return new ResponseEntity<Response>(res, HttpStatus.OK);
@@ -128,7 +132,7 @@ public class ProcessController extends BaseController {
 	@RequestMapping(value = "/deleteProcess/{processId}/", method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<Response> deleteProcess(ModelMap model,
 			@PathVariable(value = "processId") int processId) {
-		
+
 		processService.deleteProcess(processId);
 		String msg = "Process id : " + processId + " -- Process Deleted Successfully ";
 		Response<String> res = new Response<String>(true, msg);
@@ -317,14 +321,15 @@ public class ProcessController extends BaseController {
 
 	}
 
-	private void processTaskMapping(List<ProcessInfo> processInfos) {
-		processInfos.forEach(processInfo -> {
-			List<ProcessInfo> subprocesslist = processService.listAllSubProcesses(processInfo.getProcessId());
-			processInfo.setSubProcessList(subprocesslist);
-			subprocesslist.forEach(process -> {
-				List<TaskInfo> tasklist = processService.listTaskByProcessId(process.getProcessId());
-				process.setTaskList(tasklist);
-			});
+	private void processTaskMapping(ProcessInfo processInfo) {
+
+		List<ProcessInfo> subprocesslist = processService.listAllSubProcesses(processInfo.getProcessId());
+		processInfo.setSubProcessList(subprocesslist);
+		subprocesslist.forEach(process -> {
+			List<TaskInfo> tasklist = processService.listTaskByProcessId(process.getProcessId());
+			process.setTaskList(tasklist);
 		});
+
 	}
+	
 }

@@ -6,11 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
 import org.activiti.engine.IdentityService;
+import org.hibernate.validator.constraints.NotEmpty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,15 +98,25 @@ public class FormBuilderController extends BaseController {
 	@RequestMapping(value = "/userFormList", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Response> getUserFormList(ModelMap model,
 			HttpServletRequest request) {
-		Response<List<Map<String, Object>>> res = new Response<List<Map<String, Object>>>(true, "Alert acknowledged");
+		Response<List<Map<String, Object>>> res = new Response<List<Map<String, Object>>>(true, "Form List fetched");
 		res.setData(formService.fetchUserFormList());
 		return new ResponseEntity<Response>(res, HttpStatus.OK);
 		
 	}
+	
+	@RequestMapping(value = "/userFormListForSelectedCol", method = RequestMethod.GET)
+	public @ResponseBody ResponseEntity<Response> userFormListWithSeclectedColumn(ModelMap model,
+			HttpServletRequest request) {
+		Response<List<Map<String, Object>>> res = new Response<List<Map<String, Object>>>(true, "Form List fetched");
+		res.setData(formService.fetchUserFormListForSelectedColumn());
+		return new ResponseEntity<Response>(res, HttpStatus.OK);
+		
+	}
+	
 	@RequestMapping(value = "/userFormById", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Response> getUserFormById(ModelMap model,
 			HttpServletRequest request) {
-		Response<List<Map<String, Object>>> res = new Response<List<Map<String, Object>>>(true, "Alert acknowledged");
+		Response<List<Map<String, Object>>> res = new Response<List<Map<String, Object>>>(true, "Form List fetched By id");
 		res.setData(formService.fetchUserFormList());
 		return new ResponseEntity<Response>(res, HttpStatus.OK);
 		
@@ -148,7 +160,7 @@ public class FormBuilderController extends BaseController {
 	}
 
 	@RequestMapping(value = "/saveJsonFormMetaData", method = RequestMethod.POST)
-	public @ResponseBody ResponseEntity<Response> postJson(@RequestBody List<Field> fields,@RequestParam String formName,
+	public @ResponseBody ResponseEntity<Response> postJson(@RequestBody List<Field> fields,@Valid @RequestParam  @NotEmpty String formName,
 			HttpServletRequest request, ModelMap model) throws BusinessException {
 		FormTemplateInfo formTemplateInfo = new FormTemplateInfo();
 		formTemplateInfo.setFields(fields);

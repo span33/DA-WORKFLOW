@@ -176,17 +176,22 @@ public class FormService {
 		
 	}
 	
-	@Transactional
+	@Transactional(readOnly = true)
 	public List<Map<String, Object>> fetchUserFormList() {
 		return formsDao.getUserFormList();
 	}
 	
+	@Transactional(readOnly = true)
+	public List<Map<String, Object>> fetchUserFormListForSelectedColumn() {
+		return formsDao.getUserFormListForSelectedColumn();
+	}
+	@Transactional(readOnly = true)
 	public String fetchFormsListById(int id) {
 		
 		return formsDao.userFormsListById(id).get(0).getJsonData();
 		
 	}
-	
+	@Transactional
 	public void deleteUserFormEntry(String id) {
 		formsDao.delete(id);
 	}

@@ -18,7 +18,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="${pageContext.request.contextPath}/index.htm">Work Flow Engine</a>
+            <a class="navbar-brand" href="${pageContext.request.contextPath}/index.htm">Home</a>
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
@@ -27,11 +27,12 @@
 			<li id ="nav-buildForms" ><a href="${pageContext.request.contextPath}/admin/process/buildForms.htm" class="">Build Forms</a> </li> 
 			<li id="nav-code"><a href="${pageContext.request.contextPath}/admin/codelookup/codeList.htm">Code List</a></li>
 			<li id="nav-forms"><a href="${pageContext.request.contextPath}/forms/dynFormlist.htm">User Forms</a></li>
+			<li id="nav-roles"><a href="${pageContext.request.contextPath}/admin/roles.htm">Roles</a></li>
+			<li id="nav-users"><a href="${pageContext.request.contextPath}/admin/users.htm">Users</a></li>
 			</sec:authorize>
                 <li id="nav-docs"><a href="${pageContext.request.contextPath}/document/list.htm">Documents</a></li>
                 <li id="nav-tasks"><a href="${pageContext.request.contextPath}/tasks.htm">Tasks</a></li>
                 <li id="nav-workflows"><a href="${pageContext.request.contextPath}/workflow/index.htm">Workflows</a></li>
-                <li id="nav-users"><a href="${pageContext.request.contextPath}/users.htm">Users</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown" id="nav-alerts">

@@ -1,26 +1,35 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="sec"
+	uri="http://www.springframework.org/security/tags"%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <jsp:include page="../fragments/head.jsp"/>
-    <title>Documents</title>
-    <title>Demonstrate how to use Tree Grid for the Adjacency Set Model</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<jsp:include page="../fragments/head.jsp" />
+<title>Documents</title>
+<title>Demonstrate how to use Tree Grid for the Adjacency Set
+	Model</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/js/jquery-ui-1.11.2/jquery-ui.css" />
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/js/jqGrid-master/css/ui.jqgrid.css" />
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/resources/js/jquery-ui-1.11.2/jquery-ui.css" />
-    <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/journal/jquery-1.11.3.min.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jqGrid-master/js/i18n/grid.locale-en.js"></script>
-	<script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jqGrid-master/js/jquery.jqgrid.min.js"></script>
-	<script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery-ui-1.11.2/jquery-ui.min.js"></script>
-    <script type="text/javascript">
+<link rel="stylesheet" type="text/css"
+	href="${pageContext.request.contextPath}/resources/js/jquery-ui-1.11.2/jquery-ui.css" />
+<link rel="stylesheet" type="text/css"
+	href="${pageContext.request.contextPath}/resources/js/jqGrid-master/css/ui.jqgrid.css" />
+<link rel="stylesheet" type="text/css"
+	href="${pageContext.request.contextPath}/resources/js/jquery-ui-1.11.2/jquery-ui.css" />
+<script type="text/javascript"
+	src="${pageContext.request.contextPath}/resources/js/journal/jquery-1.11.3.min.js"></script>
+<script type="text/javascript"
+	src="${pageContext.request.contextPath}/resources/js/jqGrid-master/js/i18n/grid.locale-en.js"></script>
+<script type="text/javascript"
+	src="${pageContext.request.contextPath}/resources/js/jqGrid-master/js/jquery.jqgrid.min.js"></script>
+<script type="text/javascript"
+	src="${pageContext.request.contextPath}/resources/js/jquery-ui-1.11.2/jquery-ui.min.js"></script>
+<script type="text/javascript">
    // var mydata = [{id:"1",name:"Cash",num:"100",debit:"400.00",credit:"250.00",balance:"150.00",level:"0",parent:"",isLeaf:false,expanded:false}] ;
     //<![CDATA[
                var jsonData= [{"1" : "1"},{"2" : "2"},{"3":"3"}] ;
@@ -32,15 +41,23 @@
         $(function(){
         	var departmentList = ajaxCall('/admin/process/departmentList');
         	departmentList = getOption(departmentList);
-            userFormList = ajaxCall('/forms/userFormList');
+            userFormList = ajaxCall('/forms/userFormListForSelectedCol');
             userFormList = getOptionByCompKey(userFormList , 'userform_name');
-             userList = ajaxCall('/admin/process/userListByDepartments?departments=CT');
+            userList = ajaxCall('/admin/process/userListByDepartments?departments=CT');
             console.log(userList)
-             console.log(departmentList);
+            console.log(departmentList);
             userList = getOptionForUser(userList);
             console.log(userFormList);
             
-            
+           var docTypes =  ajaxCall('/admin/codelookup/readCodeByCodeType/DOC_TYPE/');
+           var processTypes =  ajaxCall('/admin/codelookup/readCodeByCodeType/PROCESS_TYPE/');
+           var taskTypes = ajaxCall('/admin/codelookup/readCodeByCodeType/TASK_TYPE/');
+           var taskStatus = ajaxCall('/admin/codelookup/readCodeByCodeType/TASK_STATUS/');
+           docTypes =  getOptionByCompKeyForCodeList(docTypes ,'keyCode', 'keyValue');
+           processTypes =  getOptionByCompKeyForCodeList(processTypes,'keyCode', 'keyValue');
+           taskTypes = getOptionByCompKeyForCodeList(taskTypes,'keyCode', 'keyValue');
+           taskStatuses = getOptionByCompKeyForCodeList(taskStatus,'keyCode', 'keyValue');
+           
            var approverList =  ajaxCall('/admin/process/approverUserList');
            approverList = getOptionByCompKey(approverList, 'userName');
             
@@ -56,7 +73,6 @@
        				
                 });
                 userDropDown = userDropDown+'</select>';
-                console.log(userDropDown);
                 var form = $(e.target).closest("form.FormGrid");
                 $("select#processOwner.FormElement",form[0]).html(userDropDown);
                 
@@ -105,6 +121,19 @@
         		 dropDownData = dropDownData.slice(0, -1);
         		 return dropDownData  ;
         		 }
+        	
+        	function getOptionByCompKeyForCodeList(inputData,compKey,compValue){
+        		var dropDownData = '' ;
+        		 $.each(inputData, function(i, obj) {
+        			 for (var key in obj) {
+        				 if(key == compKey)
+        				 dropDownData =dropDownData+ obj[compKey]+":" +obj[compValue];
+               		 }
+        			 dropDownData=dropDownData+";" ;
+        	});
+        		 dropDownData = dropDownData.slice(0, -1);
+        		 return dropDownData  ;
+        		 }
         	var dataurl =SERVLET_CONTEXT +'/workflow/departmentList' ;
                 $.ajax({
         	        type: 'GET',
@@ -147,19 +176,19 @@
             grid.jqGrid({
                 datatype: "json",
                 url:SERVLET_CONTEXT + '/admin/process/DynProcesslist.htm',
-                colNames:["processId","Process Name","Process Description","Department", "Process Owner", "Doc Type", "User Group","Process Type","User Form","Level" ,"hasSibling" /* ,"" */ ],
+                colNames:["processId","Process Name","Process Description","Department", "Process Owner", "Doc Type", "User Group","Process Type","User Form","Level" ,/*"hasSibling"  ,"" */ ],
                 colModel:[
                     {name:'processId', index:'processId', width:50, key:true},
-                    {name:'processName', index:'processName', width:80,align:"center",editable:true,required:true},
-                    {name:'processDescription', index:'processDescription', width:180, align:"center" ,editable:true, edittype:"textarea", editoptions: { rows:5,cols: 5 }},
-                  	{name:'departmentId', index:'departmentId', width:180, align:"center" ,editable:true, edittype: 'select',editoptions: { multiple: true, value: departmentList }, editrules: { required: false }, formatoptions: { disabled: false}},
+                    {name:'processName', index:'processName', width:80,align:"center",editable:true,editrules:{required:true },editoptions: { maxlength: 30}},
+                    {name:'processDescription', index:'processDescription', width:180, align:"center" ,editable:true, edittype:"textarea", editoptions: { rows:5,cols: 5,maxlength: 100 },editrules:{required:true}},
+                  	{name:'departmentId', index:'departmentId', width:180, align:"center" ,editable:true, edittype: 'select',editoptions: { multiple: true, value: departmentList }, editrules: { required: true }, formatoptions: { disabled: false}},
                     {name:'processOwner', index:'processOwner', width:80, align:"center" ,editable:true,edittype:"select" ,editrules: { required: true }, editoptions:{value:userList,defaultValue:"CT:Controllership"}, editrules: { required: true }},
-                    {name:'docType', index:'docType', width:80,align:"center",editable:true,required:true,edittype:"select" ,editrules: { required: true },editoptions:{value:"BOOK_REPORT:BOOK_REPORT;INVOICE:INVOICE;RECEIPT:RECEIPT;JOURNAL:JOURNAL;GENERAL:GENERAL;OPENACCOUNT:OPENACCOUNT;PAYORDER:PAYORDER;SALESORDER:SALESORDER;OCAS:OCAS" ,defaultValue:"JOURNAL:JOURNAL"},required:true},
+                    {name:'docType', index:'docType', width:80,align:"center",editable:true,required:true,edittype:"select" ,editrules: { required: true },editoptions:{value:docTypes},required:true},
                     {name:'groupId', index:'groupId', width:80,align:"center",editable:true,required:true,edittype:"select" ,editrules: { required: true },editoptions:{value:"Admin:Admin;Aprrover:Aprrover;user:user"},required:true},
-                    {name:'processType', index:'processType', width:80,align:"center" , editable: true,edittype:"select" ,editrules: { required: true },editoptions:{value:"Form Sumission:Form Sumission;Time Based:Time Based"} ,required:true},
+                    {name:'processType', index:'processType', width:80,align:"center" , editable: true,edittype:"select" ,editrules: { required: true },editoptions:{value:processTypes} },
                     {name:'processTemplateId', index:'processTemplateId', width:80,align:"center" ,editable: true,edittype:"select" , editrules: { required: true },editoptions:{value:userFormList}, required:true},
                     {name:'processLevel', index:'processLevel', width: 60, align:'center', editable: true,edittype:"select" , editrules: { required: true },editoptions:{value:"1:1;2:2;3:3"},hidden: true},
-                    {name:'processHasSibling', index:'processHasSibling',editable:true, width: 60, align:'center' ,editoptions:{value:"1:1;2:2;3:3"},hidden: true}/*,
+                   /* {name:'processHasSibling', index:'processHasSibling',editable:true, width: 60, align:'center' ,editrules:{required:true},editoptions:{value:"1:1;2:2;3:3"},hidden: true},
                      {
                          name: 'Actions', index: 'Actions', width: 80, formatter: 'actions',
                          formatoptions: {
@@ -178,6 +207,17 @@
                     }
                 },
                
+                /* gridComplete: function(){
+            		var ids = grid.jqGrid('getDataIDs');
+            		console.log("Ids Value:::"+ids);
+            		for(var i=0;i < ids.length;i++){
+            			console.log("i Value:::"+i);
+            			var cl = ids[i];
+            			se = "<input style='height:22px;width:20px;' type='button' value='S' onclick=\"grid.saveRow('"+cl+"');\"  />"; 
+            			grid.jqGrid('setRowData',ids[i],{processLevel:se});
+            		}	
+            	}, */
+                
                 height:'100%',
                 rowNum: 10,
                	pager : "#ptreegrid",
@@ -264,13 +304,14 @@
                 cursor: "pointer"
             });
             
-            function saveGridData() {
-            	var allRowsInProcessGrid = $('#treegrid').jqGrid('getGridParam','data');
-            	console.log(allRowsInProcessGrid);
+             function saveGridData() {
+            	var row = $(this).jqGrid('getGridParam', 'selrow');
+            	
+            	var allRowsInProcessGrid = $(this).jqGrid("getRowData", row);
             	if(allRowsInProcessGrid.length <  1) {
             		alert("Grid is empty");
             	}
-            	
+            	if(row!= null) {
             	$.ajax({
         	        url: SERVLET_CONTEXT + '/admin/process/saveGridData',
         	        type: "POST",
@@ -279,7 +320,20 @@
         	        contentType: 'application/json',
         	        success: function (resposeResult) {
         	            if (!resposeResult.success) {
-        	                alert("There was an error while saving process:::"+resposeResult.message);
+        	                $('#dialog').css('display', 'block');
+        	                $("#dialog").text(resposeResult.message);
+        	                $("#dialog").dialog({
+        	                    title: 'Failure',
+        	                    modal: true,
+        	                    buttons: {
+        	                        "Ok": function() {
+        	                            $(this).dialog("close");
+        	                            $('#dialog').css('display', 'none');
+        	                           
+        	                            
+        	                        }
+        	                    }
+        	                });
         	            }
         	            else {
         	            	$('#dialog').css('display', 'block');
@@ -305,8 +359,11 @@
         	        }
         	    });
             	
-            	
-            }
+            	}else {
+            		 alert("Please select row");
+            		return false;
+            	}
+            } 
  function addRow() {
 	 
 
@@ -530,6 +587,7 @@
                 });
                 else alert("Please select row");
             }
+            
 
             function deleteRow() {
                 // Get the currently selected row
@@ -604,18 +662,18 @@
             	url:SERVLET_CONTEXT + '/admin/process/SubprocessByProcessId.htm?processId='+grid.jqGrid("getLocalRow", parentRowKey).processId,
                 mtype: "GET",
                 datatype: "json",
-                colNames:["id","Sub Process Name","Description","Owner",/* "Process Type", */"Template","Level","Parent" ,"hasSibling" /* ,"" */ ],
+                colNames:["id","Sub Process Name","Description","Owner",/* "Process Type", */"Template","Level","Parent" /*,"hasSibling"  ,"" */ ],
                 colModel:[
                     {name:'processId', index:'processId', width:50, key:true},
-                    {name:'processName', index:'processName', width:80,align:"center",editable:true,required:true},
-                    {name:'processDescription', index:'processDescription', width:180, align:"center" ,editable:true},
-                    {name:'processOwner', index:'processOwner', width:80, align:"center" ,editable:true ,editoptions:{defaultValue:$(this).jqGrid("getLocalRow", parentRowKey).processOwner}},
+                    {name:'processName', index:'processName', width:80,align:"center",editable:true,editrules:{required:true },editoptions: { maxlength: 30}},
+                    {name:'processDescription', index:'processDescription', width:180, align:"center" ,editable:true,editrules:{required:true},editoptions: { maxlength: 50}},
+                    {name:'processOwner', index:'processOwner', width:80, align:"center" ,editable:true ,editoptions:{defaultValue:$(this).jqGrid("getLocalRow", parentRowKey).processOwner},editrules:{required:true }},
                     /* {name:'processType', index:'processType', width:80,align:"center" , editable: true,edittype:"select" ,editoptions:{value:"1:1;2:2;3:3"}}, */
                     {name:'processTemplateId', index:'processTemplateId', width:80,align:"center" ,editable: true,edittype:"select" , editoptions:{value:"1:1;2:2;3:3"} ,hidden: true},
                     {name:'level', index:'level', width: 60, align:'center', editable: true,edittype:"select" , editoptions:{value:"1:1;2:2;3:3"},hidden: true},
                     {name:'parent', index:'parent', width: 60, align:'center', editable:true ,edittype:"select",editoptions:{value:processlist, defaultValue:$(this).jqGrid("getLocalRow", parentRowKey).processId}},
-                    {name:'processHasSibling', index:'processHasSibling', width: 60, align:'center' ,editoptions:{value:"1:1;2:2;3:3"},hidden: true},
-                    /* {
+                   /* {name:'processHasSibling', index:'processHasSibling', width: 60, align:'center' ,editoptions:{value:"1:1;2:2;3:3"},hidden: true},
+                     {
                          name: 'Actions', index: 'Actions', width: 80, formatter: 'actions',
                          formatoptions: {
                                           keys: true,
@@ -689,12 +747,12 @@
                 colNames: ["Id", "Name" ,"Description" ,"UserForm", "Owner" , "Task Type" , "Task Status" , "Actor Name" ,"Process Id"  /* , "" */],
                 colModel: [
                   {name: "taskId", index:'taskId', width: 130, key: true},
-                  {name: "taskName", width: 130, editable:true},
-                  {name: "taskDescription", width: 130 , editable:true},
+                  {name: "taskName", width: 130, editable:true,editrules:{required:true },editoptions: { maxlength: 30}},
+                  {name: "taskDescription", width: 130 , editable:true,editrules:{required:true },editoptions: { maxlength: 50}},
                   {name: "userForm", index:'userForm', width:180, align:"center" ,editable:true, edittype: 'select',editoptions: { multiple: false, value: userFormList }, editrules: { required: false }, formatoptions: { disabled: false}},
                   {name: "taskOwner", width: 130 , editable:true,editoptions:{defaultValue:$(this).jqGrid("getLocalRow", parentRowKey).processOwner}},
-                  {name: "taskType", width: 130 , edittype: 'select',editoptions:{value:"APPROVE_REJECT:APPROVE_REJECT;COLLABORATION:COLLABORATION;USERTASK:USERTASK;SYSTEMTASK:SYSTEMTASK"},editable:true},
-                  {name: "taskStatus", width: 130 , editable:true ,edittype: 'select',editoptions:{value:"CONFIGURED:CONFIGURED"}},
+                  {name: "taskType", width: 130 , edittype: 'select', editrules:{required:true } ,editoptions:{value:taskTypes},editable:true},
+                  {name: "taskStatus", width: 130 , editable:true ,edittype: 'select',editoptions:{value:taskStatuses}},
                   {name: "actorId", width: 130 , editable:true,edittype: 'select',editrules: { required: true },editoptions:{value:approverList}},
                   {name: "processId", width: 130 ,editable:true, editoptions:{defaultValue:$(this).jqGrid("getLocalRow", parentRowKey).processId}},
                 /*   {
@@ -773,25 +831,45 @@
     </script>
 </head>
 <body>
-<jsp:include page="../fragments/navbar-top.jsp"/>
+	<jsp:include page="../fragments/navbar-top.jsp" />
 
-<div class="container">
-    <div class="start-template">
-    <table id="treegrid"><tr><td></td></tr></table>
-    <div id="ptreegrid"/></div>  
-    <div id="dialog" title="Feature not supported" style="display:none">
-            <p>That feature is not supported.</p>
-        </div>
-</div>
-</div>
-<%--  <jsp:include page="/WEB-INF/pages/fragments/footer.jsp"/>  --%>
- <script src="${pageContext.request.contextPath}/resources/js/bootstrap.js"></script>
-<script src="${pageContext.request.contextPath}/resources/js/bootbox.js"></script>
-<script src="${pageContext.request.contextPath}/resources/js/app/app.js"></script>
-<script>
+	<div class="container">
+		<div class="start-template">
+			<table id="treegrid">
+				<tr>
+					<td></td>
+				</tr>
+			</table>
+			<div id="ptreegrid" /></div>
+			<div id="dialog" title="Feature not supported" style="display: none">
+				<p>That feature is not supported.</p>
+			</div>
+		</div>
+	</div>
+	<%--  <jsp:include page="/WEB-INF/pages/fragments/footer.jsp"/>  --%>
+	<script
+		src="${pageContext.request.contextPath}/resources/js/bootstrap.js"></script>
+	<script
+		src="${pageContext.request.contextPath}/resources/js/bootbox.js"></script>
+	<script
+		src="${pageContext.request.contextPath}/resources/js/app/app.js"></script>
+	<script>
     (function($){
         $(document).ready(function () {
             $('li#configure-process').addClass('active');
+            $('#processDescription').keyup(function () {
+                var maxLength = 50;
+                var text = $(this).val();
+                var textLength = text.length;
+                console.log(text);
+                if (textLength > maxLength) {
+                    $(this).val(text.substring(0, (maxLength)));
+                    alert("Sorry, you only " + maxLength + " characters are allowed");
+                }
+                else {
+                    //alert("Required Min. 500 characters");
+                }
+            });
         });
     })(jQuery);
 </script>

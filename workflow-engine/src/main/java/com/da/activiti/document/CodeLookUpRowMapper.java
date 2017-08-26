@@ -12,7 +12,7 @@ public class CodeLookUpRowMapper implements RowMapper<CodeLookUp> {
 	@Override
 	public CodeLookUp mapRow(ResultSet rs, int arg1) throws SQLException {
 		CodeLookUp codeLookUp = new CodeLookUp();
-		String codeType = rs.getString("Code_type");
+		String codeType = rs.getString("Code_Type");
 		String keyCode = rs.getString("Key_Code");
 		String keyValue = rs.getString("Key_Value");
 		String dateCreated = rs.getString("Dt_Created");

@@ -28,7 +28,40 @@
             function rloadGrid() {
                  window.location.reload();
             }
-        	
+            var roles =  ajaxCall('/groups');
+            roles =   getOptionByCompKey(roles,'id') ;
+            function getOptionByCompKey(inputData,compKey){
+        		var dropDownData = '' ;
+        		 $.each(inputData, function(i, obj) {
+        			 for (var key in obj) {
+        				 if(key == compKey)
+        				 dropDownData =dropDownData+ obj[key]+":" +obj[key];
+               		 }
+        			 dropDownData=dropDownData+";" ;
+        	});
+        		 dropDownData = dropDownData.slice(0, -1);
+        		 return dropDownData  ;
+        		 }
+            
+            function ajaxCall(url) {
+            	var dataFromServer ;
+    			$.ajax({
+    				type : 'GET',
+    				dataType : 'json',
+    				url : SERVLET_CONTEXT + url,
+    				async: false,
+    				success : function(jsonData) {
+    					dataFromServer= jsonData.data;
+    				},
+    				error: function (error) {
+    	 	            alert("There was an error while accessing :::"+url+"::::::"+error);
+    	 	        }
+    			});
+    			 
+    			return dataFromServer;
+    		}
+           
+            
                 grid = $("#treegrid");
                 
                 getColumnIndexByName = function (grid, columnName) {
@@ -42,15 +75,17 @@
                 }
             grid.jqGrid({
                 datatype: "json",
-                url:SERVLET_CONTEXT + '/admin/codelookup/dynCodelist',
-                colNames:["Id","Code Type","Key Code","Key Value","Date Created"],
+                url:SERVLET_CONTEXT + '/users',
+                colNames:["User Name","password","email" , "firstName" , "lastName" , "group"],
                 colModel:[
-                    {name:'id', index:'id', width:100, key:true},
-                    {name:'codeType', index:'codeType', width:100, editable:true , editrules:{required:true },editoptions: { maxlength : 15 ,dataInit: function (el) { $(el).css('text-transform', 'uppercase'); }}},
-                    {name:'keyCode', index:'keyCode', width:200,align:"center",editable:true,editrules:{required:true },editoptions: { maxlength: 15, dataInit: function (el) { $(el).css('text-transform', 'uppercase'); }}},
-                    {name:'keyValue', index:'keyValue', width:200,align:"center",editable:true,editrules:{required:true } ,editoptions: { maxlength : 15 ,dataInit: function (el) { $(el).css('text-transform', 'uppercase'); }}},
-                    {name:'dateCreated', index:'dateCreated', width:300,align:"center",required:true ,editoptions: { dataInit: function (el) { $(el).css('text-transform', 'uppercase'); }}}
-                ],
+                    {name:'userName', index:'userName', width:150, key:true,editable:true,editrules:{required:true },editoptions: {  maxlength: 15}},
+                    {name:'password', index:'password', width:150,editable:true, edittype:'password' , editrules:{required:true },editoptions: {maxlength: 15}},
+                    {name:'email', index:'email', width:200,align:"center",editable:true,editrules:{required:true, email:true },editoptions: { maxlength: 30 }},
+                    {name:'firstName', index:'firstName', width:200,align:"center",editable:true,editrules:{required:true },editoptions: { maxlength: 30, }},
+                    {name:'lastName', index:'lastName', width:200,align:"center",editable:true,editrules:{required:true },editoptions: { maxlength: 30,}},
+                    {name:'group', index:'group',edittype: 'select', width:200,align:"center",editable:true,editrules:{required:true },editoptions: { multiple: true ,value: roles }},
+                    
+                    ],
                 jsonReader: {
                     repeatitems: true,
                     id: "id",
@@ -75,7 +110,7 @@
                     postData.name = postData.name.toUpperCase();
                     return [true, ''];
                 },
-                caption: "Code List",
+                caption: "Roles",
                 	/* loadComplete: function () {
                         $(".testClass").on("click",function(){
                         	//grid.editGridRow( "new" );
@@ -114,11 +149,8 @@
             });
             function addRow() {
                 $(this).jqGrid('editGridRow', 'new', {
-                    url: SERVLET_CONTEXT + '/admin/codelookup/addCodeType',
+                    url: SERVLET_CONTEXT + '/admin/createUser',
                     serializeEditData: function(data) {
-                    	data.codeType = data.codeType.toUpperCase();
-                    	data.keyCode = data.keyCode.toUpperCase();
-                    	data.keyValue = data.keyValue.toUpperCase();
                         return $.param(data);
                     },
                     recreateForm: true,
@@ -130,9 +162,22 @@
                         var errors = "";
 
                         if (response.responseJSON.success == false) {
-                            for (var i = 0; i < response.message.length; i++) {
-                                errors += result.message[i] + "<br/>";
-                            }
+                            $('#dialog').css('display', 'block');
+                            $("#dialog").text(response.responseJSON.message);
+                            $("#dialog").dialog({
+                                title: 'Failure',
+                                modal: true,
+                                buttons: {
+                                    "Ok": function() {
+                                    	
+                                    	
+                                        $(this).dialog("close");
+                                        $('#dialog').css('display', 'none');
+                                       
+           	                           
+                                    }
+                                }
+                            });
                             return [response.responseJSON.success, errors, null];
                         } else {
                        	 
@@ -167,7 +212,7 @@
                 var row = $(this).jqGrid('getGridParam', 'selrow');
                 console.log(row);
                 if (row != null) $(this).jqGrid('delGridRow', row, {
-                    url:  SERVLET_CONTEXT +'/admin/codelookup/deleteCodeType/'+row+'/',
+                    url:  SERVLET_CONTEXT +'/admin/deleteUser/'+row+'/',
                     recreateForm: true,
                     beforeShowForm: function(form) {
                         //change title
@@ -181,10 +226,20 @@
                         var result = eval('(' + response.responseText + ')');
                         var errors = "";
 
-                        if (result.success == false) {
-                            for (var i = 0; i < result.message.length; i++) {
-                                errors += result.message[i] + "<br/>";
-                            }
+                        if (response.responseJSON.success == false) {
+                            $('#dialog').css('display', 'block');
+                            $("#dialog").text(response.responseJSON.message);
+                            $("#dialog").dialog({
+                                title: 'Failure',
+                                modal: true,
+                                buttons: {
+                                    "Ok": function() {
+                                        $(this).dialog("close");
+                                        $('#dialog').css('display', 'none');
+                                    }
+                                }
+                            });
+                            return [response.responseJSON.success, errors, null];
                         } else {
                         	$('#dialog').removeClass('hide').addClass('show');
                             $("#dialog").text('Entry has been deleted successfully');
@@ -213,18 +268,16 @@
                 var row = $(this).jqGrid('getGridParam', 'selrow');
 
                 if (row != null) $(this).jqGrid('editGridRow', row, {
-                    url:  SERVLET_CONTEXT + '/admin/codelookup/updateCodeType',
+                    url:  SERVLET_CONTEXT + '/admin/editUser',
                     serializeEditData: function(data) {
-                    	data.codeType = data.codeType.toUpperCase();
-                    	data.keyCode = data.keyCode.toUpperCase();
-                    	data.keyValue = data.keyValue.toUpperCase();
                         return $.param(data); 
                     },
                     recreateForm: true,
                     closeAfterEdit: true,
                     reloadAfterSubmit: true,
                     beforeShowForm: function(form) {
-                    
+                    	$('#userName').attr('readonly', true);
+                    	$('#password').attr('readonly', true);
                     },
                     afterSubmit: function(response, postdata) {
                         var result = eval('(' + response.responseText + ')');
@@ -276,7 +329,7 @@
 <script>
     (function($){
         $(document).ready(function () {
-            $('li#nav-code').addClass('active');
+            $('li#nav-users').addClass('active');
         });
     })(jQuery);
 </script>

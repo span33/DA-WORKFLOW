@@ -1,13 +1,15 @@
 package com.da.activiti.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.base.Objects;
-import org.activiti.engine.identity.User;
-import org.hibernate.validator.constraints.Email;
+import java.io.Serializable;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.io.Serializable;
+
+import org.activiti.engine.identity.User;
+import org.hibernate.validator.constraints.Email;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.Objects;
 
 /**
  \* @author Santosh Pandey
@@ -20,12 +22,12 @@ public class UserForm implements Serializable {
 	private static final long serialVersionUID = 251046264223565292L;
 
 	@NotNull
-    @Size(min = 5, max = 50)
+    @Size(min = 5, max = 15)
     private String userName;
 
-    @JsonIgnore
+   
     @NotNull
-    @Size(min = 8, max = 30)
+    @Size(min = 5, max = 15)
     private String password;
 
     @NotNull
@@ -136,8 +138,18 @@ public class UserForm implements Serializable {
         userForm.setFirstName(user.getFirstName());
         userForm.setLastName(user.getLastName());
         userForm.setEmail(user.getEmail());
-
+       
         return userForm;
+
+    }
+    
+ public static User fromUser(User user ,UserForm userForm) {
+    	
+        user.setFirstName(userForm.getFirstName());
+        user.setLastName(userForm.getLastName());
+        user.setPassword(userForm.getPassword());
+        user.setEmail(userForm.getEmail());
+        return user;
 
     }
 }
