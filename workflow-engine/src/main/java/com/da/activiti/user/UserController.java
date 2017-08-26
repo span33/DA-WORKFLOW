@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.da.activiti.model.GroupInfo;
 import com.da.activiti.model.Response;
 import com.da.activiti.model.UserForm;
 import com.da.activiti.web.BaseController;
@@ -86,6 +87,30 @@ public class UserController extends BaseController {
 			res = new Response<String>(true, userForm.getUserName() + " Created Successfully");
 			res.setData(userForm.getUserName());
 			return new ResponseEntity<Response>(res, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/admin/saveGroup", method = RequestMethod.POST)
+	public ResponseEntity<Response> updateUser(ModelMap model, HttpServletRequest request,
+			@Valid @ModelAttribute GroupInfo groupInfo,final RedirectAttributes redirectAttributes ,BindingResult result) {
+		Response<String> res = null  ;
+		 if (result.hasFieldErrors()) {
+	    	Response<List<ObjectError>> resn = new Response<List<ObjectError>>(false, "BindingError") ;
+	    	resn.setData(result.getAllErrors());
+	    	return new ResponseEntity<Response>(res, HttpStatus.OK);
+	    }
+			userService.saveGroup(groupInfo.getId(), groupInfo.getType());
+			res = new Response<String>(true, groupInfo.getId() + " Saved Successfully");
+			res.setData(groupInfo.getId());
+			return new ResponseEntity<Response>(res, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/admin/deleteGroup/{groupid}/", method = RequestMethod.POST)
+	public ResponseEntity<Response> addCodeType(@PathVariable String groupid,final RedirectAttributes redirectAttributes) {
+			Response<String> res = null  ;
+		userService.deleteUser(userId);
+		res = new Response<String>(true, userId + " Deleted Successfully");
+		res.setData(userId);
+		return new ResponseEntity<Response>(res, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/admin/deleteUser/{userId}/", method = RequestMethod.POST)
