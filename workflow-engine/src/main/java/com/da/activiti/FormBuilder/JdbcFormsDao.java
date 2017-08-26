@@ -51,7 +51,7 @@ public class JdbcFormsDao extends BaseDao implements FormsDao {
 	
 	@Override
 	public boolean  updateProcessUserMapping(ProcessInfo processInfo) {
-		String sql = "update process_userfom  set process_id=:processId, doctype=:docType, group_id =:groupId ,user_Id=:processOwner where userform_name =:processTemplateId " ;
+		String sql = "update process_userfom  set process_id=:processId, doc_Type=:docType, group_id =:groupId ,user_Id=:processOwner where userform_name =:processTemplateId " ;
 		BeanPropertySqlParameterSource source = new BeanPropertySqlParameterSource(processInfo);
 		return this.namedJdbcTemplate.update(sql, source) > 0 ;
 
@@ -198,7 +198,7 @@ public class JdbcFormsDao extends BaseDao implements FormsDao {
 
 	@Override
 	public int duplicateCheck(String formName) {
-		 String sql = "SELECT id  FROM process_userfom where userForm_name =:formName";
+		 String sql = "SELECT *  FROM process_userfom where userForm_name =:formName";
 		 Map<String, String> params = ImmutableMap.of("formName", formName);
 		 List<ProcessUserfomInfo> processUserfomInfo  = this.namedJdbcTemplate.query(sql, params, new ProcessUserfomRowMapper());
 		 if(processUserfomInfo != null && processUserfomInfo .size() >0 ) {
