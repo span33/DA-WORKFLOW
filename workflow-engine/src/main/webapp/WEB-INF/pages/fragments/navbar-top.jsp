@@ -26,7 +26,7 @@
 			<li id ="nav-configure-process" ><a href="${pageContext.request.contextPath}/admin/process/createProcess.htm" class="">Process</a> </li> 
 			<li id ="nav-buildForms" ><a href="${pageContext.request.contextPath}/admin/process/buildForms.htm" class="">Build Forms</a> </li> 
 			<li id="nav-code"><a href="${pageContext.request.contextPath}/admin/codelookup/codeList.htm">Code List</a></li>
-			<li id="nav-forms"><a href="${pageContext.request.contextPath}/forms/dynFormlist.htm">User Forms</a></li>
+			<li id="nav-forms"><a href="${pageContext.request.contextPath}/forms/dynFormlist.htm">Forms</a></li>
 			<li id="nav-roles"><a href="${pageContext.request.contextPath}/admin/roles.htm">Roles</a></li>
 			<li id="nav-users"><a href="${pageContext.request.contextPath}/admin/users.htm">Users</a></li>
 			</sec:authorize>
