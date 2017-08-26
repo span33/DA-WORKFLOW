@@ -36,6 +36,7 @@ import com.da.activiti.model.document.ProcessInfo;
 import com.da.activiti.model.document.TaskInfo;
 import com.da.activiti.user.UserService;
 import com.da.activiti.web.BaseController;
+import com.da.activiti.workflow.WFConstants;
 import com.da.activiti.workflow.WorkflowBuilder;
 import com.da.activiti.workflow.WorkflowService;
 import com.da.util.ServiceHelper;
@@ -103,7 +104,9 @@ public class ProcessController extends BaseController {
 		workflowService.deleteWorkflow(processInfo.getDocType(), processInfo.getGroupId());
 		Process process;
 		try {
+			processInfo.setProcessActName(WFConstants.createProcId(processInfo.getDocType(), processInfo.getGroupId()));
 			process = workflowBuilder.createProcess(processInfo, processInfo.getSubProcessList());
+			processService.editProcess(processInfo);
 			String.join(msg, ",", process.getName());
 		} catch (Exception e) {
 			LOG.error("Error occured while creating process :::"+e.getMessage(),e);

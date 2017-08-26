@@ -112,6 +112,7 @@ public class UserService {
 	 @Transactional
 	 public void  updateUser(UserForm userForm)  {
 		 User user = identityService.createUserQuery().userId(userForm.getUserName()).singleResult();
+		 userForm.setPassword(user.getPassword());
 		 UserForm.fromUser(user, userForm);
 		 identityService.saveUser(user);
 		 List<String> groups = ServiceHelper.convertCommaSepratedStringToList(userForm.getGroup()) ;

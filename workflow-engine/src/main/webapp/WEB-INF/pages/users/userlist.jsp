@@ -169,8 +169,6 @@
                                 modal: true,
                                 buttons: {
                                     "Ok": function() {
-                                    	
-                                    	
                                         $(this).dialog("close");
                                         $('#dialog').css('display', 'none');
                                        

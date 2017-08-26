@@ -47,8 +47,8 @@
                 colNames:["Id","Name","Type"],
                 colModel:[
                     {name:'id', index:'id', width:200, key:true},
-                    {name:'name', index:'name', width:300, editable:true , editrules:{required:true },editoptions: { maxlength : 15 ,dataInit: function (el) { $(el).css('text-transform', 'uppercase'); }}},
-                    {name:'type', index:'keyCode', width:300,align:"center",editable:true,editrules:{required:true },editoptions: { maxlength: 15, dataInit: function (el) { $(el).css('text-transform', 'uppercase'); }}}
+                    {name:'name', index:'name', width:300, editable:true , editrules:{required:true },editoptions: { maxlength : 15 }},
+                    {name:'type', index:'keyCode', width:300,align:"center",editable:true,editrules:{required:true },editoptions: { maxlength: 15}}
                     ],
                 jsonReader: {
                     repeatitems: true,
@@ -71,7 +71,6 @@
                 loadonce: true,
                 subGrid: false,
                 beforeSubmit: function (postData) {
-                    postData.name = postData.name.toUpperCase();
                     return [true, ''];
                 },
                 caption: "Roles",
@@ -113,11 +112,8 @@
             });
             function addRow() {
                 $(this).jqGrid('editGridRow', 'new', {
-                    url: SERVLET_CONTEXT + '/admin/codelookup/addCodeType',
+                    url: SERVLET_CONTEXT + '/admin/saveGroup',
                     serializeEditData: function(data) {
-                    	data.codeType = data.codeType.toUpperCase();
-                    	data.keyCode = data.keyCode.toUpperCase();
-                    	data.keyValue = data.keyValue.toUpperCase();
                         return $.param(data);
                     },
                     recreateForm: true,
@@ -129,9 +125,22 @@
                         var errors = "";
 
                         if (response.responseJSON.success == false) {
-                            for (var i = 0; i < response.message.length; i++) {
-                                errors += result.message[i] + "<br/>";
-                            }
+                            $('#dialog').css('display', 'block');
+                            $("#dialog").text(response.responseJSON.message);
+                            $("#dialog").dialog({
+                                title: 'Failure',
+                                modal: true,
+                                buttons: {
+                                    "Ok": function() {
+                                    	
+                                    	
+                                        $(this).dialog("close");
+                                        $('#dialog').css('display', 'none');
+                                       
+           	                           
+                                    }
+                                }
+                            });
                             return [response.responseJSON.success, errors, null];
                         } else {
                        	 
@@ -166,7 +175,7 @@
                 var row = $(this).jqGrid('getGridParam', 'selrow');
                 console.log(row);
                 if (row != null) $(this).jqGrid('delGridRow', row, {
-                    url:  SERVLET_CONTEXT +'/admin/codelookup/deleteCodeType/'+row+'/',
+                    url:  SERVLET_CONTEXT +'/admin/deleteGroup/'+row+'/',
                     recreateForm: true,
                     beforeShowForm: function(form) {
                         //change title
@@ -180,10 +189,23 @@
                         var result = eval('(' + response.responseText + ')');
                         var errors = "";
 
-                        if (result.success == false) {
-                            for (var i = 0; i < result.message.length; i++) {
-                                errors += result.message[i] + "<br/>";
-                            }
+                        if (response.responseJSON.success == false) {
+                            $('#dialog').css('display', 'block');
+                            $("#dialog").text(response.responseJSON.message);
+                            $("#dialog").dialog({
+                                title: 'Failure',
+                                modal: true,
+                                buttons: {
+                                    "Ok": function() {
+                                    	
+                                    	
+                                        $(this).dialog("close");
+                                        $('#dialog').css('display', 'none');
+                                       
+           	                           
+                                    }
+                                }
+                            });
                         } else {
                         	$('#dialog').removeClass('hide').addClass('show');
                             $("#dialog").text('Entry has been deleted successfully');
@@ -212,11 +234,8 @@
                 var row = $(this).jqGrid('getGridParam', 'selrow');
 
                 if (row != null) $(this).jqGrid('editGridRow', row, {
-                    url:  SERVLET_CONTEXT + '/admin/codelookup/updateCodeType',
+                    url:  SERVLET_CONTEXT + '/admin/saveGroup',
                     serializeEditData: function(data) {
-                    	data.codeType = data.codeType.toUpperCase();
-                    	data.keyCode = data.keyCode.toUpperCase();
-                    	data.keyValue = data.keyValue.toUpperCase();
                         return $.param(data); 
                     },
                     recreateForm: true,
@@ -229,10 +248,23 @@
                         var result = eval('(' + response.responseText + ')');
                         var errors = "";
 
-                        if (result.success == false) {
-                            for (var i = 0; i < result.message.length; i++) {
-                                errors += result.message[i] + "<br/>";
-                            }
+                        if (response.responseJSON.success == false) {
+                            $('#dialog').css('display', 'block');
+                            $("#dialog").text(response.responseJSON.message);
+                            $("#dialog").dialog({
+                                title: 'Failure',
+                                modal: true,
+                                buttons: {
+                                    "Ok": function() {
+                                    	
+                                    	
+                                        $(this).dialog("close");
+                                        $('#dialog').css('display', 'none');
+                                       
+           	                           
+                                    }
+                                }
+                            });
                         } else {
                             $("#dialog").text('Entry has been edited successfully');
                             $("#dialog").dialog({

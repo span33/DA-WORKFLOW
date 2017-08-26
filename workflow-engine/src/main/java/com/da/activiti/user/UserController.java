@@ -89,30 +89,6 @@ public class UserController extends BaseController {
 			return new ResponseEntity<Response>(res, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/admin/saveGroup", method = RequestMethod.POST)
-	public ResponseEntity<Response> updateUser(ModelMap model, HttpServletRequest request,
-			@Valid @ModelAttribute GroupInfo groupInfo,final RedirectAttributes redirectAttributes ,BindingResult result) {
-		Response<String> res = null  ;
-		 if (result.hasFieldErrors()) {
-	    	Response<List<ObjectError>> resn = new Response<List<ObjectError>>(false, "BindingError") ;
-	    	resn.setData(result.getAllErrors());
-	    	return new ResponseEntity<Response>(res, HttpStatus.OK);
-	    }
-			userService.saveGroup(groupInfo.getId(), groupInfo.getType());
-			res = new Response<String>(true, groupInfo.getId() + " Saved Successfully");
-			res.setData(groupInfo.getId());
-			return new ResponseEntity<Response>(res, HttpStatus.OK);
-	}
-	
-	@RequestMapping(value = "/admin/deleteGroup/{groupid}/", method = RequestMethod.POST)
-	public ResponseEntity<Response> deleteGroup(@PathVariable String groupId,final RedirectAttributes redirectAttributes) {
-			Response<String> res = null  ;
-		userService.deleteGroup(groupId);
-		res = new Response<String>(true, groupId + " Deleted Successfully");
-		res.setData(groupId);
-		return new ResponseEntity<Response>(res, HttpStatus.OK);
-	}
-	
 	@RequestMapping(value = "/admin/deleteUser/{userId}/", method = RequestMethod.POST)
 	public ResponseEntity<Response> deleteUser(@PathVariable String userId,final RedirectAttributes redirectAttributes) {
 			Response<String> res = null  ;
@@ -121,6 +97,33 @@ public class UserController extends BaseController {
 		res.setData(userId);
 		return new ResponseEntity<Response>(res, HttpStatus.OK);
 	}
+	
+	@RequestMapping(value = "/admin/saveGroup", method = RequestMethod.POST)
+	public ResponseEntity<Response> saveGroup(ModelMap model, HttpServletRequest request,
+			@Valid @ModelAttribute GroupInfo groupInfo,final RedirectAttributes redirectAttributes ,BindingResult result) {
+		Response<String> res = null  ;
+		 if (result.hasFieldErrors()) {
+	    	Response<List<ObjectError>> resn = new Response<List<ObjectError>>(false, "BindingError") ;
+	    	resn.setData(result.getAllErrors());
+	    	return new ResponseEntity<Response>(res, HttpStatus.OK);
+	    }
+		 
+			userService.saveGroup(groupInfo.getName(), groupInfo.getType());
+			res = new Response<String>(true, groupInfo.getId() + " Saved Successfully");
+			res.setData(groupInfo.getId());
+			return new ResponseEntity<Response>(res, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/admin/deleteGroup/{groupId}/", method = RequestMethod.POST)
+	public ResponseEntity<Response> deleteGroup(@PathVariable String groupId,final RedirectAttributes redirectAttributes) {
+			Response<String> res = null  ;
+		userService.deleteGroup(groupId);
+		res = new Response<String>(true, groupId + " Deleted Successfully");
+		res.setData(groupId);
+		return new ResponseEntity<Response>(res, HttpStatus.OK);
+	}
+	
+	
 	
 
 	@RequestMapping(value = "/users.htm", method = RequestMethod.GET)

@@ -1,43 +1,33 @@
 package com.da.activiti.model;
 
-import org.activiti.engine.identity.Group;
+public class GroupInfo {
 
-public class GroupInfo implements Group {
+	private String Id;
+	private String name;
+	private String type;
 
-	@Override
 	public String getId() {
-		// TODO Auto-generated method stub
-		return null;
+		return Id;
 	}
 
-	@Override
 	public void setId(String id) {
-		// TODO Auto-generated method stub
-		
+		Id = id;
 	}
 
-	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return name;
 	}
 
-	@Override
 	public void setName(String name) {
-		// TODO Auto-generated method stub
-		
+		this.name = name;
 	}
 
-	@Override
 	public String getType() {
-		// TODO Auto-generated method stub
-		return null;
+		return type;
 	}
 
-	@Override
-	public void setType(String string) {
-		// TODO Auto-generated method stub
-		
+	public void setType(String type) {
+		this.type = type;
 	}
 
 }

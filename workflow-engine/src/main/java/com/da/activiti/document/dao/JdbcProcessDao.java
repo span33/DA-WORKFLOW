@@ -140,7 +140,7 @@ public class JdbcProcessDao extends BaseDao implements ProcessDao {
 
 		LOG.debug("Updating  ProcessInfo into SQL backend: {}", obj);
 
-		String sql = "update PROCESS set process_name=:processName, process_description=:processDescription, process_type=:processType, process_template_id=:processTemplateId, process_level=:processLevel, process_parent_id=:parent, process_hasSibling=:processHasSibling,doc_type =:docType,group_Id=:groupId,process_owner=:processOwner where process_Id=:id ";
+		String sql = "update PROCESS set process_name=:processName, process_description=:processDescription, process_type=:processType, process_template_id=:processTemplateId, process_level=:processLevel, process_parent_id=:parent, process_hasSibling=:processHasSibling,doc_type =:docType,group_Id=:groupId,process_owner=:processOwner ,process_act_name=:processActName where process_Id=:id ";
 
 		BeanPropertySqlParameterSource source = new BeanPropertySqlParameterSource(obj);
 		source.registerSqlType("docType", Types.VARCHAR);

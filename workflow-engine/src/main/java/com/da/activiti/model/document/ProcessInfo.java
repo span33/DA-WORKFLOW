@@ -30,15 +30,17 @@ public class ProcessInfo extends Document {
 	private String processHasSibling;
 
 	private String createdBy;
-	
+
 	private String departmentId;
 
+	private String processActName;
+
 	private List<TaskInfo> taskList;
-	
+
 	private int processTaskMappingId;
-	
-	private List<String> departmentList ;
-	
+
+	private List<String> departmentList;
+
 	public String getDepartmentId() {
 		return departmentId;
 	}
@@ -63,8 +65,15 @@ public class ProcessInfo extends Document {
 		this.taskList = taskList;
 	}
 
-	
+	public String getProcessActName() {
+		return processActName;
+	}
 
+	public void setProcessActName(String processActName) {
+		this.processActName = processActName;
+	}
+
+	
 
 	@Override
 	public String toString() {
@@ -72,8 +81,11 @@ public class ProcessInfo extends Document {
 				+ processDescription + ", processOwner=" + processOwner + ", processType=" + processType
 				+ ", processTemplateId=" + processTemplateId + ", subProcessList=" + subProcessList + ", processLevel="
 				+ processLevel + ", parent=" + parent + ", processHasSibling=" + processHasSibling + ", createdBy="
-				+ createdBy + ", departmentId=" + departmentId + ", taskList=" + taskList + ", processTaskMappingId="
-				+ processTaskMappingId + ", departmentList=" + departmentList + "]";
+				+ createdBy + ", departmentId=" + departmentId + ", processActName=" + processActName + ", taskList="
+				+ taskList + ", processTaskMappingId=" + processTaskMappingId + ", departmentList=" + departmentList
+				+ ", id=" + id + ", author=" + author + ", title=" + title + ", groupId=" + groupId + ", createdDate="
+				+ createdDate + ", docState=" + docState + ", docType=" + docType + ", updatedBy=" + updatedBy
+				+ ", dtCreated=" + dtCreated + ", dtupdated=" + dtupdated + "]";
 	}
 
 	public String getCreatedBy() {
@@ -83,8 +95,6 @@ public class ProcessInfo extends Document {
 	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
 	}
-
-
 
 	public int getProcessId() {
 		return processId;
@@ -157,7 +167,7 @@ public class ProcessInfo extends Document {
 	public void setProcessTaskMappingId(int processTaskMappingId) {
 		this.processTaskMappingId = processTaskMappingId;
 	}
-	
+
 	public String getParent() {
 		return parent;
 	}
@@ -165,7 +175,7 @@ public class ProcessInfo extends Document {
 	public void setParent(String parent) {
 		this.parent = parent;
 	}
-	
+
 	public List<ProcessInfo> getSubProcessList() {
 		return subProcessList;
 	}
