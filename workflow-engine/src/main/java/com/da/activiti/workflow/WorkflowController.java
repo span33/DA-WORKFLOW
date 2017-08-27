@@ -132,8 +132,8 @@ public class WorkflowController extends BaseController {
     @RequestMapping(value = "/getProcessName/{docType}/{group}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Response<String>> getProcessName  (@PathVariable(value = "group") String group,
             @PathVariable(value = "docType") String docType) {
-    	processService.getProcessName(group, docType); 
     	Response <String> res = new Response<String>(true, "");
+    	res.setData(processService.getProcessName(group, docType));
         return new ResponseEntity<Response<String>>(res, HttpStatus.OK);
     }
 

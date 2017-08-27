@@ -71,6 +71,24 @@ APP.dynamicTasksTpl = _.template(
     </table>'
 );
 
+function ajaxCall(url) {
+	var dataFromServer ;
+	$.ajax({
+		type : 'GET',
+		dataType : 'json',
+		url : SERVLET_CONTEXT + url,
+		async: false,
+		success : function(jsonData) {
+			dataFromServer= jsonData.data;
+		},
+		error: function (error) {
+	            alert("There was an error while accessing :::"+url+"::::::"+error);
+	        }
+	});
+	 
+	return dataFromServer;
+}
+
 function refreshTpl() {
     if (_.isEmpty(APP.dynamicTasks)) {
         $('#emptyTaskListAddBtn').show();
@@ -336,23 +354,7 @@ function updateDiagram() {
     //});
 }
 
-function ajaxCall(url) {
-	var dataFromServer ;
-	$.ajax({
-		type : 'GET',
-		dataType : 'json',
-		url : SERVLET_CONTEXT + url,
-		async: false,
-		success : function(jsonData) {
-			dataFromServer= jsonData.data;
-		},
-		error: function (error) {
-	            alert("There was an error while accessing :::"+url+"::::::"+error);
-	        }
-	});
-	 
-	return dataFromServer;
-}
+
 
 function randPlaceholder(dimensions) {
     var rand = _.random(1, 100000000);
@@ -403,8 +405,9 @@ $(function () {
             return;
         }
         //alert("DocType =" + docType + ", group =" + group);
-         String processName = ajaxCall(SERVLET_CONTEXT+'/workflow/getProcessName/'+docType+'/'+group) ;
-        console.log("processName::::"+processName);
+       var url = '/workflow/getProcessName/'+docType+'/'+group ;
+         var processName = ajaxCall(url) ;
+        console.log(processName);
          $('#processName').val(processName);
          $('#processName').attr('readonly', true);
          
