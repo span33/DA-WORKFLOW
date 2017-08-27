@@ -105,8 +105,9 @@ public class ProcessController extends BaseController {
 		Process process;
 		try {
 			processInfo.setProcessActName(WFConstants.createProcId(processInfo.getDocType(), processInfo.getGroupId()));
+			processInfo.setId(Integer.toString(processInfo.getProcessId()));
 			process = workflowBuilder.createProcess(processInfo, processInfo.getSubProcessList());
-			processService.editProcess(processInfo);
+			processService.editProcess(processInfo,false);
 			String.join(msg, ",", process.getName());
 		} catch (Exception e) {
 			LOG.error("Error occured while creating process :::"+e.getMessage(),e);
@@ -124,7 +125,7 @@ public class ProcessController extends BaseController {
 	public @ResponseBody ResponseEntity<Response> editProcess(@ModelAttribute ProcessInfo processInfo,
 			BindingResult result, final RedirectAttributes redirectAttributes, HttpServletRequest request,
 			ModelMap model) {
-		processService.editProcess(processInfo);
+		processService.editProcess(processInfo,true);
 		String msg = "Process id : " + processInfo.getProcessId() + " -- Process Changed Successfully ";
 		Response<String> res = new Response<String>(true, msg);
 		res.setData(Integer.toString(processInfo.getProcessId()));

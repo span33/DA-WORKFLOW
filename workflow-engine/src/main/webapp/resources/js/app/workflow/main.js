@@ -336,6 +336,24 @@ function updateDiagram() {
     //});
 }
 
+function ajaxCall(url) {
+	var dataFromServer ;
+	$.ajax({
+		type : 'GET',
+		dataType : 'json',
+		url : SERVLET_CONTEXT + url,
+		async: false,
+		success : function(jsonData) {
+			dataFromServer= jsonData.data;
+		},
+		error: function (error) {
+	            alert("There was an error while accessing :::"+url+"::::::"+error);
+	        }
+	});
+	 
+	return dataFromServer;
+}
+
 function randPlaceholder(dimensions) {
     var rand = _.random(1, 100000000);
     //http://placehold.it/300&text=placehold.it+rocks!
@@ -385,7 +403,12 @@ $(function () {
             return;
         }
         //alert("DocType =" + docType + ", group =" + group);
-        getDynamicTasks(group, docType);
+         String processName = ajaxCall(SERVLET_CONTEXT+'/workflow/getProcessName/'+docType+'/'+group) ;
+        console.log("processName::::"+processName);
+         $('#processName').val(processName);
+         $('#processName').attr('readonly', true);
+         
+         getDynamicTasks(group, docType);
     });
     //set up JQuery choosen plugin
     var config = {

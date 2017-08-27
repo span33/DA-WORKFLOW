@@ -80,6 +80,13 @@
                 </select>
             </div>
         </div>
+        
+        <div id="groupSelForm" >
+            <div class="form-group">
+                <label for="processName" class="">Process Name</label>
+                <input type="text" class="form-control" id="processName">
+            </div>
+        </div>
         <hr/>
 
         <div id="dynamicTasks" class="hidden">

@@ -95,6 +95,7 @@ public class WorkflowController extends BaseController {
             @PathVariable(value = "docType") String docType)  {
         LOG.debug("updating tasks for docType: {} and group: {} --> {}", docType, group, dynamicUserTasks.toString());
         ProcessDefinition procDefinition = this.workflowBldr.updateDynamicTasks(docType, group, dynamicUserTasks);
+      
 
 
         //wait for the model diagram to catch up (maybe)
@@ -126,6 +127,14 @@ public class WorkflowController extends BaseController {
         LOG.debug("returning json response of {} dynamicProcDefs", tasks.size());
         Response res = new Response<List<DynamicUserTask>>(true, group, tasks);
         return new ResponseEntity<Response<List<DynamicUserTask>>>(res, HttpStatus.OK);
+    }
+    
+    @RequestMapping(value = "/getProcessName/{docType}/{group}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Response<String>> getProcessName  (@PathVariable(value = "group") String group,
+            @PathVariable(value = "docType") String docType) {
+    	processService.getProcessName(group, docType); 
+    	Response <String> res = new Response<String>(true, "");
+        return new ResponseEntity<Response<String>>(res, HttpStatus.OK);
     }
 
 

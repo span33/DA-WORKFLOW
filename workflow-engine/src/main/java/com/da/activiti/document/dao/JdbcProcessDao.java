@@ -141,9 +141,7 @@ public class JdbcProcessDao extends BaseDao implements ProcessDao {
 		LOG.debug("Updating  ProcessInfo into SQL backend: {}", obj);
 
 		String sql = "update PROCESS set process_name=:processName, process_description=:processDescription, process_type=:processType, process_template_id=:processTemplateId, process_level=:processLevel, process_parent_id=:parent, process_hasSibling=:processHasSibling,doc_type =:docType,group_Id=:groupId,process_owner=:processOwner ,process_act_name=:processActName where process_Id=:id ";
-
 		BeanPropertySqlParameterSource source = new BeanPropertySqlParameterSource(obj);
-		source.registerSqlType("docType", Types.VARCHAR);
 		int updated = this.namedJdbcTemplate.update(sql, source);
 		LOG.debug("updated: {} Process", updated);
 	}
@@ -169,6 +167,14 @@ public class JdbcProcessDao extends BaseDao implements ProcessDao {
 	public ProcessInfo read(String id) {
 		String sql = "SELECT * FROM Process where process_Id = :id";
 		Map<String, String> params = ImmutableMap.of("id", id);
+		ProcessInfo processInfo = this.namedJdbcTemplate.queryForObject(sql, params, new ProcessRowMapper());
+		return processInfo;
+	}
+	
+	@Override
+	public ProcessInfo readProcessByActName(String actProcesName) {
+		String sql = "SELECT * FROM demo_da.process where process_act_name =:actProcesName";
+		Map<String, String> params = ImmutableMap.of("actProcesName", actProcesName);
 		ProcessInfo processInfo = this.namedJdbcTemplate.queryForObject(sql, params, new ProcessRowMapper());
 		return processInfo;
 	}

@@ -36,6 +36,8 @@ public interface ProcessDao extends IBaseDao<ProcessInfo> {
 	List<Map<String, Object>> getDepartmentList();
 
 	List<Map<String, Object>> getUserByDepartmentId(List<String> departmentId);
+	
+	ProcessInfo readProcessByActName(String actProcesName);
 
 	void delete(int id);
 

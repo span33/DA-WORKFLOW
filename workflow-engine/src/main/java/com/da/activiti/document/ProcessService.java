@@ -15,6 +15,7 @@ import com.da.activiti.document.dao.ProcessDao;
 import com.da.activiti.exception.BusinessException;
 import com.da.activiti.model.document.ProcessInfo;
 import com.da.activiti.model.document.TaskInfo;
+import com.da.activiti.workflow.WFConstants;
 import com.da.activiti.workflow.WorkflowService;
 import com.da.util.ServiceHelper;
 import com.google.common.collect.Lists;
@@ -166,11 +167,15 @@ public class ProcessService  {
     }
     
     @Transactional
-    public void editProcess(ProcessInfo processInfo){
+    public void editProcess(ProcessInfo processInfo,boolean updateFormMapping){
     	 processDao.update(processInfo);
-    	 if(StringUtils.isBlank(processInfo.getParent())) {
-     		formsDao.updateProcessUserMapping(processInfo);
-     	}
+    	 System.out.println("Data"+processInfo.getProcessActName());
+    	 if(updateFormMapping) {
+    		 if(StringUtils.isBlank(processInfo.getParent())) {
+    	     		formsDao.updateProcessUserMapping(processInfo);
+    	     	} 
+    	 }
+    	
     }
    
     @Transactional
@@ -204,6 +209,11 @@ public class ProcessService  {
     public List<Map<String, Object>> userListByDepatmentId(List <String> departmentList) {
         return processDao.getUserByDepartmentId(departmentList);
        
+    }
+    
+    public String getProcessName(String group ,String doctype ) {
+    return 	 processDao.readProcessByActName(WFConstants.createProcId(doctype, group)).getProcessName();
+    	
     }
    
 }
