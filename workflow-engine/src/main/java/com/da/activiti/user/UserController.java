@@ -1,6 +1,7 @@
 package com.da.activiti.user;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -59,11 +60,11 @@ public class UserController extends BaseController {
 	}
 	
 	@RequestMapping(value = "/allGroups", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Response<List<Group>>> getALLGroups(HttpServletRequest request) {
-		List<Group> groups = userService.getAllGroups();
+	public ResponseEntity<Response<Map <String, List<Group>>>> getALLGroups(HttpServletRequest request) {
+		Map <String, List<Group>>  groups = userService.getAllGroups();
 		LOG.trace("returning json response of {} groups", groups.size());
 		Response res = new Response(true, "groups", groups);
-		return new ResponseEntity<Response<List<Group>>>(res, HttpStatus.OK);
+		return new ResponseEntity<Response<Map <String, List<Group>>>>(res, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/admin/createUser", method = RequestMethod.POST)

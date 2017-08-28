@@ -39,28 +39,50 @@ public class UserForm implements Serializable {
 
     @NotNull
     private String lastName;
-
+    
     @NotNull
-    private String group;
+    private String department;
+    
+    @NotNull
+    private String role;
+
+    public String getDepartment() {
+		return department;
+	}
+
+
+
+	public void setDepartment(String department) {
+		this.department = department;
+	}
+
+
+
+	public String getRole() {
+		return role;
+	}
+
+
+
+	public void setRole(String role) {
+		this.role = role;
+	}
+
+	
 
     public UserForm() {
     }
 
-    public String getGroup() {
-        return group;
-    }
+    
 
-    public void setGroup(String group) {
-        this.group = group;
-    }
-
-    public UserForm(String userName, String password, String email, String firstName, String lastName, String group) {
+    public UserForm(String userName, String password, String email, String firstName, String lastName, String role,String department) {
         this.userName = userName;
         this.password = password;
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.group = group;
+        this.role = role;
+        this.department = department;
     }
 
     public String getUserName() {
@@ -120,18 +142,17 @@ public class UserForm implements Serializable {
         return userName != null ? userName.hashCode() : 0;
     }
 
-    @Override
-    public String toString() {
-        return Objects.toStringHelper(this)
-                .add("userName", userName)
-                .add("email", email)
-                .add("firstName", firstName)
-                .add("lastName", lastName)
-                .add("group", group)
-                .toString();
-    }
+   
 
-    public static UserForm fromUser(User user) {
+    @Override
+	public String toString() {
+		return "UserForm [userName=" + userName + ", password=" + password + ", email=" + email + ", firstName="
+				+ firstName + ", lastName=" + lastName + ", department=" + department + ", role=" + role + "]";
+	}
+
+
+
+	public static UserForm fromUser(User user) {
         UserForm userForm = new UserForm();
         userForm.setUserName(user.getId());
         userForm.setPassword(user.getPassword());

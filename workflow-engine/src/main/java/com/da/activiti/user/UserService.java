@@ -1,6 +1,7 @@
 package com.da.activiti.user;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -74,7 +75,7 @@ public class UserService {
 		ProcessInstance pi = runtimeService.startProcessInstanceByKey(WFConstants.PROCESS_ID_USER_APPROVAL,
 				processVariables);
 		Task task = taskService.createTaskQuery().processInstanceId(pi.getProcessInstanceId()).singleResult();
-		taskService.addCandidateGroup(task.getId(), userForm.getGroup());
+		//taskService.addCandidateGroup(task.getId(), userForm.getGroup());
 
 		LOG.debug("beginning user registration workflow with instance id: " + pi.getId());
 	}
@@ -90,7 +91,7 @@ public class UserService {
 
 			UserForm.fromUser(user, userForm);
 			identityService.saveUser(user);
-			List<String> groups = ServiceHelper.convertCommaSepratedStringToList(userForm.getGroup());
+			List<String>	groups = getGroupByUserForm(userForm);
 
 			if (groups != null) {
 				for (String group : groups) {
@@ -118,7 +119,7 @@ public class UserService {
 		UserForm.fromUser(user, userForm);
 		identityService.saveUser(user);
 		System.out.println(user.getId());
-		List<String> groups = ServiceHelper.convertCommaSepratedStringToList(userForm.getGroup());
+		List<String> groups =getGroupByUserForm(userForm);
 		 this.identityService.createGroupQuery().groupMember(userForm.getUserName()).groupType("SECURITY-ROLE").list().
 		forEach(index ->{ System.out.println("index.getId()::::"+index.getId() );identityService.deleteMembership(user.getId(), index.getId()); });
 		 this.identityService.createGroupQuery().groupMember(userForm.getUserName()).groupType("ASSIGNMENT").list().
@@ -238,13 +239,20 @@ public class UserService {
 		List<UserForm> userForms = Lists.newArrayList();
 		for (User user : users) {
 			UserForm userForm = UserForm.fromUser(user);
-			List<Group> groups = getAllGroups();
+			List<Group> department = identityService.createGroupQuery().groupMember(userForm.getUserName()).groupType(WFConstants.ASSIGNMENT).list();
+			List<Group> securityRoles = identityService.createGroupQuery().groupMember(userForm.getUserName()).groupType(WFConstants.SECURITY_ROLE).list();
+			
 
-			List<String> groupNames = new ArrayList<>();
-			groups.forEach(index -> {
+		final	List<String> departmentNames = new ArrayList<>();
+			department.forEach(index -> {
+				departmentNames.add(index.getId());
+			});
+			userForm.setDepartment(ServiceHelper.convertListToCommaSepratedString(departmentNames));
+			List<String>	groupNames = new ArrayList<>(); 
+			securityRoles.forEach(index -> {
 				groupNames.add(index.getId());
 			});
-			userForm.setGroup(ServiceHelper.convertListToCommaSepratedString(groupNames));
+			userForm.setRole(ServiceHelper.convertListToCommaSepratedString(groupNames));
 			userForms.add(userForm);
 		}
 		userForms.forEach(index -> index.setPassword("XXXXXXXXXX"));
@@ -264,13 +272,16 @@ public class UserService {
 	 * @return List of {@link o dzrg.activiti.engine.identity.Group Groups} with
 	 *         type of {@code ASSIGNMENT}.
 	 */
-	public List<Group> getAllGroups() {
-		List<Group> allGroups = identityService.createGroupQuery().groupType("ASSIGNMENT").orderByGroupId().asc()
+	public Map <String, List<Group>> getAllGroups() {
+		Map <String, List<Group>> groupMap = new HashMap<>();
+		List<Group> assigmentGroups = identityService.createGroupQuery().groupType("ASSIGNMENT").orderByGroupId().asc()
 				.list();
 		List<Group> securityGroups = identityService.createGroupQuery().groupType("SECURITY-ROLE").orderByGroupId()
 				.asc().list();
-		securityGroups.forEach(index -> allGroups.add(index));
-		return allGroups;
+		groupMap.put(WFConstants.ASSIGNMENT, assigmentGroups);
+		groupMap.put("ROLES", securityGroups);
+		
+		return groupMap;
 	}
 
 	public List<UserForm> getUserByAmountToApprove(final int amount) {
@@ -303,5 +314,11 @@ public class UserService {
 				.forEach(user -> users.add(user)));
 
 		return users;
+	}
+	
+	private List<String> getGroupByUserForm(UserForm userForm) {
+		List<String> groups = ServiceHelper.convertCommaSepratedStringToList(userForm.getRole());
+		ServiceHelper.convertCommaSepratedStringToList(userForm.getDepartment()).forEach(index -> groups.add(index));
+		return groups;
 	}
 }

@@ -18,6 +18,8 @@ public class WFConstants {
     public static final String TASK_ID_DOC_GENRIC_TASK = "TASK_ID_DOC_GENRIC_TASK";
     public static final String REJECTED_BOUNDARY_EVENT_ID = "REJECTED_ERROR_BOUNDARY_EVENT";
     public static final String ERROR_DOC_REJECTED = "ERROR_DOC_REJECTED";
+    public static final String SECURITY_ROLE = "SECURITY-ROLE";
+    public static final String ASSIGNMENT = "ASSIGNMENT";
 
     public static final String TASK_VAR_OUTCOME = "taskOutcome";
     public static final String PROCESS_VAR_APPROVED_OR_REJECTED = "approved";
