@@ -35,7 +35,7 @@ import java.util.*;
 
 
 /**
- * @author Joram Barrez
+ * @author span33
  */
 public class DemoDataGenerator implements ModelDataJsonConstants {
 
@@ -104,7 +104,7 @@ public class DemoDataGenerator implements ModelDataJsonConstants {
             createGroup(groupId, "assignment");
         }
 
-        String[] securityGroups = new String[]{"user", "admin"};
+        String[] securityGroups = new String[]{"user", "Admin"};
         for (String groupId : securityGroups) {
             createGroup(groupId, "security-role");
         }
@@ -122,9 +122,9 @@ public class DemoDataGenerator implements ModelDataJsonConstants {
     }
 
     protected void initDemoUsers() {
-        createUser("admin", "admin", "The Frog", "kermit", "kermit@activiti.org",
+        createUser("admin", "admin", "The Frog", "admin", "kermit@activiti.org",
                 "org/activiti/explorer/images/kermit.jpg",
-                Arrays.asList("management", "sales", "marketing", "engineering", "user", "admin"),
+                Arrays.asList("management", "sales", "marketing", "engineering",  "Admin"),
                 Arrays.asList("birthDate", "10-10-1955", "jobTitle", "Muppet", "location", "Hollywoord",
                         "phone", "+123456789", "twitterName", "alfresco", "skype", "activiti_kermit_frog"));
         

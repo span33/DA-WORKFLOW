@@ -74,6 +74,17 @@ CREATE TABLE `act_ge_property` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+insert into ACT_GE_PROPERTY
+values ('schema.version', '5.17.0.2', 1);
+
+insert into ACT_GE_PROPERTY
+values ('schema.history', 'create(5.17.0.2)', 1);
+
+insert into ACT_GE_PROPERTY
+values ('next.dbid', '1', 1);
+
+
+
 --
 -- Table structure for table `act_hi_actinst`
 --
@@ -258,8 +269,7 @@ CREATE TABLE `act_hi_taskinst` (
   `FORM_KEY_` varchar(255) DEFAULT NULL,
   `CATEGORY_` varchar(255) DEFAULT NULL,
   `TENANT_ID_` varchar(255) DEFAULT '',
-  PRIMARY KEY (`ID_`),
-  KEY `ACT_IDX_HI_TASK_INST_PROCINST` (`PROC_INST_ID_`)
+  PRIMARY KEY (`ID_`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

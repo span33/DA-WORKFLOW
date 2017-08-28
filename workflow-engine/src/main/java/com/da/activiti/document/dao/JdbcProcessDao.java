@@ -173,7 +173,7 @@ public class JdbcProcessDao extends BaseDao implements ProcessDao {
 	
 	@Override
 	public ProcessInfo readProcessByActName(String actProcesName) {
-		String sql = "SELECT * FROM demo_da.process where process_act_name =:actProcesName";
+		String sql = "SELECT * FROM process where process_act_name =:actProcesName";
 		Map<String, String> params = ImmutableMap.of("actProcesName", actProcesName);
 		ProcessInfo processInfo = this.namedJdbcTemplate.queryForObject(sql, params, new ProcessRowMapper());
 		return processInfo;

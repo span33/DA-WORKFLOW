@@ -38,9 +38,9 @@
 
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager" p:dataSource-ref="dataSource"/>
 
-     <jdbc:initialize-database data-source="dataSource">
+      <jdbc:initialize-database data-source="dataSource">
         <jdbc:script location="${jdbc.initialize.location}"/>
-    </jdbc:initialize-database> 
+    </jdbc:initialize-database>  
 
 </beans>
 
