@@ -46,12 +46,12 @@
                 }
             grid.jqGrid({
                 datatype: "json",
-                url:SERVLET_CONTEXT + '/allGroups',
+                url:SERVLET_CONTEXT + '/allRolles',
                 colNames:["Id","Name","Type"],
                 colModel:[
                     {name:'id', index:'id', width:200, key:true},
                     {name:'name', index:'name', width:300, editable:true , editrules:{required:true },editoptions: { maxlength : 15 }},
-                    {name:'type', index:'keyCode', width:300,align:"center",editable:true,editrules:{required:true },edittype:"select", editoptions: { value:roleTypes}}
+                    {name:'type', index:'type', width:300,align:"center",editable:true,editrules:{required:true },edittype:"select", editoptions: { value:roleTypes}}
                     ],
                 jsonReader: {
                     repeatitems: true,

@@ -47,7 +47,7 @@
 			<button id="getXML" type="button">Get XML Data</button>
 			<button id="getJSON" type="button">Get JSON Data</button>
 			<button id="getJS" type="button">Get JS Data</button>
-			<button id="setData" type="button">Set Data</button>
+			<button id="setData" type="button">Set Data</button> 
 			<button id="addField" type="button">Add Field</button>
 			<button id="removeField" type="button">Remove Field</button>
 			<button id="testSubmit" type="submit">Submit</button>
@@ -72,7 +72,7 @@
 		</div>
 	</div>
 	<script>
-	 var  userFormId = ${userFormId} ;
+	 
 	</script>
 	<script
 		src="${pageContext.request.contextPath}/resources/formBuilder-master/demo/assets/js/vendor.js"></script>
@@ -93,6 +93,8 @@
 		src="${pageContext.request.contextPath}/resources/formBuilder-master/demo/assets/js/demo.js"></script>
 	<%-- <jsp:include page="/WEB-INF/pages/fragments/footer.jsp"/> --%>
 	<script>
+	var  userFormId = 0 ;
+	  userFormId = ${userFormId} ;
     (function($){
     	function ajaxCall(url) {
         	var dataFromServer ;
@@ -113,6 +115,9 @@
 		}
         $(document).ready(function () {
         	$('li#nav-buildForms').addClass('active');
+        	if (userFormId == 0){
+        	    return false;
+        	}
             var setFormData =  ajaxCall('/admin/process/jsonDataForForm?userFormId='+userFormId) ;
             $('#setFormData').val(setFormData);
             console.log(setFormData);

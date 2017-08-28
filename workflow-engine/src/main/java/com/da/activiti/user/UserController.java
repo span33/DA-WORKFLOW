@@ -66,6 +66,13 @@ public class UserController extends BaseController {
 		Response res = new Response(true, "groups", groups);
 		return new ResponseEntity<Response<Map <String, List<Group>>>>(res, HttpStatus.OK);
 	}
+	@RequestMapping(value = "/allRolles", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Response<List<Group>>> getALLRoles(HttpServletRequest request) {
+		List<Group>  groups = userService.getAllRoles();
+		LOG.trace("returning json response of {} groups", groups.size());
+		Response res = new Response(true, "groups", groups);
+		return new ResponseEntity<Response<List<Group>>>(res, HttpStatus.OK);
+	}
 	
 	@RequestMapping(value = "/admin/createUser", method = RequestMethod.POST)
 	public ResponseEntity<Response> createUser(ModelMap model, HttpServletRequest request,

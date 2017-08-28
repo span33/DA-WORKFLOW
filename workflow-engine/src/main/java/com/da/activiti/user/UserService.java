@@ -283,6 +283,18 @@ public class UserService {
 		
 		return groupMap;
 	}
+	
+	/**
+	 * @return List of {@link o dzrg.activiti.engine.identity.Group Groups} with
+	 *         type of {@code ASSIGNMENT}.
+	 */
+	public  List<Group> getAllRoles() {
+		List<Group> securityGroups = identityService.createGroupQuery().groupType("SECURITY-ROLE").orderByGroupId()
+				.asc().list();
+		identityService.createGroupQuery().groupType("ASSIGNMENT").orderByGroupId().asc()
+				.list().forEach(index ->securityGroups.add(index) );
+		return securityGroups;
+	}
 
 	public List<UserForm> getUserByAmountToApprove(final int amount) {
 

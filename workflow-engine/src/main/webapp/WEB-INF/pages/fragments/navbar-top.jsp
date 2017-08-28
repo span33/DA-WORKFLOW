@@ -87,7 +87,7 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">${pageContext.request.remoteUser}<b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li><a href="${pageContext.request.contextPath}/j_spring_security_logout">Log Out</a></li>
-                        <li><a href="${pageContext.request.contextPath}/debug.htm">Debug</a></li>
+                       <%--  <li><a href="${pageContext.request.contextPath}/debug.htm">Debug</a></li> --%>
                     </ul>
                 </li>
             </ul>

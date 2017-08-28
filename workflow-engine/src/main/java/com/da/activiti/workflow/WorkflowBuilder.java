@@ -585,6 +585,7 @@ public class WorkflowBuilder {
 
 	public static SubProcess createDynamicSubProcess(List<DynamicUserTask> dynamicUserTasks,
 			ErrorEventDefinition errorDef, String subprocessName) {
+		subprocessName = StringUtils.replace(subprocessName, " ", WFConstants.PROCESS_GROUP_DIVIDER);
 		SubProcess sub = new SubProcess();
 		sub.setId(WFConstants.SUBPROCESS_ID_DYNAMIC + subprocessName);
 		sub.setName(WFConstants.SUBPROCESS_NAME_DYNAMIC + subprocessName);

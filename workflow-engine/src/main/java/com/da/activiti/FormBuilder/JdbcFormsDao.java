@@ -51,7 +51,7 @@ public class JdbcFormsDao extends BaseDao implements FormsDao {
 	
 	@Override
 	public boolean  updateProcessUserMapping(ProcessInfo processInfo) {
-		String sql = "update process_userfom  set process_id=:processId, doc_Type=:docType, group_id =:groupId ,user_Id=:processOwner  where userform_name =:processTemplateId " ;
+		String sql = "update process_userfom  set process_id=:processId, doctype=:docType, group_id =:groupId ,user_Id=:processOwner  where userform_name =:processTemplateId " ;
 		BeanPropertySqlParameterSource source = new BeanPropertySqlParameterSource(processInfo);
 		return this.namedJdbcTemplate.update(sql, source) > 0 ;
 
