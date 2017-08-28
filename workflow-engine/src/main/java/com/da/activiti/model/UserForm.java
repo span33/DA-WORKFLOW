@@ -40,10 +40,8 @@ public class UserForm implements Serializable {
     @NotNull
     private String lastName;
     
-    @NotNull
     private String department;
     
-    @NotNull
     private String role;
 
     public String getDepartment() {

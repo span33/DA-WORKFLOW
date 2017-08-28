@@ -189,8 +189,8 @@ public class ProcessController extends BaseController {
 	@RequestMapping(value = "/userListByDepartments", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Response> userListByDepartments(ModelMap model,
 			@RequestParam String departments) {
-		Set<User> departMentList = userService.fetchUserByDepartments(departments);
-		Response<Set<User>> res = new Response<Set<User>>(true, "Alert acknowledged");
+		List<String> departMentList = userService.fetchUserByDepartments(departments);
+		Response<List<String>> res = new Response<List<String>>(true, "Alert acknowledged");
 		res.setData(departMentList);
 		return new ResponseEntity<Response>(res, HttpStatus.OK);
 

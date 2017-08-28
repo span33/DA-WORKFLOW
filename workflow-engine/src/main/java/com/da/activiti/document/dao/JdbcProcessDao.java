@@ -77,19 +77,18 @@ public class JdbcProcessDao extends BaseDao implements ProcessDao {
 			throw new BusinessException("Duplicate process::::"+obj.getProcessName());
 		}
 
-		String sql = "INSERT INTO PROCESS (process_name, process_description,process_owner, process_type, process_template_id, process_level, process_parent_id, process_hasSibling, created_by,doc_type,group_Id,department_id) "
-								+ "VALUES (:processName, :processDescription,:processOwner,:processType, :processTemplateId, :processLevel,   :parent          ,:processHasSibling, :createdBy,:docType,:groupId,:departmentId)";
+		String sql = "INSERT INTO PROCESS (process_name, process_description,process_owner, process_type, process_template_id, process_level, process_parent_id, process_hasSibling, created_by,doc_type,group_Id) "
+								+ "VALUES (:processName, :processDescription,:processOwner,:processType, :processTemplateId, :processLevel,   :parent          ,:processHasSibling, :createdBy,:docType,:groupId)";
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		BeanPropertySqlParameterSource source = new BeanPropertySqlParameterSource(obj);
 		source.registerSqlType("docType", Types.VARCHAR);
 		this.namedJdbcTemplate.update(sql, source, keyHolder);
 		String processId = Long.toString(keyHolder.getKey().longValue());
-		if(obj.getDepartmentList()!= null) 
-		creatProcessDepartmentMapping(processId, obj.getDepartmentList());
+		/*creatProcessDepartmentMapping(processId, obj.getDepartmentList());*/
 		return processId;
 	}
 	
-	public void creatProcessDepartmentMapping(String processId, List<String> departments) {
+	/*public void creatProcessDepartmentMapping(String processId, List<String> departments) {
 		String sql = "INSERT INTO process_department_mapping (process_id, department_id) "
 				+ "VALUES (:processId, :department)";
 		departments.forEach(index -> {
@@ -100,7 +99,7 @@ public class JdbcProcessDao extends BaseDao implements ProcessDao {
 		
 		});
 	
-	}
+	}*/
 
 	public String create(TaskInfo obj) {
 		LOG.debug("Inserting  TaskInfo into SQL backend: {}", obj);

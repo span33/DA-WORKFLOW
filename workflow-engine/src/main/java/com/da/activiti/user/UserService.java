@@ -307,11 +307,11 @@ public class UserService {
 
 	}
 
-	public Set<User> fetchUserByDepartments(String departments) {
+	public List<String> fetchUserByDepartments(String departments) {
 		List<String> group = ServiceHelper.convertCommaSepratedStringToList(departments);
-		Set<User> users = new HashSet<User>();
+		List<String> users = new ArrayList<String>();
 		group.forEach(index -> identityService.createUserQuery().memberOfGroup(index).list()
-				.forEach(user -> users.add(user)));
+				.forEach(user -> users.add(user.getId())));
 
 		return users;
 	}

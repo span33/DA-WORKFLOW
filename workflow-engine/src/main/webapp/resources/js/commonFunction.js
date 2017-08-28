@@ -43,3 +43,20 @@ function getOptionByCompKey(inputData,compKey){
 	 return dropDownData  ;
 	 }
 
+function retErrorMessage( message) {
+	 $('#dialog').css('display', 'block');
+    $("#dialog").text(message);
+    $("#dialog").dialog({
+        title: 'Error	',
+        modal: true,
+        buttons: {
+            "Ok": function() {
+                $(this).dialog("close");
+                $('#dialog').css('display', 'none');
+                rloadGrid();
+                   
+            }
+        }
+    });
+}
+

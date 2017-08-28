@@ -25,7 +25,6 @@ public class ProcessRowMapper  implements RowMapper<ProcessInfo>{
 	        String createdBy = StringUtils.trim(rs.getString("created_by"));
 	        String updatedBy = StringUtils.trim(rs.getString("updated_by"));
 	        String docType = StringUtils.trim(rs.getString("doc_type"));
-	        String departmentId = StringUtils.trim(rs.getString("department_id"));
 	        String groupId = StringUtils.trim(rs.getString("group_id"));
 	        String processActName =  StringUtils.trim(rs.getString("process_act_name"));
 	        
@@ -42,7 +41,6 @@ public class ProcessRowMapper  implements RowMapper<ProcessInfo>{
 	        processInfo.setCreatedBy(createdBy);
 	        processInfo.setUpdatedBy(updatedBy);
 	        processInfo.setDocType(docType);
-	        processInfo.setDepartmentId(departmentId);
 	        processInfo.setGroupId(groupId);
 	        
 	        

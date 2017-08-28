@@ -27,9 +27,12 @@
 	src="${pageContext.request.contextPath}/resources/js/jqGrid-master/js/i18n/grid.locale-en.js"></script>
 <script type="text/javascript"
 	src="${pageContext.request.contextPath}/resources/js/jqGrid-master/js/jquery.jqgrid.min.js"></script>
+	
 <script type="text/javascript"
 	src="${pageContext.request.contextPath}/resources/js/jquery-ui-1.11.2/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/commonFunction.js"></script>
 <script type="text/javascript">
+
    // var mydata = [{id:"1",name:"Cash",num:"100",debit:"400.00",credit:"250.00",balance:"150.00",level:"0",parent:"",isLeaf:false,expanded:false}] ;
     //<![CDATA[
                var jsonData= [{"1" : "1"},{"2" : "2"},{"3":"3"}] ;
@@ -39,13 +42,16 @@
                var userList ;
                
         $(function(){
-        	var departmentList = ajaxCall('/groups');
+        	var groupsData = ajaxCall('/allGroups');
+        	var departmentList = groupsData.ASSIGNMENT;
+        	var roles = getOptionByCompKey(groupsData.ROLES,'id') ;
         	departmentList = getOptionByCompKeyForCodeList(departmentList , 'id','name');
             userFormList = ajaxCall('/forms/userFormListForSelectedCol');
             userFormList = getOptionByCompKey(userFormList , 'userform_name');
-            userList = ajaxCall('/admin/process/userListByDepartments?departments=Approver');
+            userList = ajaxCall('/admin/process/userListByDepartments?departments=Admin');
+            console.log(":::::Data:::::");
             console.log(userList)
-            console.log(departmentList);
+           
             userList = getOptionForUser(userList);
             console.log(userFormList);
             
@@ -64,15 +70,19 @@
             function changeProcessOwnerSelect(e){
                 departments = $(e.target).val();
                 var userList = ajaxCall('/admin/process/userListByDepartments?departments='+departments);
+                console.log("Test Value:::");
+                console.log(userList);
                var userDropDown = '<select>' ;
                 $.each(userList, function(i, obj) {
           
-       			 for (var key in obj) {
-       				userDropDown=userDropDown+'<option value='+obj[key]+'>'+obj[key] + '</option>';
-       			 }
+                	console.log("Test Value:::"+i);
+                	console.log("Test Value:::"+obj);
+       				userDropDown=userDropDown+'<option value='+obj+'>'+obj + '</option>';
+       			 
        				
                 });
                 userDropDown = userDropDown+'</select>';
+                console.log("Test Value:::"+userDropDown);
                 var form = $(e.target).closest("form.FormGrid");
                 $("select#processOwner.FormElement",form[0]).html(userDropDown);
                 
@@ -100,17 +110,16 @@
         	function getOptionForUser(inputData){
         		var dropDownData = '' ;
         		 $.each(inputData, function(i, obj) {
-        			 for (var key in obj) {
-        				 dropDownData =dropDownData+ obj[key]+":" +obj[key];
-               		 }
-        			 dropDownData=dropDownData+";" ;
+        			
+        				 dropDownData =dropDownData+ obj+":" +obj;
+               		     dropDownData=dropDownData+";" ;
         	});
         		 dropDownData = dropDownData.slice(0, -1);
         		 return dropDownData  ;
         		 }
         	
         	function getOptionByCompKey(inputData,compKey){
-        		var dropDownData = 'System:System;' ;
+        		var dropDownData = '0:select;' ;
         		 $.each(inputData, function(i, obj) {
         			 for (var key in obj) {
         				 if(key == compKey)
@@ -123,7 +132,7 @@
         		 }
         	
         	function getOptionByCompKeyForCodeList(inputData,compKey,compValue){
-        		var dropDownData = '' ;
+        		var dropDownData = '0:select;' ;
         		 $.each(inputData, function(i, obj) {
         			 for (var key in obj) {
         				 if(key == compKey)
@@ -182,11 +191,11 @@
                     {name:'processName', index:'processName', width:80,align:"center",editable:true,editrules:{required:true },editoptions: { maxlength: 30}},
                     {name:'processDescription', index:'processDescription', width:180, align:"center" ,editable:true, edittype:"textarea", editoptions: { rows:5,cols: 5,maxlength: 100 },editrules:{required:true}},
                   	{name:'departmentId', index:'departmentId', width:180, align:"center" ,editable:true, edittype: 'select',editoptions: { multiple: true, value: departmentList }, editrules: { required: true }, formatoptions: { disabled: false}},
-                    {name:'processOwner', index:'processOwner', width:80, align:"center" ,editable:true,edittype:"select" ,editrules: { required: true }, editoptions:{value:userList,defaultValue:"management:management"}, editrules: { required: true }},
-                    {name:'docType', index:'docType', width:80,align:"center",editable:true,required:true,edittype:"select" ,editrules: { required: true },editoptions:{value:docTypes},required:true},
-                    {name:'groupId', index:'groupId', width:80,align:"center",editable:true,required:true,edittype:"select" ,editrules: { required: true },editoptions:{value:"Admin:Admin;Aprrover:Aprrover;user:user"},required:true},
+                    {name:'processOwner', index:'processOwner', width:80, align:"center" ,editable:true,edittype:"select" ,editrules: { required: true }, editoptions:{value:userList}, editrules: { required: true }},
+                    {name:'docType', index:'docType', width:80,align:"center",editable:true,edittype:"select" ,editrules: { required: true },editoptions:{value:docTypes}},
+                    {name:'groupId', index:'groupId', width:80,align:"center",editable:true,edittype:"select" ,editrules: { required: true },editoptions:{value:roles}},
                     {name:'processType', index:'processType', width:80,align:"center" , editable: true,edittype:"select" ,editrules: { required: true },editoptions:{value:processTypes} },
-                    {name:'processTemplateId', index:'processTemplateId', width:80,align:"center" ,editable: true,edittype:"select" , editrules: { required: true },editoptions:{value:userFormList}, required:true},
+                    {name:'processTemplateId', index:'processTemplateId', width:80,align:"center" ,editable: true,edittype:"select" , editrules: { required: true },editoptions:{value:userFormList}},
                     {name:'processLevel', index:'processLevel', width: 60, align:'center', editable: true,edittype:"select" , editrules: { required: true },editoptions:{value:"1:1;2:2;3:3"},hidden: true},
                    /* {name:'processHasSibling', index:'processHasSibling',editable:true, width: 60, align:'center' ,editrules:{required:true},editoptions:{value:"1:1;2:2;3:3"},hidden: true},
                      {
@@ -364,9 +373,30 @@
             		return false;
             	}
             } 
+             
+        function validateDropDown() {
+        	if( $("#processOwner option:selected").val() == 0 ) {
+        		retErrorMessage('Process Owner Can not blank');
+        		return false
+        	};
+        	if( $("#docType option:selected").val() == 0 ) {
+        		retErrorMessage('DocType Can not blank');
+        		return false
+        	};
+        	if(  $("#groupId option:selected").val() == 0 ) {
+        		retErrorMessage('Group Id Can not blank');
+        		return false
+        	};
+        	if( $("#processType option:selected").val() == 0 ) {
+        		retErrorMessage('Process Type Can not blank');
+        		return false
+        	};
+        	if( $("#processTemplateId option:selected").val() == 0 ) {
+        		retErrorMessage('Process Typle Can not blank');
+        		return false
+        	}
+        }
  function addRow() {
-	 
-
      $(this).jqGrid('editGridRow', 'new', {
          url: SERVLET_CONTEXT + '/admin/process/saveProcess',
          serializeEditData: function(data) {
@@ -376,6 +406,9 @@
          closeAfterAdd: true,
          reloadAfterSubmit: true,
          beforeShowForm: function(form) {
+         },
+         beforeSubmit: function(form) {
+        	 return validateDropDown();
          },
          afterSubmit: function(response, postdata) {
              var errors = "";
@@ -807,25 +840,6 @@
                cursor: "pointer"
            });
         }
-       
-        
-        function ajaxCall(url) {
-        	var dataFromServer ;
-			$.ajax({
-				type : 'GET',
-				dataType : 'json',
-				url : SERVLET_CONTEXT + url,
-				async: false,
-				success : function(jsonData) {
-					dataFromServer= jsonData.data;
-				},
-				error: function (error) {
-	 	            alert("There was an error while accessing :::"+url+"::::::"+error);
-	 	        }
-			});
-			 
-			return dataFromServer;
-		}
         });
     //]]>
     </script>
