@@ -798,7 +798,7 @@ DROP TABLE IF EXISTS `process_department_mapping`;
 CREATE TABLE `process_department_mapping` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `process_id` int(11) DEFAULT NULL,
-  `department_id` varchar(10) DEFAULT NULL,
+  `department_id` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=55 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
