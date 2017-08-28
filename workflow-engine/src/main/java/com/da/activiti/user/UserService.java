@@ -1,8 +1,10 @@
 package com.da.activiti.user;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -76,75 +78,79 @@ public class UserService {
 
 		LOG.debug("beginning user registration workflow with instance id: " + pi.getId());
 	}
-	
-	 @Transactional
-	    public boolean createUser(UserForm userForm) {
-		 boolean status = false ;
-	    	 if (identityService.createUserQuery().userId(userForm.getUserName()).count() == 0) {
 
-	             // Following data can already be set by demo setup script
+	@Transactional
+	public boolean createUser(UserForm userForm) {
+		boolean status = false;
+		if (identityService.createUserQuery().userId(userForm.getUserName()).count() == 0) {
 
-	             User user = identityService.newUser(userForm.getUserName());
-	            
-	             UserForm.fromUser(user, userForm);
-	             identityService.saveUser(user);
-	             List<String> groups = ServiceHelper.convertCommaSepratedStringToList(userForm.getGroup()) ;
-	  
-	             if (groups != null) {
-	                 for (String group : groups) {
-	                     identityService.createMembership(user.getId(), group);
-	                 }
-	             }
-	             status = true ;
-	         } else {
-	        	 LOG.debug("User {} already exists - not creating.", userForm.getUserName());
-	         }
-	    	 
-	    	 return status ;
-	    	
-	    }
-	 
-	 @Transactional
-	 public void  deleteUser(String userId)  {
-		 identityService.deleteUser(userId);
-	 }
-	 
-	 @Transactional
-	 public void  updateUser(UserForm userForm)  {
-		 User user = identityService.createUserQuery().userId(userForm.getUserName()).singleResult();
-		 userForm.setPassword(user.getPassword());
-		 UserForm.fromUser(user, userForm);
-		 identityService.saveUser(user);
-		 List<String> groups = ServiceHelper.convertCommaSepratedStringToList(userForm.getGroup()) ;
-		  
-         if (groups != null) {
-             for (String group : groups) {
-            	 identityService.deleteMembership(user.getId(), group);
-                 identityService.createMembership(user.getId(), group);
-             }
-         }
-		
-	 }
-	 @Transactional
-	 public void saveGroup(String groupId, String type) {
-	        if (identityService.createGroupQuery().groupId(groupId).count() == 0) {
-	            Group newGroup = identityService.newGroup(groupId);
-	            newGroup.setName(groupId.substring(0, 1).toUpperCase() + groupId.substring(1));
-	            newGroup.setType(type);
-	            identityService.saveGroup(newGroup);
-	        } else {
-	        	LOG.debug("Demo group: {} already exists - not creating", groupId);
-	        }
-	    }
+			// Following data can already be set by demo setup script
 
-	 @Transactional
-	 public void deleteGroup(String groupId) {
-		 if (identityService.createGroupQuery().groupId(groupId).count() != 0) {
-			 identityService.deleteGroup(groupId);
-	        } else {
-	        	LOG.debug("Demo group: {} not exists - not creating", groupId);
-	        }
-	 }
+			User user = identityService.newUser(userForm.getUserName());
+
+			UserForm.fromUser(user, userForm);
+			identityService.saveUser(user);
+			List<String> groups = ServiceHelper.convertCommaSepratedStringToList(userForm.getGroup());
+
+			if (groups != null) {
+				for (String group : groups) {
+					identityService.createMembership(user.getId(), group);
+				}
+			}
+			status = true;
+		} else {
+			LOG.debug("User {} already exists - not creating.", userForm.getUserName());
+		}
+
+		return status;
+
+	}
+
+	@Transactional
+	public void deleteUser(String userId) {
+		identityService.deleteUser(userId);
+	}
+
+	@Transactional
+	public void updateUser(UserForm userForm) {
+		User user = identityService.createUserQuery().userId(userForm.getUserName()).singleResult();
+		userForm.setPassword(user.getPassword());
+		UserForm.fromUser(user, userForm);
+		identityService.saveUser(user);
+		System.out.println(user.getId());
+		List<String> groups = ServiceHelper.convertCommaSepratedStringToList(userForm.getGroup());
+		 this.identityService.createGroupQuery().groupMember(userForm.getUserName()).groupType("SECURITY-ROLE").list().
+		forEach(index ->{ System.out.println("index.getId()::::"+index.getId() );identityService.deleteMembership(user.getId(), index.getId()); });
+		 this.identityService.createGroupQuery().groupMember(userForm.getUserName()).groupType("ASSIGNMENT").list().
+			forEach(index -> identityService.deleteMembership(user.getId(), index.getId()));
+		if (groups != null) {
+			for (String group : groups) {
+				identityService.createMembership(user.getId(), group);
+			}
+		}
+
+	}
+
+	@Transactional
+	public void saveGroup(String groupId, String type) {
+		if (identityService.createGroupQuery().groupId(groupId).count() == 0) {
+			Group newGroup = identityService.newGroup(groupId);
+			newGroup.setName(groupId.substring(0, 1).toUpperCase() + groupId.substring(1));
+			newGroup.setType(type);
+			identityService.saveGroup(newGroup);
+		} else {
+			LOG.debug("Demo group: {} already exists - not creating", groupId);
+		}
+	}
+
+	@Transactional
+	public void deleteGroup(String groupId) {
+		if (identityService.createGroupQuery().groupId(groupId).count() != 0) {
+			identityService.deleteGroup(groupId);
+		} else {
+			LOG.debug("Demo group: {} not exists - not creating", groupId);
+		}
+	}
 	/*
 	 * @Transactional public void submitForApproval(DocDetails docDetails) {
 	 * Map<String, Object> processVariables = Maps.newHashMap();
@@ -179,7 +185,7 @@ public class UserService {
 		for (User currUser : users) {
 			LOG.debug(currUser.getId());
 			List<Group> groups = this.identityService.createGroupQuery().groupMember(currUser.getId())
-					.groupType("assignment").list();
+					.groupType("ASSIGNMENT").list();
 			List<Group> currentGroups = Lists.newArrayList();
 			for (Group group : groups) {
 				LOG.debug("    " + group.getId() + " - " + group.getType());
@@ -201,7 +207,7 @@ public class UserService {
 		for (User currUser : users) {
 			LOG.debug(currUser.getId());
 			List<Group> groups = this.identityService.createGroupQuery().groupMember(currUser.getId())
-					.groupType("assignment").list();
+					.groupType("ASSIGNMENT").list();
 			List<String> currentGroups = Lists.newArrayList();
 			for (Group group : groups) {
 				LOG.debug("    " + group.getId() + " - " + group.getType());
@@ -215,10 +221,10 @@ public class UserService {
 	/**
 	 * @param userId
 	 * @return List of all {@link org.activiti.engine.identity.Group Groups} of
-	 *         type {@code assignment} to which the given user belongs.
+	 *         type {@code ASSIGNMENT} to which the given user belongs.
 	 */
 	public List<Group> getAssignmentGroups(String userId) {
-		List<Group> groups = identityService.createGroupQuery().groupMember(userId).groupType("assignment")
+		List<Group> groups = identityService.createGroupQuery().groupMember(userId).groupType("ASSIGNMENT")
 				.orderByGroupId().asc().list();
 		return groups;
 	}
@@ -232,8 +238,7 @@ public class UserService {
 		List<UserForm> userForms = Lists.newArrayList();
 		for (User user : users) {
 			UserForm userForm = UserForm.fromUser(user);
-			List<Group> groups = this.identityService.createGroupQuery().groupMember(user.getId())
-					.groupType("security-role").list();
+			List<Group> groups = getAllGroups();
 
 			List<String> groupNames = new ArrayList<>();
 			groups.forEach(index -> {
@@ -248,12 +253,24 @@ public class UserService {
 
 	/**
 	 * @return List of {@link o dzrg.activiti.engine.identity.Group Groups} with
-	 *         type of {@code assignment}.
+	 *         type of {@code ASSIGNMENT}.
 	 */
 	public List<Group> getAllAssignmentGroups() {
-		List<Group> groups = identityService.createGroupQuery().groupType("security-role").orderByGroupId().asc()
-				.list();
+		List<Group> groups = identityService.createGroupQuery().groupType("ASSIGNMENT").orderByGroupId().asc().list();
 		return groups;
+	}
+
+	/**
+	 * @return List of {@link o dzrg.activiti.engine.identity.Group Groups} with
+	 *         type of {@code ASSIGNMENT}.
+	 */
+	public List<Group> getAllGroups() {
+		List<Group> allGroups = identityService.createGroupQuery().groupType("ASSIGNMENT").orderByGroupId().asc()
+				.list();
+		List<Group> securityGroups = identityService.createGroupQuery().groupType("SECURITY-ROLE").orderByGroupId()
+				.asc().list();
+		securityGroups.forEach(index -> allGroups.add(index));
+		return allGroups;
 	}
 
 	public List<UserForm> getUserByAmountToApprove(final int amount) {
@@ -279,7 +296,12 @@ public class UserService {
 
 	}
 
-	public List<Map<String, Object>> fetchUserByDepartments(String departments) {
-		return userDao.getUserByDepartMentId(departments);
+	public Set<User> fetchUserByDepartments(String departments) {
+		List<String> group = ServiceHelper.convertCommaSepratedStringToList(departments);
+		Set<User> users = new HashSet<User>();
+		group.forEach(index -> identityService.createUserQuery().memberOfGroup(index).list()
+				.forEach(user -> users.add(user)));
+
+		return users;
 	}
 }

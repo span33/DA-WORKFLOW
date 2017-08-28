@@ -20,6 +20,7 @@
     <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jqGrid-master/js/i18n/grid.locale-en.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jqGrid-master/js/jquery.jqgrid.min.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/jquery-ui-1.11.2/jquery-ui.min.js"></script>
+   <script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/commonFunction.js"></script>
     <script type="text/javascript">
    // var mydata = [{id:"1",name:"Cash",num:"100",debit:"400.00",credit:"250.00",balance:"150.00",level:"0",parent:"",isLeaf:false,expanded:false}] ;
     //<![CDATA[
@@ -31,6 +32,8 @@
             }
         	
                 grid = $("#treegrid");
+                var roleTypes =  ajaxCall('/admin/codelookup/readCodeByCodeType/ROLE_TYPE/');
+                roleTypes  =  getOptionByCompKeyForCodeList(roleTypes ,'keyCode', 'keyValue');
                 
                 getColumnIndexByName = function (grid, columnName) {
                     var cm = grid.jqGrid('getGridParam', 'colModel'), i, l = cm.length;
@@ -43,12 +46,12 @@
                 }
             grid.jqGrid({
                 datatype: "json",
-                url:SERVLET_CONTEXT + '/groups',
+                url:SERVLET_CONTEXT + '/allGroups',
                 colNames:["Id","Name","Type"],
                 colModel:[
                     {name:'id', index:'id', width:200, key:true},
                     {name:'name', index:'name', width:300, editable:true , editrules:{required:true },editoptions: { maxlength : 15 }},
-                    {name:'type', index:'keyCode', width:300,align:"center",editable:true,editrules:{required:true },editoptions: { maxlength: 15}}
+                    {name:'type', index:'keyCode', width:300,align:"center",editable:true,editrules:{required:true },edittype:"select", editoptions: { value:roleTypes}}
                     ],
                 jsonReader: {
                     repeatitems: true,

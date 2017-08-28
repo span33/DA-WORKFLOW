@@ -79,7 +79,7 @@ public class ActivitiSpringTest {
         List<User> users2 = identityService.createUserQuery().list();
         for (User user2 : users2) {
             LOG.debug(user2.getId());
-            List<Group> groups = this.identityService.createGroupQuery().groupMember(user2.getId()).groupType("security-role").list();
+            List<Group> groups = this.identityService.createGroupQuery().groupMember(user2.getId()).groupType("SECURITY-ROLE").list();
             for (Group group : groups) {
                 LOG.debug("{} - {}", group.getId(), group.getType());
             }

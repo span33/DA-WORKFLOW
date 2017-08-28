@@ -77,7 +77,7 @@ public class ActivitiAuthenticationProvider extends AbstractUserDetailsAuthentic
 
         String userName = user.getId();
         String pw = user.getPassword();
-        List<Group> groups = this.identityService.createGroupQuery().groupMember(userName).groupType("security-role").list();
+        List<Group> groups = this.identityService.createGroupQuery().groupMember(userName).groupType("SECURITY-ROLE").list();
         List<String> groupStr = Lists.newArrayList();
         for (Group g : groups) {
             groupStr.add(g.getId());

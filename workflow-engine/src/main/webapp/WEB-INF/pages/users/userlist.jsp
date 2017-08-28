@@ -28,7 +28,7 @@
             function rloadGrid() {
                  window.location.reload();
             }
-            var roles =  ajaxCall('/groups');
+            var roles =  ajaxCall('/allGroups');
             roles =   getOptionByCompKey(roles,'id') ;
             function getOptionByCompKey(inputData,compKey){
         		var dropDownData = '' ;
@@ -157,6 +157,8 @@
                     closeAfterAdd: true,
                     reloadAfterSubmit: true,
                     beforeShowForm: function(form) {
+                    	$('#userName').val('');
+                    	$('#password').val('');
                     },
                     afterSubmit: function(response, postdata) {
                         var errors = "";

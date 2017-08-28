@@ -120,7 +120,7 @@ package com.da.activiti;
 //    }
 //
 //    private void setSpringSecurity(String userName) {
-//        List<Group> groups = this.identityService.createGroupQuery().groupMember(userName).groupType("security-role").list();
+//        List<Group> groups = this.identityService.createGroupQuery().groupMember(userName).groupType("SECURITY-ROLE").list();
 //        List<String> groupStr = Lists.newArrayList();
 //        for (Group g : groups) {
 //            groupStr.add(g.getId());

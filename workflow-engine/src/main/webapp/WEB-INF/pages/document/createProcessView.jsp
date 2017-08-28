@@ -39,11 +39,11 @@
                var userList ;
                
         $(function(){
-        	var departmentList = ajaxCall('/admin/process/departmentList');
-        	departmentList = getOption(departmentList);
+        	var departmentList = ajaxCall('/groups');
+        	departmentList = getOptionByCompKeyForCodeList(departmentList , 'id','name');
             userFormList = ajaxCall('/forms/userFormListForSelectedCol');
             userFormList = getOptionByCompKey(userFormList , 'userform_name');
-            userList = ajaxCall('/admin/process/userListByDepartments?departments=CT');
+            userList = ajaxCall('/admin/process/userListByDepartments?departments=Approver');
             console.log(userList)
             console.log(departmentList);
             userList = getOptionForUser(userList);
@@ -53,7 +53,7 @@
            var processTypes =  ajaxCall('/admin/codelookup/readCodeByCodeType/PROCESS_TYPE/');
            var taskTypes = ajaxCall('/admin/codelookup/readCodeByCodeType/TASK_TYPE/');
            var taskStatus = ajaxCall('/admin/codelookup/readCodeByCodeType/TASK_STATUS/');
-           docTypes =  getOptionByCompKeyForCodeList(docTypes ,'keyCode', 'keyValue');
+           docTypes =      getOptionByCompKeyForCodeList(docTypes ,'keyCode', 'keyValue');
            processTypes =  getOptionByCompKeyForCodeList(processTypes,'keyCode', 'keyValue');
            taskTypes = getOptionByCompKeyForCodeList(taskTypes,'keyCode', 'keyValue');
            taskStatuses = getOptionByCompKeyForCodeList(taskStatus,'keyCode', 'keyValue');
@@ -182,7 +182,7 @@
                     {name:'processName', index:'processName', width:80,align:"center",editable:true,editrules:{required:true },editoptions: { maxlength: 30}},
                     {name:'processDescription', index:'processDescription', width:180, align:"center" ,editable:true, edittype:"textarea", editoptions: { rows:5,cols: 5,maxlength: 100 },editrules:{required:true}},
                   	{name:'departmentId', index:'departmentId', width:180, align:"center" ,editable:true, edittype: 'select',editoptions: { multiple: true, value: departmentList }, editrules: { required: true }, formatoptions: { disabled: false}},
-                    {name:'processOwner', index:'processOwner', width:80, align:"center" ,editable:true,edittype:"select" ,editrules: { required: true }, editoptions:{value:userList,defaultValue:"CT:Controllership"}, editrules: { required: true }},
+                    {name:'processOwner', index:'processOwner', width:80, align:"center" ,editable:true,edittype:"select" ,editrules: { required: true }, editoptions:{value:userList,defaultValue:"management:management"}, editrules: { required: true }},
                     {name:'docType', index:'docType', width:80,align:"center",editable:true,required:true,edittype:"select" ,editrules: { required: true },editoptions:{value:docTypes},required:true},
                     {name:'groupId', index:'groupId', width:80,align:"center",editable:true,required:true,edittype:"select" ,editrules: { required: true },editoptions:{value:"Admin:Admin;Aprrover:Aprrover;user:user"},required:true},
                     {name:'processType', index:'processType', width:80,align:"center" , editable: true,edittype:"select" ,editrules: { required: true },editoptions:{value:processTypes} },

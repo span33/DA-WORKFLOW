@@ -686,6 +686,8 @@ CREATE TABLE `codelookup` (
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+INSERT INTO `codelookup` VALUES ('ROLE_TYPE','ASSIGNMENT','ASSIGNMENT','2017-08-28 13:10:23',1),('ROLE_TYPE','SECURITY-ROLE','SECURITY-ROLE','2017-08-28 13:11:12',2);
+
 --
 -- Table structure for table `department`
 --

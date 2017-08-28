@@ -667,7 +667,7 @@ public class WorkflowBuilder {
 	protected DynamicUserTask DynmicUserTask(TaskInfo taskInfo, int position) {
 		DynamicUserTask dut = new DynamicUserTask();
 		dut.setIndex(position);
-		List<Group> groups = this.identityService.createGroupQuery().groupMember(taskInfo.getActorId()).groupType("security-role").list();
+		List<Group> groups = this.identityService.createGroupQuery().groupMember(taskInfo.getActorId()).groupType("SECURITY-ROLE").list();
 		List <String> groupNames = new ArrayList<>() ;
 		groups.forEach(index -> groupNames.add(index.getId()));
 		dut.setCandidateGroups(groupNames);

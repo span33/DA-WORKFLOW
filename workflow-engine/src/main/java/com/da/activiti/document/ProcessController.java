@@ -2,11 +2,13 @@ package com.da.activiti.document;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.activiti.bpmn.model.Process;
+import org.activiti.engine.identity.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -187,8 +189,8 @@ public class ProcessController extends BaseController {
 	@RequestMapping(value = "/userListByDepartments", method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<Response> userListByDepartments(ModelMap model,
 			@RequestParam String departments) {
-		List<Map<String, Object>> departMentList = userService.fetchUserByDepartments(departments);
-		Response<List<Map<String, Object>>> res = new Response<List<Map<String, Object>>>(true, "Alert acknowledged");
+		Set<User> departMentList = userService.fetchUserByDepartments(departments);
+		Response<Set<User>> res = new Response<Set<User>>(true, "Alert acknowledged");
 		res.setData(departMentList);
 		return new ResponseEntity<Response>(res, HttpStatus.OK);
 

@@ -429,7 +429,7 @@
         <simpleType>
           <restriction base="string">
             <enumeration value="create" />
-            <enumeration value="assignment" />
+            <enumeration value="ASSIGNMENT" />
             <enumeration value="complete" />
             <enumeration value="delete" />
           </restriction>

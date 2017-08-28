@@ -36,7 +36,7 @@ Remark: the above URLs will be available **after publishing** the release of the
 
 ### Main new features and improvements implemented in the version 4.12.0.
 
-* Add support of requireJs, improving building process of free jqGrid, add minimized individual modules. Be carefully with the usage of separate modules of free jqGrid. The names and the assignment of the methods to modules can be changed in the future.
+* Add support of requireJs, improving building process of free jqGrid, add minimized individual modules. Be carefully with the usage of separate modules of free jqGrid. The names and the ASSIGNMENT of the methods to modules can be changed in the future.
 * Add support on new `forceClientSorting: true` option, which force **local** sorting of data returned from the server in case of usage `loadonce: true`. The input data for TreeGrid needed be still already sorted. The problem will be solved in the later versions of free jqGrid.
 * Add support of sorting and filtering by properties of data specified in `additionalProperties` options. One don't need more to use hidden columns for usage in custom formatters, sortring and filterings.
 

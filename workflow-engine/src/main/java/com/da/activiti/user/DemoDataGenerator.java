@@ -101,12 +101,12 @@ public class DemoDataGenerator implements ModelDataJsonConstants {
     protected void initDemoGroups() {
         String[] assignmentGroups = new String[]{"management", "sales", "marketing", "engineering", "human-resources"};
         for (String groupId : assignmentGroups) {
-            createGroup(groupId, "assignment");
+            createGroup(groupId, "ASSIGNMENT");
         }
 
         String[] securityGroups = new String[]{"user", "Admin"};
         for (String groupId : securityGroups) {
-            createGroup(groupId, "security-role");
+            createGroup(groupId, "SECURITY-ROLE");
         }
     }
 

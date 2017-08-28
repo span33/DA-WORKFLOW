@@ -109,7 +109,7 @@ public class FormService {
 	}
 	
 	public List<ProcessUserfomInfo>  userFormsByCurrentUserRoleType (String userName) {
-		 List<Group> groups = this.identityService.createGroupQuery().groupMember(userName).groupType("security-role").list();
+		 List<Group> groups = this.identityService.createGroupQuery().groupMember(userName).groupType("SECURITY-ROLE").list();
 		Set <String> groupIds = new HashSet<>() ;
 		 groups.forEach(index -> groupIds.add(index.getId()));
 		 List<ProcessUserfomInfo>  retList = formsDao.userFormsListByGroups(groupIds) ;
@@ -149,7 +149,7 @@ public class FormService {
 		Map<String, String> workflowmap = new HashMap<>();
 		String docType =formData.get("docType")[0] ;
 		WorkFlowBean workFlowBean  = new WorkFlowBean(docType, formData.get("userProcessFormId")[0], docState, userName);
-		List<Group> groups = this.identityService.createGroupQuery().groupMember(userName).groupType("security-role").list();
+		List<Group> groups = this.identityService.createGroupQuery().groupMember(userName).groupType("SECURITY-ROLE").list();
 		workFlowBean.setGroupId(groups.get(0).getId());
 		workflowmap.put("docType",formData.get("docType")[0]);
 		workflowmap.put("userProcessFormId",formData.get("userProcessFormId")[0]);
