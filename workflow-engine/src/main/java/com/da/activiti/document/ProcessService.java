@@ -96,7 +96,7 @@ public class ProcessService  {
     @Transactional(readOnly = true)
     public List<ProcessInfo>  listAllProcesses() {
     	 List<ProcessInfo> processList = Lists.newArrayList();
-         processList = this.processDao.readAll();
+         processList = this.processDao.readParentProcess();
          return processList;
        
     }
@@ -168,8 +168,12 @@ public class ProcessService  {
     
     @Transactional
     public void editProcess(ProcessInfo processInfo,boolean updateFormMapping){
+    	 if(!StringUtils.isBlank(processInfo.getDepartmentId())) {
+      		processInfo.setDepartmentList(ServiceHelper.convertCommaSepratedStringToList(processInfo.getDepartmentId()));
+      	}
     	 processDao.update(processInfo);
     	 System.out.println("Data"+processInfo.getProcessActName());
+    	
     	 if(updateFormMapping) {
     		 if(StringUtils.isBlank(processInfo.getParent())) {
     	     		formsDao.updateProcessUserMapping(processInfo);

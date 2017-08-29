@@ -184,7 +184,7 @@
 
             grid.jqGrid({
                 datatype: "json",
-                url:SERVLET_CONTEXT + '/admin/process/DynProcesslist.htm',
+                url:SERVLET_CONTEXT + '/admin/process/Processlist.htm',
                 colNames:["processId","Process Name","Process Description","Department", "Process Owner", "Doc Type", "User Group","Process Type","User Form","Level" ,/*"hasSibling"  ,"" */ ],
                 colModel:[
                     {name:'processId', index:'processId', width:50, key:true},
@@ -412,12 +412,8 @@
          },
          afterSubmit: function(response, postdata) {
              var errors = "";
-
              if (response.responseJSON.success == false) {
-                 for (var i = 0; i < response.message.length; i++) {
-                     errors += result.message[i] + "<br/>";
-                 }
-                 return [response.responseJSON.success, errors, null];
+                 return failureMessage(response);
              } else {
             	 
              	$('#dialog').css('display', 'block');
@@ -459,11 +455,7 @@
              var errors = "";
 
              if (response.responseJSON.success == false) {
-                 for (var i = 0; i < response.responseJSON.message.length; i++) {
-                     errors += response.responseJSON.message[i] + "<br/>";
-                 }
-                 $(this).dialog("close");
-                 return [response.responseJSON.success, errors, null];
+            	 return failureMessage(response);
              } else {
              	$('#dialog').css('display', 'block');
                  $("#dialog").text('Entry has been added successfully');
@@ -550,10 +542,8 @@
              var result = eval('(' + response.responseText + ')');
              var errors = "";
 
-             if (result.success == false) {
-                 for (var i = 0; i < result.message.length; i++) {
-                     errors += result.message[i] + "<br/>";
-                 }
+             if (response.responseJSON.success == false) {
+            	 return failureMessage(response);
              } else {
              	$('#dialog').removeClass('hide').addClass('show');
                  $("#dialog").text('Entry has been deleted successfully');
@@ -590,6 +580,9 @@
                     recreateForm: true,
                     closeAfterEdit: true,
                     reloadAfterSubmit: true,
+                    beforeSubmit: function(form) {
+                   	 return validateDropDown();
+                    },
                     beforeShowForm: function(form) {
                     
                     },

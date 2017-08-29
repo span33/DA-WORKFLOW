@@ -226,7 +226,7 @@ public class FormBuilderController extends BaseController {
 		if (doc.isEditable(doc.getAuthor(), currentUserName())) {
 			return "FormBuilder/view";
 		}
-		model.addAttribute("msg", "The Journal cannot be edited in its current state.");
+		model.addAttribute("msg", "The " + docType + " cannot be edited in its current state.");
 		return "FormBuilder/view";
 	}
 	

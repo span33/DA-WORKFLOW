@@ -28,11 +28,14 @@ public class ServiceHelper {
 	}
 	
 	public static String convertListToCommaSepratedString(List<String> inputdata) {
-		StringBuilder builder = new StringBuilder() ;
-		inputdata.forEach(index -> builder.append(index).append(",") );
-		String retString = builder.toString() ;
-		retString = retString.substring(0 ,retString.length() - 1) ;
-		return retString;
+		if(inputdata != null && inputdata.size() >0 ) {
+			StringBuilder builder = new StringBuilder() ;
+			inputdata.forEach(index -> builder.append(index).append(",") );
+			String retString = builder.toString() ;
+			retString = retString.substring(0 ,retString.length() - 1) ;
+			return retString;
+		}
+	 return StringUtils.EMPTY ;
 		
 	}
 	

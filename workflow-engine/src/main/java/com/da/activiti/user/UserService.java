@@ -75,7 +75,7 @@ public class UserService {
 		ProcessInstance pi = runtimeService.startProcessInstanceByKey(WFConstants.PROCESS_ID_USER_APPROVAL,
 				processVariables);
 		Task task = taskService.createTaskQuery().processInstanceId(pi.getProcessInstanceId()).singleResult();
-		//taskService.addCandidateGroup(task.getId(), userForm.getGroup());
+		// taskService.addCandidateGroup(task.getId(), userForm.getGroup());
 
 		LOG.debug("beginning user registration workflow with instance id: " + pi.getId());
 	}
@@ -91,7 +91,7 @@ public class UserService {
 
 			UserForm.fromUser(user, userForm);
 			identityService.saveUser(user);
-			List<String>	groups = getGroupByUserForm(userForm);
+			List<String> groups = getGroupByUserForm(userForm);
 
 			if (groups != null) {
 				for (String group : groups) {
@@ -119,11 +119,14 @@ public class UserService {
 		UserForm.fromUser(user, userForm);
 		identityService.saveUser(user);
 		System.out.println(user.getId());
-		List<String> groups =getGroupByUserForm(userForm);
-		 this.identityService.createGroupQuery().groupMember(userForm.getUserName()).groupType("SECURITY-ROLE").list().
-		forEach(index ->{ System.out.println("index.getId()::::"+index.getId() );identityService.deleteMembership(user.getId(), index.getId()); });
-		 this.identityService.createGroupQuery().groupMember(userForm.getUserName()).groupType("ASSIGNMENT").list().
-			forEach(index -> identityService.deleteMembership(user.getId(), index.getId()));
+		List<String> groups = getGroupByUserForm(userForm);
+		this.identityService.createGroupQuery().groupMember(userForm.getUserName()).groupType("SECURITY-ROLE").list()
+				.forEach(index -> {
+					System.out.println("index.getId()::::" + index.getId());
+					identityService.deleteMembership(user.getId(), index.getId());
+				});
+		this.identityService.createGroupQuery().groupMember(userForm.getUserName()).groupType("ASSIGNMENT").list()
+				.forEach(index -> identityService.deleteMembership(user.getId(), index.getId()));
 		if (groups != null) {
 			for (String group : groups) {
 				identityService.createMembership(user.getId(), group);
@@ -230,6 +233,12 @@ public class UserService {
 		return groups;
 	}
 
+	public List<Group> getRoles() {
+	List<Group> securityGroups = identityService.createGroupQuery().groupType("SECURITY-ROLE").orderByGroupId()
+			.asc().list();
+	return securityGroups ;
+}
+
 	/**
 	 * @return List of all {@link org.activiti.engine.identity.User Users}
 	 *         converted to {@link com.da.activiti.model.UserForm UserForms}
@@ -239,16 +248,17 @@ public class UserService {
 		List<UserForm> userForms = Lists.newArrayList();
 		for (User user : users) {
 			UserForm userForm = UserForm.fromUser(user);
-			List<Group> department = identityService.createGroupQuery().groupMember(userForm.getUserName()).groupType(WFConstants.ASSIGNMENT).list();
-			List<Group> securityRoles = identityService.createGroupQuery().groupMember(userForm.getUserName()).groupType(WFConstants.SECURITY_ROLE).list();
-			
+			List<Group> department = identityService.createGroupQuery().groupMember(userForm.getUserName())
+					.groupType(WFConstants.ASSIGNMENT).list();
+			List<Group> securityRoles = identityService.createGroupQuery().groupMember(userForm.getUserName())
+					.groupType(WFConstants.SECURITY_ROLE).list();
 
-		final	List<String> departmentNames = new ArrayList<>();
+			final List<String> departmentNames = new ArrayList<>();
 			department.forEach(index -> {
 				departmentNames.add(index.getId());
 			});
 			userForm.setDepartment(ServiceHelper.convertListToCommaSepratedString(departmentNames));
-			List<String>	groupNames = new ArrayList<>(); 
+			List<String> groupNames = new ArrayList<>();
 			securityRoles.forEach(index -> {
 				groupNames.add(index.getId());
 			});
@@ -272,27 +282,27 @@ public class UserService {
 	 * @return List of {@link o dzrg.activiti.engine.identity.Group Groups} with
 	 *         type of {@code ASSIGNMENT}.
 	 */
-	public Map <String, List<Group>> getAllGroups() {
-		Map <String, List<Group>> groupMap = new HashMap<>();
+	public Map<String, List<Group>> getAllGroups() {
+		Map<String, List<Group>> groupMap = new HashMap<>();
 		List<Group> assigmentGroups = identityService.createGroupQuery().groupType("ASSIGNMENT").orderByGroupId().asc()
 				.list();
 		List<Group> securityGroups = identityService.createGroupQuery().groupType("SECURITY-ROLE").orderByGroupId()
 				.asc().list();
 		groupMap.put(WFConstants.ASSIGNMENT, assigmentGroups);
 		groupMap.put("ROLES", securityGroups);
-		
+
 		return groupMap;
 	}
-	
+
 	/**
 	 * @return List of {@link o dzrg.activiti.engine.identity.Group Groups} with
 	 *         type of {@code ASSIGNMENT}.
 	 */
-	public  List<Group> getAllRoles() {
+	public List<Group> getAllRoles() {
 		List<Group> securityGroups = identityService.createGroupQuery().groupType("SECURITY-ROLE").orderByGroupId()
 				.asc().list();
-		identityService.createGroupQuery().groupType("ASSIGNMENT").orderByGroupId().asc()
-				.list().forEach(index ->securityGroups.add(index) );
+		identityService.createGroupQuery().groupType("ASSIGNMENT").orderByGroupId().asc().list()
+				.forEach(index -> securityGroups.add(index));
 		return securityGroups;
 	}
 
@@ -327,7 +337,7 @@ public class UserService {
 
 		return users;
 	}
-	
+
 	private List<String> getGroupByUserForm(UserForm userForm) {
 		List<String> groups = ServiceHelper.convertCommaSepratedStringToList(userForm.getRole());
 		ServiceHelper.convertCommaSepratedStringToList(userForm.getDepartment()).forEach(index -> groups.add(index));

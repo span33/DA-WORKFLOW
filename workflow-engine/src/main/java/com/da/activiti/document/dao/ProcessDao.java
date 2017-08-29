@@ -9,6 +9,7 @@ import com.da.activiti.model.document.TaskInfo;
 
 public interface ProcessDao extends IBaseDao<ProcessInfo> {
 
+	List<ProcessInfo> readParentProcess();
 	List<Map<String, Object>> getProcesList();
 
 	List<Map<String, Object>> getProcessTaskMappingList();

@@ -60,3 +60,22 @@ function retErrorMessage( message) {
     });
 }
 
+function failureMessage(response) {
+	if (response.responseJSON.success == false) {
+        $('#dialog').css('display', 'block');
+        $("#dialog").text(response.responseJSON.message);
+        $("#dialog").dialog({
+            title: 'Failure',
+            modal: true,
+            buttons: {
+                "Ok": function() {
+                    $(this).dialog("close");
+                    $('#dialog').css('display', 'none');
+                   
+                      
+                }
+            }
+        });
+        return [response.responseJSON.success, errors, null];
+}
+}

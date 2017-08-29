@@ -149,6 +149,7 @@ public class DocWorkflowListener {
 		if (doc == null) {
 			return;
 		}
+	
 		LOG.debug("Setting doc: {} to state = {}", doc.getTitle(),
 				DocState.getDocStateStatusByName(task.getName()) != null
 						? DocState.getDocStateStatusByName(task.getName()).name() : "");

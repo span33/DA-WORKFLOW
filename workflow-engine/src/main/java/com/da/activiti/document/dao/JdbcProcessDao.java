@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -16,12 +17,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import com.da.activiti.dao.BaseDao;
+import com.da.activiti.document.ProcessDeptRowMapper;
 import com.da.activiti.document.ProcessRowMapper;
 import com.da.activiti.document.TaskRowMapper;
 import com.da.activiti.exception.BusinessException;
+import com.da.activiti.model.document.ProcessDepartmentInfo;
 import com.da.activiti.model.document.ProcessInfo;
 import com.da.activiti.model.document.TaskInfo;
 import com.da.activiti.web.PagingCriteria;
+import com.da.util.ServiceHelper;
 import com.google.common.collect.ImmutableMap;
 
 @Repository
@@ -50,6 +54,27 @@ public class JdbcProcessDao extends BaseDao implements ProcessDao {
 		/* this.ds.getConnection() */
 		String sql = "SELECT * FROM Process ORDER BY dt_created ASC";
 		List<ProcessInfo> processInfos = this.namedJdbcTemplate.query(sql, new ProcessRowMapper());
+		LOG.debug("got all book reports: {}", processInfos.size());
+		return processInfos;
+	}
+	
+	@Override
+	public List<ProcessInfo> readParentProcess() {
+		// TODO Auto-generated method stub
+		/* this.ds.getConnection() */
+		String sql = "SELECT * FROM Process where process_parent_id is null ORDER BY dt_created ASC";
+		List<ProcessInfo> processInfos = this.namedJdbcTemplate.query(sql, new ProcessRowMapper());
+		
+		processInfos.forEach(index -> {
+			
+			String query = "SELECT department_id FROM process_department_mapping where process_id =:processId ";
+			Map<String, Integer> params = ImmutableMap.of("processId", index.getProcessId());
+			List <String> deptList = this.namedJdbcTemplate.query(query, params, new ProcessDeptRowMapper());
+			
+			index.setDepartmentId(ServiceHelper.convertListToCommaSepratedString(deptList));
+		});
+		
+		
 		LOG.debug("got all book reports: {}", processInfos.size());
 		return processInfos;
 	}
@@ -84,22 +109,27 @@ public class JdbcProcessDao extends BaseDao implements ProcessDao {
 		source.registerSqlType("docType", Types.VARCHAR);
 		this.namedJdbcTemplate.update(sql, source, keyHolder);
 		String processId = Long.toString(keyHolder.getKey().longValue());
-		/*creatProcessDepartmentMapping(processId, obj.getDepartmentList());*/
+		if(StringUtils.isBlank(obj.getParent()))
+		creatProcessDepartmentMapping(processId, obj.getDepartmentList());
 		return processId;
 	}
 	
-	/*public void creatProcessDepartmentMapping(String processId, List<String> departments) {
+	public void creatProcessDepartmentMapping(String processId, List<String> departments) {
 		String sql = "INSERT INTO process_department_mapping (process_id, department_id) "
-				+ "VALUES (:processId, :department)";
+				+ "VALUES (:processId, :departmentId)";
 		departments.forEach(index -> {
-			Map<String, String> params = new HashMap<>();
-			params.put("processId", processId);
-			params.put("department", index);
-			this.namedJdbcTemplate.update(sql, params);
+			KeyHolder keyHolder = new GeneratedKeyHolder();
+			ProcessDepartmentInfo obj = new ProcessDepartmentInfo();
+			obj.setProcessId(Integer.parseInt(processId));
+			obj.setDepartmentId(index);
+			BeanPropertySqlParameterSource source = new BeanPropertySqlParameterSource(obj);
+			this.namedJdbcTemplate.update(sql, source, keyHolder);
+			String key = Long.toString(keyHolder.getKey().longValue());
+			LOG.debug("Inserting  Department into SQL backend: {} key {}", index , key);
 		
 		});
 	
-	}*/
+	}
 
 	public String create(TaskInfo obj) {
 		LOG.debug("Inserting  TaskInfo into SQL backend: {}", obj);
@@ -142,7 +172,21 @@ public class JdbcProcessDao extends BaseDao implements ProcessDao {
 		String sql = "update PROCESS set process_name=:processName, process_description=:processDescription, process_type=:processType, process_template_id=:processTemplateId, process_level=:processLevel, process_parent_id=:parent, process_hasSibling=:processHasSibling,doc_type =:docType,group_Id=:groupId,process_owner=:processOwner ,process_act_name=:processActName where process_Id=:id ";
 		BeanPropertySqlParameterSource source = new BeanPropertySqlParameterSource(obj);
 		int updated = this.namedJdbcTemplate.update(sql, source);
+		if(StringUtils.isBlank(obj.getParent())) {
+			deleteDeptMapping(obj.getProcessId());
+			creatProcessDepartmentMapping(obj.getId(), obj.getDepartmentList());
+		}
+		
 		LOG.debug("updated: {} Process", updated);
+	}
+	
+
+	private  void deleteDeptMapping(int id) {
+		String sql = "DELETE FROM process_department_mapping WHERE process_Id = :id";
+		Map<String, Integer> params = ImmutableMap.of("id", id);
+		int deleted = this.namedJdbcTemplate.update(sql, params);
+		LOG.debug("Deleted: {} Process", deleted);
+
 	}
 
 	@Override

@@ -63,7 +63,7 @@ public class WorkflowController extends BaseController {
     @ModelAttribute
     public void addModelInfo(ModelMap model, HttpServletRequest request) {
         super.addModelInfo(model, request);
-        List<Group> groups = userService.getAllAssignmentGroups();
+        List<Group> groups = userService.getRoles();
         model.addAttribute("groups", groups);
         //model.addAttribute("defaultDocProcId", "FOO");//TODOWorkflow.PROCESS_ID_DOC_APPROVAL);
         model.addAttribute("docTypes", this.workflowSrvc.findExistingBaseDocTypes());
