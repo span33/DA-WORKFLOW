@@ -50,9 +50,7 @@ public class LocalTaskService {
      */
     public List<CandidateTask> findCandidateTasks(String userId) {
         LOG.debug("Getting tasks for user: {}", userId);
-        List<Task> tasks = taskService.createTaskQuery().
-                includeProcessVariables().
-                taskCandidateOrAssigned(userId).
+        List<Task> tasks = taskService.createTaskQuery().taskCandidateOrAssigned(userId).
                 orderByTaskCreateTime().asc().list();
         List<CandidateTask> candidateTasks = Lists.newArrayList();
         try {

@@ -57,7 +57,7 @@ public class NewUserProcessTest {
         identityService.setAuthenticatedUserId("fozzie");
         Map<String, Object> processVariables = Maps.newHashMap();
         processVariables.put("approved", Boolean.FALSE);
-        UserForm userForm = new UserForm("newUser324", "pwabcdedfgss", "me@here.com", "jim", "smith", "engineering");
+        UserForm userForm = new UserForm("newUser324", "pwabcdedfgss", "me@here.com", "jim", "smith", "engineering", null);
         Set<ConstraintViolation<UserForm>> violations = validator.validate(userForm);
         assertTrue(violations.size() == 0);
         LOG.debug("{}",violations.size());

@@ -175,6 +175,8 @@ public class WorkflowBuilder {
 		}
 		current.setCandidateGroups(from.getCandidateGroups());
 		current.setCandidateUsers(from.getCandidateUsers());
+		current.setAssignee(from.getCandidateUsers().get(0));
+		current.setOwner(from.getCandidateUsers().get(0));
 
 		ExclusiveGateway gw = new ExclusiveGateway();
 		gw.setId(String.format("exclusivegateway_approval_%d_of_%d_of_%s", currentIdx, total, sub.getId()));
@@ -240,6 +242,8 @@ public class WorkflowBuilder {
 		}
 		current.setCandidateGroups(from.getCandidateGroups());
 		current.setCandidateUsers(from.getCandidateUsers());
+		current.setAssignee(from.getCandidateUsers().get(0));
+		current.setOwner(from.getCandidateUsers().get(0));
 
 		ActivitiListener onCreate = new ActivitiListener();
 		onCreate.setImplementationType(ImplementationType.IMPLEMENTATION_TYPE_EXPRESSION);
@@ -289,6 +293,8 @@ public class WorkflowBuilder {
 		}
 		current.setCandidateGroups(from.getCandidateGroups());
 		current.setCandidateUsers(from.getCandidateUsers());
+		current.setAssignee(from.getCandidateUsers().get(0));
+		current.setOwner(from.getCandidateUsers().get(0));
 
 		ActivitiListener onCreate = new ActivitiListener();
 		onCreate.setImplementationType(ImplementationType.IMPLEMENTATION_TYPE_EXPRESSION);
