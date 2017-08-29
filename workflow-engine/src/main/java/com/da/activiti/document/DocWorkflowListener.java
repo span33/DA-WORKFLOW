@@ -154,6 +154,7 @@ public class DocWorkflowListener {
 				DocState.getDocStateStatusByName(task.getName()) != null
 						? DocState.getDocStateStatusByName(task.getName()).name() : "");
 		doc.setDocState(DocState.getDocStateStatusByName(task.getName()));
+	
 		this.docSrvc.updateDocument(doc);
 		doc.setTitle(doc.getDocType() + " Document");
 		String message = String.format("%s entitled '%s' has been %s on. ", doc.getDocType(),doc.getDocState(), doc.getTitle());

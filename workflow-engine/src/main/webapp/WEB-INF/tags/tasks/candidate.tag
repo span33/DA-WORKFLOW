@@ -52,6 +52,7 @@
                     </div>
                   <%--   <tf:userApproval candidateTask="${candidateTask}"/> --%>
                      <c:choose>
+                     
                     
                         <c:when test="${fn:startsWith(candidateTask.taskDefinitionKey, userApprovalTask )}">
                             <tf:userApproval candidateTask="${candidateTask}"/>
@@ -63,6 +64,7 @@
                             <tf:docCollaborate candidateTask="${candidateTask}"/>
                         </c:when>
                         <c:otherwise>
+                        <%System.out.print("Test Vaue"); %>
                             <tf:unknown candidateTask="${candidateTask}"/>
                         </c:otherwise>
                     </c:choose> 

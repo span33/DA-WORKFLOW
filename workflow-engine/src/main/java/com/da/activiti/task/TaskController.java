@@ -49,6 +49,7 @@ public class TaskController extends BaseController {
     @RequestMapping(value = "/tasks.htm", method = RequestMethod.GET)
     public String index(ModelMap model, HttpServletRequest request) {
         List<CandidateTask> candidateTasks = this.taskService.findCandidateTasks(currentUserName());
+        candidateTasks.forEach(index -> System.out.println("Data::::"+index.getTaskDefinitionKey()));
         model.addAttribute("candidateTasks", candidateTasks);
         return "tasks";
     }

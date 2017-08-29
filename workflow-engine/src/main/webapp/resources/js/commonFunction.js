@@ -79,3 +79,15 @@ function failureMessage(response) {
         return [response.responseJSON.success, errors, null];
 }
 }
+
+function validate(data ) {
+    if (data == "") {
+        retErrorMessage("Enter a name")
+        return false;
+    }
+    if (!/^[a-zA-Z]*$/g.test(data)) {
+        retErrorMessage("Invalid characters")
+        return false;
+    }
+}
+

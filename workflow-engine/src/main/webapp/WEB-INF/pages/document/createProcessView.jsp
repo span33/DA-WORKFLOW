@@ -65,7 +65,7 @@
            taskStatuses = getOptionByCompKeyForCodeList(taskStatus,'keyCode', 'keyValue');
            
            var approverList =  ajaxCall('/admin/process/approverUserList');
-           approverList = getOptionByCompKey(approverList, 'userName');
+           approverList = getOptionForApprover(approverList, 'userName');
             
             function changeProcessOwnerSelect(e){
                 departments = $(e.target).val();
@@ -120,6 +120,19 @@
         	
         	function getOptionByCompKey(inputData,compKey){
         		var dropDownData = '0:select;' ;
+        		 $.each(inputData, function(i, obj) {
+        			 for (var key in obj) {
+        				 if(key == compKey)
+        				 dropDownData =dropDownData+ obj[key]+":" +obj[key];
+               		 }
+        			 dropDownData=dropDownData+";" ;
+        	});
+        		 dropDownData = dropDownData.slice(0, -1);
+        		 return dropDownData  ;
+        		 }
+        	
+        	function getOptionForApprover(inputData,compKey){
+        		var dropDownData = 'system:system;' ;
         		 $.each(inputData, function(i, obj) {
         			 for (var key in obj) {
         				 if(key == compKey)
