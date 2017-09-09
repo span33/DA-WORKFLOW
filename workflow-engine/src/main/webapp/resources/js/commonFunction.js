@@ -89,5 +89,6 @@ function validateProcessName(data) {
         retErrorMessage("Invalid characters")
         return false;
     }
+    return true;
 }
 
