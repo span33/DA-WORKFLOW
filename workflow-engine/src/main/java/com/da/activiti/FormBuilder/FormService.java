@@ -62,7 +62,7 @@ public class FormService {
 			this.documentService.submitToWorkflow(docType, workFlowId, userProcessFormId);
 		}
 		if (isSubmit.equalsIgnoreCase("on")) {
-			redirAttr.addFlashAttribute("msg", "Your Journal has been submitted to the workflow.</br>"
+			redirAttr.addFlashAttribute("msg", "Your "+ docType+" has been submitted to the workflow.</br>"
 					+ "You will receive alerts as it processed.");
 		} else {
 			redirAttr.addFlashAttribute("msg", "Your invoice has been Saved");

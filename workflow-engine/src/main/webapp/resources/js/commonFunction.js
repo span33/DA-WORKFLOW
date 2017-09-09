@@ -80,12 +80,12 @@ function failureMessage(response) {
 }
 }
 
-function validate(data ) {
+function validateProcessName(data) {
     if (data == "") {
         retErrorMessage("Enter a name")
         return false;
     }
-    if (!/^[a-zA-Z]*$/g.test(data)) {
+    if (!/^[a-zA-Z_]*$/g.test(data)) {
         retErrorMessage("Invalid characters")
         return false;
     }

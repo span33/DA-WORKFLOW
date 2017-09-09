@@ -41,7 +41,6 @@ public class UserAccountWorkflow {
         user.setLastName(userForm.getLastName());
         identityService.saveUser(user);
         identityService.createMembership(userForm.getUserName(), "user");
-        identityService.createMembership(userForm.getUserName(), userForm.getGroup());
         LOG.info("user account approved - new user with name {} created", user.getId());
     }
 

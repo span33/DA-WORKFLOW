@@ -174,7 +174,7 @@ public class JdbcProcessDao extends BaseDao implements ProcessDao {
 		int updated = this.namedJdbcTemplate.update(sql, source);
 		if(StringUtils.isBlank(obj.getParent())) {
 			deleteDeptMapping(obj.getProcessId());
-			creatProcessDepartmentMapping(obj.getId(), obj.getDepartmentList());
+			creatProcessDepartmentMapping(Integer.toString(obj.getProcessId()), obj.getDepartmentList());
 		}
 		
 		LOG.debug("updated: {} Process", updated);

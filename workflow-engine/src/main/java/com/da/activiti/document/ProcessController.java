@@ -94,6 +94,7 @@ public class ProcessController extends BaseController {
 	public ResponseEntity<Response> postGridData(@Valid @RequestBody ProcessInfo processInfo, BindingResult result,
 			final RedirectAttributes redirectAttributes, HttpServletRequest request, ModelMap model) {
 		processTaskMapping(processInfo);
+		processService.editProcess(processInfo, true);
 		String msg = "Process Created Successfully ";
 		final Response<String> res;
 		if(!ServiceHelper.validateProcessInfo(processInfo)) {

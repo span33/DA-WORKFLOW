@@ -30,7 +30,7 @@
 	
 <script type="text/javascript"
 	src="${pageContext.request.contextPath}/resources/js/jquery-ui-1.11.2/jquery-ui.min.js"></script>
-	<script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/commonFunction.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/resources/js/commonFunction.js"></script>
 <script type="text/javascript">
 
    // var mydata = [{id:"1",name:"Cash",num:"100",debit:"400.00",credit:"250.00",balance:"150.00",level:"0",parent:"",isLeaf:false,expanded:false}] ;
@@ -421,7 +421,12 @@
          beforeShowForm: function(form) {
          },
          beforeSubmit: function(form) {
-        	 return validateDropDown();
+        	 var data =  $("#processName").val();
+        	 if(validateProcessName(data)) {
+        		 return validateDropDown();
+        	 }else{
+        		 return false;
+        	 }
          },
          afterSubmit: function(response, postdata) {
              var errors = "";
@@ -594,7 +599,12 @@
                     closeAfterEdit: true,
                     reloadAfterSubmit: true,
                     beforeSubmit: function(form) {
-                   	 return validateDropDown();
+                    	var data =  $("#processName").val();
+                   	 if(validateProcessName(data)) {
+                   		 return validateDropDown();
+                   	 }else{
+                   		 return false;
+                   	 }
                     },
                     beforeShowForm: function(form) {
                     
