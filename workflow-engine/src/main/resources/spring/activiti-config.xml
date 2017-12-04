@@ -38,13 +38,13 @@
     <bean id="identityService" class="org.activiti.engine.IdentityService"
           factory-bean="processEngine"
           factory-method="getIdentityService"/>
-
+<!--
     <bean id="demoDataGenerator" class="com.da.activiti.user.DemoDataGenerator" init-method="init" depends-on="processEngine">
         <property name="processEngine" ref="processEngine" />
         <property name="createDemoUsersAndGroups" value="${activiti.demo.createUsers}" />
         <property name="createDemoProcessDefinitions" value="false" />
         <property name="createDemoModels" value="false" />
-    </bean>
+    </bean> -->
 
 </beans>
 
