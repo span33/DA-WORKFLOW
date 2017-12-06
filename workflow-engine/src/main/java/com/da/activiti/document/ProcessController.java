@@ -65,6 +65,7 @@ public class ProcessController extends BaseController {
 
 	@RequestMapping(value = "/buildForms.htm", method = RequestMethod.GET)
 	public String getDocuments(ModelMap model, HttpServletRequest request) {
+		model.addAttribute("userFormId", 0);
 		return "FormBuilder/buildform";
 	}
 

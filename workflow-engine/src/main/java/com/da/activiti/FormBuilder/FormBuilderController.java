@@ -160,7 +160,7 @@ public class FormBuilderController extends BaseController {
 	}
 
 	@RequestMapping(value = "/saveJsonFormMetaData", method = RequestMethod.POST)
-	public @ResponseBody ResponseEntity<Response> postJson(@RequestBody List<Field> fields,@Valid @RequestParam  @NotEmpty String formName,
+	public @ResponseBody ResponseEntity<Response> postJson(@RequestBody List<Field> fields, @RequestParam( value = "formName", required = true)  @NotEmpty String formName,
 			HttpServletRequest request, ModelMap model) throws BusinessException {
 		FormTemplateInfo formTemplateInfo = new FormTemplateInfo();
 		formTemplateInfo.setFields(fields);
@@ -207,7 +207,7 @@ public class FormBuilderController extends BaseController {
 			redirAttr.addFlashAttribute("msg", "Your "+ docType+" has been submitted to the workflow.</br>"
 					+ "You will receive alerts as it processed.");
 		} else {
-			redirAttr.addFlashAttribute("msg", "Your invoice has been Saved");
+			redirAttr.addFlashAttribute("msg", "Your Request has been Saved");
 		}
 	}
 

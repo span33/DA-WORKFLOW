@@ -15,6 +15,11 @@
 <title></title>
 <jsp:include page="../fragments/head.jsp" />
 <title>FormBuilder</title>
+<%--
+response.setHeader("Access-Control-Allow-Origin","*");
+response.setHeader("Access-Control-Allow-Methods" ,"GET, POST, PATCH, PUT, DELETE, OPTIONS");
+response.setHeader("Access-Control-Allow-Headers","Origin, Content-Type, X-Auth-Token");
+ --%>
 </head>
 
 <body>
@@ -22,7 +27,7 @@
 <body>
 	<div class="content">
 		<h1>Form Builder</h1>
-		<div id="dialog" title="Feature not supported" style="display: none">
+		<div id="dialog" align="center" title="Feature not supported" style="display: none">
 			<p>That feature is not supported.</p>
 		</div>
 		<div class="form-group">
@@ -93,8 +98,7 @@
 		src="${pageContext.request.contextPath}/resources/formBuilder-master/demo/assets/js/demo.js"></script>
 	<%-- <jsp:include page="/WEB-INF/pages/fragments/footer.jsp"/> --%>
 	<script>
-	var  userFormId = 0 ;
-	  userFormId = ${userFormId} ;
+	 var  userFormId = ${userFormId} ;
     (function($){
     	function ajaxCall(url) {
         	var dataFromServer ;
@@ -118,6 +122,7 @@
         	if (userFormId == 0){
         	    return false;
         	}
+       
             var setFormData =  ajaxCall('/admin/process/jsonDataForForm?userFormId='+userFormId) ;
             $('#setFormData').val(setFormData);
             console.log(setFormData);

@@ -199,10 +199,9 @@ jQuery(function($) {
         
        formName = document.getElementById("userForm").value;
       
-    	   if (formName==null || formName=="") {
-    		
-    		   $('#dialog').css('display', 'block');
-               $("#dialog").txt('Form Name Required');
+    	   if (formName==null || formName=="") {   
+               $('#dialog').css('display', 'block');
+               $("#dialog").text('Form Name Required');
                window.scrollTo(0, 0);
                return false ;
     		   
@@ -214,19 +213,13 @@ jQuery(function($) {
 	        data: formBuilder.actions.getData('json'),
 	        contentType: 'application/json',
 	        success: function (resposeResult) {
-	            if (!resposeResult.success) {
-	            	$('#dialog').css('display', 'block');
+	           
+	                $('#dialog').css('display', 'block');
 	                $("#dialog").text(resposeResult.message);
 	                window.scrollTo(0, 0);
-	            }
-	            else {
-	            	$('#dialog').css('display', 'block');
-	                $("#dialog").text(resposeResult.message);
-	                window.scrollTo(0, 0);
-	            }
-	        },
+	            },
 	        error: function (error) {
-	            $('#dialog').css('display', 'block');
+                $('#dialog').css('display', 'block');
                 $("#dialog").text(error.responseText);
                 window.scrollTo(0, 0);
 	        }

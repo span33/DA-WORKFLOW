@@ -54,14 +54,26 @@ public class DemoDataGenerator implements ModelDataJsonConstants {
 
         this.identityService = processEngine.getIdentityService();
         this.repositoryService = processEngine.getRepositoryService();
+        System.out.println(createDemoUsersAndGroups); 
+        System.out.println(createDemoProcessDefinitions);
+        System.out.println(createDemoModels);
+        System.out.println(generateReportData);
+       
 
         if (createDemoUsersAndGroups) {
-            LOGGER.info("Initializing demo groups");
-            initDemoGroups();
-            LOGGER.info("Initializing demo users");
-            initDemoUsers();
+        	try{
+        		LOGGER.info("Initializing demo groups");
+                initDemoGroups();
+                LOGGER.info("Initializing demo users");
+                initDemoUsers();
+        		
+        	}catch(Exception e) {
+        		LOGGER.error( e.getMessage(),e);
+        		e.printStackTrace();
+        	}
+            
         }
-
+        
         if (createDemoProcessDefinitions) {
             LOGGER.info("Initializing demo process definitions");
             initProcessDefinitions();
@@ -76,6 +88,7 @@ public class DemoDataGenerator implements ModelDataJsonConstants {
             LOGGER.info("Initializing demo report data");
             generateReportData();
         }
+        
     }
 
     public void setProcessEngine(ProcessEngine processEngine) {
@@ -99,6 +112,7 @@ public class DemoDataGenerator implements ModelDataJsonConstants {
     }
 
     protected void initDemoGroups() {
+    	System.out.println("::::::initDemoGroups:::::::");
         String[] assignmentGroups = new String[]{"management", "sales", "marketing", "engineering", "human-resources"};
         for (String groupId : assignmentGroups) {
             createGroup(groupId, "ASSIGNMENT");
@@ -111,6 +125,7 @@ public class DemoDataGenerator implements ModelDataJsonConstants {
     }
 
     protected void createGroup(String groupId, String type) {
+    	LOGGER.debug("Demo group: {} already exists - not creating test:::::::", groupId);
         if (identityService.createGroupQuery().groupId(groupId).count() == 0) {
             Group newGroup = identityService.newGroup(groupId);
             newGroup.setName(groupId.substring(0, 1).toUpperCase() + groupId.substring(1));
@@ -157,12 +172,12 @@ public class DemoDataGenerator implements ModelDataJsonConstants {
 
         // Following data is not set by demo setup script
 
-        // image
+        /*// image
         if (imageResource != null) {
             byte[] pictureBytes = IoUtil.readInputStream(this.getClass().getClassLoader().getResourceAsStream(imageResource), null);
             Picture picture = new Picture(pictureBytes, "image/jpeg");
             identityService.setUserPicture(userId, picture);
-        }
+        }*/
 
         // user info
         if (userInfo != null) {
